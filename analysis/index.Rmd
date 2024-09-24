@@ -8,4 +8,4 @@ editor_options:
   chunk_output_type: console
 ---
 
-SAPPHIRE – **S**outh African **P**igmentation and **P**hysiological **H**ealth in Relation to Solar **I**rradiation and **R**eflectance of the **E**pidermis
+**SAPPHIRE** – **S**outh African **P**igmentation and **P**hysiological **H**ealth in Relation to Solar **I**rradiation and **R**eflectance of the **E**pidermis
