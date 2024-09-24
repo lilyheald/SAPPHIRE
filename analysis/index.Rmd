@@ -8,4 +8,4 @@ editor_options:
   chunk_output_type: console
 ---
 
-SAPPHIRE – South African Pigmentation and Physiological Health in Relation to Solar Irradiation and Reflectance of the Epidermis
+SAPPHIRE – **S**outh African **P**igmentation and **P**hysiological **H**ealth in Relation to Solar **I**rradiation and **R**eflectance of the **E**pidermis
