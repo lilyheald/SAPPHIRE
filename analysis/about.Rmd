@@ -7,4 +7,4 @@ editor_options:
   chunk_output_type: console
 ---
 
-SAPPHIRE's aim is to achieve better understanding of the relationships between the genetic basis of constitutive skin pigmentation, tanning potential, Vitamin D levels, and ethnicity in the Xhosa and Cape Mixed populations in South Africa.
+**SAPPHIRE**'s aim is to achieve better understanding of the relationships between the genetic basis of constitutive skin pigmentation, tanning potential, Vitamin D levels, and ethnicity in the Xhosa and Cape Mixed populations in South Africa.
