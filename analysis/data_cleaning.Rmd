@@ -8,8 +8,14 @@ editor_options:
 ---
 
 ## Introduction
+1. Load the relevant packages.
 
 ```{r}
+library(readxl)
+library(dplyr)
+library(janitor)
+library(tidyverse)
+
 
 ```
 
