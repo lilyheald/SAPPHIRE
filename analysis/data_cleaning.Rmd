@@ -26,6 +26,8 @@ library(tidyverse)
 -   delete floating note in ScreeningDataCollection6Weeks sheet: "Note: VDKH007 and VDKH012 had no second weight measurement so the initial measurement was used."
 -   change column DT name in ScreeningDataCollectionWinter sheet from "Result" to "VitDResult" to match the same measures in the Summer and 6 Weeks sheets
 -   delete columns A and B (named ParticipantID and ParticipantCentre, respectively) so that column C becomes your unique identifier (named ParticipantCentreID) in all of the individual sheets within the workbook
+-   delete floating notes in FoodFrequencySummer sheet: "Notes: VDKH016 - No information for Pilchards or Liver beef/lamb; VDTG011 - No Vit D for Marg soft."
+-   delete floating notes in FoodFrequencyWinter sheet: "Note: No amounts calculated for VDKH047 - Soft Marg - or VDKH050 - Snoek; Where two types of margerine were specified, the brand with the lower Vit D percentage was used to calculate Vit D ie VDTG023, 032,045"
 
 ## Begin Wrangling in R
 
@@ -34,6 +36,8 @@ library(tidyverse)
 ```{r}
 file_path <- "~/GitHub/SAPPHIRE/data/serum_vit_D_study_with_lab_results.xlsx"
 ```
+
+### Category 1: Screening Data Collection
 
 4.  Load data from the Screening Data Collection sheets.
 
@@ -77,4 +81,16 @@ screening_long <- bind_rows(screening_summer, screening_winter, screening_6weeks
 
 ```{r}
 print(head(screening_long))
+```
+
+Repeat the above steps for the sheets in the Food Frequency category and in the Sun Exposure category.
+
+### Category 2: Food Frequency
+
+4.  Load data from the Food Frequency sheets.
+
+```{r}
+screening_summer <- read_excel(file_path, sheet = "FoodFrequencySummer")
+screening_winter <- read_excel(file_path, sheet = "FoodFrequencyWinter")
+screening_6weeks <- read_excel(file_path, sheet = "FoodFrequency6Weeks")
 ```
