@@ -25,7 +25,7 @@ library(tidyverse)
 -   delete floating note in ScreeningDataCollectionWinter sheet: "Note: VDKH001 had no second weight measurement so the initial measurement was used."
 -   delete floating note in ScreeningDataCollection6Weeks sheet: "Note: VDKH007 and VDKH012 had no second weight measurement so the initial measurement was used."
 -   change column DT name in ScreeningDataCollectionWinter sheet from "Result" to "VitDResult" to match the same measures in the Summer and 6 Weeks sheets
--   delete columns A and B (named ParticipantID and ParticipantCentre, respectively) so that column C becomes your unique identifier (named ParticipantCentreID)
+-   delete columns A and B (named ParticipantID and ParticipantCentre, respectively) so that column C becomes your unique identifier (named ParticipantCentreID) in all of the individual sheets within the workbook
 
 ## Begin Wrangling in R
 
