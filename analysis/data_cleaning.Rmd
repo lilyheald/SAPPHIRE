@@ -7,6 +7,8 @@ editor_options:
   chunk_output_type: console
 ---
 
+**About This Analysis:** The goal of this analysis is to initiate the wrangling of the original, raw data through manual editing in Google Sheets and a R pipeline to leave us with three long-form data sets (one for each category of data).
+
 ## Set Up
 
 1.  Load the relevant packages.
@@ -83,7 +85,7 @@ screening_long <- bind_rows(screening_summer, screening_winter, screening_6weeks
 print(head(screening_long))
 ```
 
-Repeat the above steps for the sheets in the Food Frequency category and in the Sun Exposure category.
+*Repeat the above steps for the sheets in the Food Frequency category and in the Sun Exposure category.*
 
 ### Category 2: Food Frequency
 

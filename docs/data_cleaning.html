@@ -542,15 +542,15 @@ data/serum_vit_D_study_with_lab_results.xlsx
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree0797437bbe33f14620fdedfa11ae807b64df7d29targetblank0797437a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree258380c2af4f375fe97d539d9334898aa891f45dtargetblank258380ca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/0797437bbe33f14620fdedfa11ae807b64df7d29" target="_blank">0797437</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/258380c2af4f375fe97d539d9334898aa891f45d" target="_blank">258380c</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree0797437bbe33f14620fdedfa11ae807b64df7d29targetblank0797437a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree258380c2af4f375fe97d539d9334898aa891f45dtargetblank258380ca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -560,7 +560,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/0797437bbe33f14620fdedfa11ae807b64df7d29" target="_blank">0797437</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/258380c2af4f375fe97d539d9334898aa891f45d" target="_blank">258380c</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -627,6 +627,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/258380c2af4f375fe97d539d9334898aa891f45d/analysis/data_cleaning.Rmd" target="_blank">258380c</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+updated data_cleaning
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/258380c2af4f375fe97d539d9334898aa891f45d/docs/data_cleaning.html" target="_blank">258380c</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+updated data_cleaning
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -889,6 +923,10 @@ Create data_cleaning.Rmd
 </div>
 </div>
 </div>
+<p><strong>About This Analysis:</strong> The goal of this analysis is to
+initiate the wrangling of the original, raw data through manual editing
+in Google Sheets and a R pipeline to leave us with three long-form data
+sets (one for each category of data).</p>
 <div id="set-up" class="section level2">
 <h2>Set Up</h2>
 <ol style="list-style-type: decimal">
@@ -1010,8 +1048,8 @@ screening_6weeks &lt;- screening_6weeks %&gt;% mutate(collection_period = &quot;
 #   refuse_to_answer &lt;lgl&gt;, weight_measure1 &lt;dbl&gt;, weight_measure2 &lt;dbl&gt;,
 #   avg_weight &lt;dbl&gt;, height_measure1 &lt;dbl&gt;, height_measure2 &lt;dbl&gt;,
 #   avg_height &lt;dbl&gt;, bmi &lt;dbl&gt;, sore_throat_yes &lt;lgl&gt;, sore_throat_no &lt;lgl&gt;, …</code></pre>
-<p>Repeat the above steps for the sheets in the Food Frequency category
-and in the Sun Exposure category.</p>
+<p><em>Repeat the above steps for the sheets in the Food Frequency
+category and in the Sun Exposure category.</em></p>
 </div>
 <div id="category-2-food-frequency" class="section level3">
 <h3>Category 2: Food Frequency</h3>
