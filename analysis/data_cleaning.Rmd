@@ -7,8 +7,10 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Introduction
-1. Load the relevant packages.
+## Set Up
+
+1.  Load the relevant packages.
+
 ```{r}
 library(readxl)
 library(dplyr)
@@ -16,51 +18,63 @@ library(janitor)
 library(tidyverse)
 ```
 
-2. In Google Sheets, make a copy of the original data, save as "serum_vit_D_study_with_lab_results.xlsx" and manually edit the following: 
--delete floating note in ScreeningDataCollectionWinter sheet: "Note: VDKH001 had no second weight measurement so the initial measurement was used."
--delete floating note in ScreeningDataCollection6Weeks sheet: "Note: VDKH007 and VDKH012 had no second weight measurement so the initial measurement was used."
--change column DT name in ScreeningDataCollectionWinter sheet from "Result" to "VitDResult" to match the same measures in the Summer and 6 Weeks sheets.
+## Prepare Your Data
 
-3. Specify the path to the new Excel file. This .xlsx file is located in ~GitHub/SAPPHIRE/data.  
+2.  In Google Sheets, make a copy of the original data, save as "serum_vit_D_study_with_lab_results.xlsx" and manually edit the following:
+
+-   delete floating note in ScreeningDataCollectionWinter sheet: "Note: VDKH001 had no second weight measurement so the initial measurement was used."
+-   delete floating note in ScreeningDataCollection6Weeks sheet: "Note: VDKH007 and VDKH012 had no second weight measurement so the initial measurement was used."
+-   change column DT name in ScreeningDataCollectionWinter sheet from "Result" to "VitDResult" to match the same measures in the Summer and 6 Weeks sheets
+-   delete columns A and B (named ParticipantID and ParticipantCentre, respectively) so that column C becomes your unique identifier (named ParticipantCentreID)
+
+## Begin Wrangling in R
+
+3.  Specify the path to the new Excel file. This .xlsx file is located in \~GitHub/SAPPHIRE/data.
+
 ```{r}
 file_path <- "~/GitHub/SAPPHIRE/data/serum_vit_D_study_with_lab_results.xlsx"
 ```
 
-4. Load data from the Screening Data Collection sheets.
+4.  Load data from the Screening Data Collection sheets.
+
 ```{r}
 screening_summer <- read_excel(file_path, sheet = "ScreeningDataCollectionSummer")
 screening_winter <- read_excel(file_path, sheet = "ScreeningDataCollectionWinter")
 screening_6weeks <- read_excel(file_path, sheet = "ScreeningDataCollection6Weeks")
 ```
 
-5. Convert the column names to snake_case.
+5.  Convert the column names to snake_case.
+
 ```{r}
 screening_summer <- screening_summer %>% clean_names()
 screening_winter <- screening_winter %>% clean_names()
 screening_6weeks <- screening_6weeks %>% clean_names()
 ```
 
-6. Standardize the data types for critical columns, for example, age_years.
+6.  Standardize the data types for critical columns, for example, age_years.
+
 ```{r}
 screening_summer <- screening_summer %>% mutate(age_years = as.numeric(age_years))
 screening_winter <- screening_winter %>% mutate(age_years = as.numeric(age_years))
 screening_6weeks <- screening_6weeks %>% mutate(age_years = as.numeric(age_years))
 ```
 
-7. Add a 'collection_period' column to each data frame to indicate when the data was collected.
+7.  Add a 'collection_period' column to each data frame to indicate when the data was collected.
+
 ```{r}
 screening_summer <- screening_summer %>% mutate(collection_period = "Summer")
 screening_winter <- screening_winter %>% mutate(collection_period = "Winter")
 screening_6weeks <- screening_6weeks %>% mutate(collection_period = "6Weeks")
 ```
 
-8. Combine the dataframes into a long-form dataset.
+8.  Combine the dataframes into a long-form dataset.
+
 ```{r}
 screening_long <- bind_rows(screening_summer, screening_winter, screening_6weeks)
 ```
 
-9. View the resulting long-form dataset
+9.  View the resulting long-form dataset
+
 ```{r}
 print(head(screening_long))
 ```
-

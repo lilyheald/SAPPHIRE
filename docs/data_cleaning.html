@@ -542,15 +542,15 @@ data/serum_vit_D_study_with_lab_results.xlsx
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree181529afb3fc33ea4c40f20ee22e94e5078a03eetargetblank181529aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree2c0a370a5ca30754aacd59e5c876185976a9e0d5targetblank2c0a370a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/181529afb3fc33ea4c40f20ee22e94e5078a03ee" target="_blank">181529a</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/2c0a370a5ca30754aacd59e5c876185976a9e0d5" target="_blank">2c0a370</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree181529afb3fc33ea4c40f20ee22e94e5078a03eetargetblank181529aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree2c0a370a5ca30754aacd59e5c876185976a9e0d5targetblank2c0a370a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -560,7 +560,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/181529afb3fc33ea4c40f20ee22e94e5078a03ee" target="_blank">181529a</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/2c0a370a5ca30754aacd59e5c876185976a9e0d5" target="_blank">2c0a370</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -580,9 +580,6 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    data/.DS_Store
-
-Untracked files:
-    Untracked:  data/serum_vit_D_study_with_lab_results.xlsx
 
 Unstaged changes:
     Modified:   analysis/data_cleaning.Rmd
@@ -630,6 +627,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/2c0a370a5ca30754aacd59e5c876185976a9e0d5/analysis/data_cleaning.Rmd" target="_blank">2c0a370</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+data_cleaning.Rmd draft 1
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/2c0a370a5ca30754aacd59e5c876185976a9e0d5/docs/data_cleaning.html" target="_blank">2c0a370</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+data_cleaning.Rmd draft 1
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -688,8 +719,8 @@ Create data_cleaning.Rmd
 </div>
 </div>
 </div>
-<div id="introduction" class="section level2">
-<h2>Introduction</h2>
+<div id="set-up" class="section level2">
+<h2>Set Up</h2>
 <ol style="list-style-type: decimal">
 <li>Load the relevant packages.</li>
 </ol>
@@ -719,19 +750,34 @@ Attaching package: &#39;janitor&#39;</code></pre>
 ✖ dplyr::filter() masks stats::filter()
 ✖ dplyr::lag()    masks stats::lag()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div id="prepare-your-data" class="section level2">
+<h2>Prepare Your Data</h2>
 <ol start="2" style="list-style-type: decimal">
-<li><p>In Google Sheets, make a copy of the original data, save as
+<li>In Google Sheets, make a copy of the original data, save as
 “serum_vit_D_study_with_lab_results.xlsx” and manually edit the
-following: -delete floating note in ScreeningDataCollectionWinter sheet:
-“Note: VDKH001 had no second weight measurement so the initial
-measurement was used.” -delete floating note in
-ScreeningDataCollection6Weeks sheet: “Note: VDKH007 and VDKH012 had no
-second weight measurement so the initial measurement was used.” -change
-column DT name in ScreeningDataCollectionWinter sheet from “Result” to
-“VitDResult” to match the same measures in the Summer and 6 Weeks
-sheets.</p></li>
-<li><p>Specify the path to the new Excel file. This .xlsx file is
-located in ~GitHub/SAPPHIRE/data.</p></li>
+following:</li>
+</ol>
+<ul>
+<li>delete floating note in ScreeningDataCollectionWinter sheet: “Note:
+VDKH001 had no second weight measurement so the initial measurement was
+used.”</li>
+<li>delete floating note in ScreeningDataCollection6Weeks sheet: “Note:
+VDKH007 and VDKH012 had no second weight measurement so the initial
+measurement was used.”</li>
+<li>change column DT name in ScreeningDataCollectionWinter sheet from
+“Result” to “VitDResult” to match the same measures in the Summer and 6
+Weeks sheets</li>
+<li>delete columns A and B (named ParticipantID and ParticipantCentre,
+respectively) so that column C becomes your unique identifier (named
+ParticipantCentreID)</li>
+</ul>
+</div>
+<div id="begin-wrangling-in-r" class="section level2">
+<h2>Begin Wrangling in R</h2>
+<ol start="3" style="list-style-type: decimal">
+<li>Specify the path to the new Excel file. This .xlsx file is located
+in ~GitHub/SAPPHIRE/data.</li>
 </ol>
 <pre class="r"><code>file_path &lt;- &quot;~/GitHub/SAPPHIRE/data/serum_vit_D_study_with_lab_results.xlsx&quot;</code></pre>
 <ol start="4" style="list-style-type: decimal">
