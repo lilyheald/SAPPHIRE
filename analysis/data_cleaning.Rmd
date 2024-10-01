@@ -103,7 +103,7 @@ food_freq_winter <- food_freq_winter %>% clean_names()
 food_freq_6weeks <- food_freq_6weeks %>% clean_names()
 ```
 
-6.  Only do Step 6 if necessary.
+6.  Step 6 unnecessary.
 
 7.  Add a 'collection_period' column to each data frame to indicate when the data was collected.
 
@@ -143,7 +143,7 @@ sun_expos_winter <- sun_expos_winter %>% clean_names()
 sun_expos_6weeks <- sun_expos_6weeks %>% clean_names()
 ```
 
-6.  Only do Step 6 if necessary.
+6.  Step 6 unnecessary.
 
 7.  Add a 'collection_period' column to each data frame to indicate when the data was collected.
 
