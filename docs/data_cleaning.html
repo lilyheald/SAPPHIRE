@@ -386,9 +386,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 5
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 2
 </p>
 <p>
 <strong>Knit directory:</strong> <code>SAPPHIRE/</code> <span
@@ -501,30 +501,56 @@ run.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongabsolute">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>File paths:</strong> absolute </a>
 </p>
 </div>
-<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div id="strongFilepathsstrongabsolute" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! Using relative paths to the files within your workflowr
-project makes it easier to run your code on other machines.</p>
+<p>
+Using absolute paths to the files within your workflowr project makes it
+difficult for you and others to run your code on a different machine.
+Change the absolute path(s) below to the suggested relative path(s) to
+make your code more reproducible.
+</p>
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th style="text-align:left;">
+absolute
+</th>
+<th style="text-align:left;">
+relative
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+~/GitHub/SAPPHIRE/data/serum_vit_D_study_with_lab_results.xlsx
+</td>
+<td style="text-align:left;">
+data/serum_vit_D_study_with_lab_results.xlsx
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree814031843c06f11233cc1d91f9a6bc84842f7d11targetblank8140318a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree181529afb3fc33ea4c40f20ee22e94e5078a03eetargetblank181529aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/814031843c06f11233cc1d91f9a6bc84842f7d11" target="_blank">8140318</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/181529afb3fc33ea4c40f20ee22e94e5078a03ee" target="_blank">181529a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree814031843c06f11233cc1d91f9a6bc84842f7d11targetblank8140318a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree181529afb3fc33ea4c40f20ee22e94e5078a03eetargetblank181529aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -534,7 +560,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/814031843c06f11233cc1d91f9a6bc84842f7d11" target="_blank">8140318</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/181529afb3fc33ea4c40f20ee22e94e5078a03ee" target="_blank">181529a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -554,6 +580,9 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    data/.DS_Store
+
+Untracked files:
+    Untracked:  data/serum_vit_D_study_with_lab_results.xlsx
 
 Unstaged changes:
     Modified:   analysis/data_cleaning.Rmd
@@ -601,6 +630,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/181529afb3fc33ea4c40f20ee22e94e5078a03ee/analysis/data_cleaning.Rmd" target="_blank">181529a</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+step 1
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/181529afb3fc33ea4c40f20ee22e94e5078a03ee/docs/data_cleaning.html" target="_blank">181529a</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+step 1
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -656,6 +719,71 @@ Attaching package: &#39;janitor&#39;</code></pre>
 ✖ dplyr::filter() masks stats::filter()
 ✖ dplyr::lag()    masks stats::lag()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li><p>In Google Sheets, make a copy of the original data, save as
+“serum_vit_D_study_with_lab_results.xlsx” and manually edit the
+following: -delete floating note in ScreeningDataCollectionWinter sheet:
+“Note: VDKH001 had no second weight measurement so the initial
+measurement was used.” -delete floating note in
+ScreeningDataCollection6Weeks sheet: “Note: VDKH007 and VDKH012 had no
+second weight measurement so the initial measurement was used.” -change
+column DT name in ScreeningDataCollectionWinter sheet from “Result” to
+“VitDResult” to match the same measures in the Summer and 6 Weeks
+sheets.</p></li>
+<li><p>Specify the path to the new Excel file. This .xlsx file is
+located in ~GitHub/SAPPHIRE/data.</p></li>
+</ol>
+<pre class="r"><code>file_path &lt;- &quot;~/GitHub/SAPPHIRE/data/serum_vit_D_study_with_lab_results.xlsx&quot;</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Load data from the Screening Data Collection sheets.</li>
+</ol>
+<pre class="r"><code>screening_summer &lt;- read_excel(file_path, sheet = &quot;ScreeningDataCollectionSummer&quot;)
+screening_winter &lt;- read_excel(file_path, sheet = &quot;ScreeningDataCollectionWinter&quot;)
+screening_6weeks &lt;- read_excel(file_path, sheet = &quot;ScreeningDataCollection6Weeks&quot;)</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Convert the column names to snake_case.</li>
+</ol>
+<pre class="r"><code>screening_summer &lt;- screening_summer %&gt;% clean_names()
+screening_winter &lt;- screening_winter %&gt;% clean_names()
+screening_6weeks &lt;- screening_6weeks %&gt;% clean_names()</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li>Standardize the data types for critical columns, for example,
+age_years.</li>
+</ol>
+<pre class="r"><code>screening_summer &lt;- screening_summer %&gt;% mutate(age_years = as.numeric(age_years))
+screening_winter &lt;- screening_winter %&gt;% mutate(age_years = as.numeric(age_years))
+screening_6weeks &lt;- screening_6weeks %&gt;% mutate(age_years = as.numeric(age_years))</code></pre>
+<ol start="7" style="list-style-type: decimal">
+<li>Add a ‘collection_period’ column to each data frame to indicate when
+the data was collected.</li>
+</ol>
+<pre class="r"><code>screening_summer &lt;- screening_summer %&gt;% mutate(collection_period = &quot;Summer&quot;)
+screening_winter &lt;- screening_winter %&gt;% mutate(collection_period = &quot;Winter&quot;)
+screening_6weeks &lt;- screening_6weeks %&gt;% mutate(collection_period = &quot;6Weeks&quot;)</code></pre>
+<ol start="8" style="list-style-type: decimal">
+<li>Combine the dataframes into a long-form dataset.</li>
+</ol>
+<pre class="r"><code>screening_long &lt;- bind_rows(screening_summer, screening_winter, screening_6weeks)</code></pre>
+<ol start="9" style="list-style-type: decimal">
+<li>View the resulting long-form dataset</li>
+</ol>
+<pre class="r"><code>print(head(screening_long))</code></pre>
+<pre><code># A tibble: 6 × 126
+  participant_id participant_centre participant_centre_id interviewer_name
+  &lt;chr&gt;          &lt;chr&gt;              &lt;chr&gt;                 &lt;chr&gt;           
+1 001            VDKH               VDKH001               Betty           
+2 002            VDKH               VDKH002               Betty           
+3 003            VDKH               VDKH003               Betty           
+4 004            VDKH               VDKH004               Betty           
+5 005            VDKH               VDKH005               Betty           
+6 006            VDKH               VDKH006               Betty           
+# ℹ 122 more variables: today_date &lt;dttm&gt;, age_years &lt;dbl&gt;,
+#   date_of_birth &lt;dttm&gt;, gender &lt;dbl&gt;, ethnicity_coloured &lt;lgl&gt;,
+#   ethnicity_white &lt;lgl&gt;, ethnicity_african_black &lt;lgl&gt;,
+#   ethnicity_indian_asian &lt;lgl&gt;, ethnicity_other &lt;lgl&gt;,
+#   ethnicity_specify_other &lt;lgl&gt;, ethnicity &lt;lgl&gt;, refuse_to_answer &lt;lgl&gt;,
+#   weight_measure1 &lt;dbl&gt;, weight_measure2 &lt;dbl&gt;, avg_weight &lt;dbl&gt;,
+#   height_measure1 &lt;dbl&gt;, height_measure2 &lt;dbl&gt;, avg_height &lt;dbl&gt;, …</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -699,8 +827,8 @@ loaded via a namespace (and not attached):
 [33] lifecycle_1.0.4   git2r_0.33.0      snakecase_0.11.1  fs_1.6.4         
 [37] pkgconfig_2.0.3   pillar_1.9.0      bslib_0.8.0       later_1.3.2      
 [41] gtable_0.3.5      glue_1.7.0        Rcpp_1.0.13       xfun_0.47        
-[45] tidyselect_1.2.1  rstudioapi_0.16.0 knitr_1.48        htmltools_0.5.8.1
-[49] rmarkdown_2.28    compiler_4.4.1   </code></pre>
+[45] tidyselect_1.2.1  highr_0.11        rstudioapi_0.16.0 knitr_1.48       
+[49] htmltools_0.5.8.1 rmarkdown_2.28    compiler_4.4.1   </code></pre>
 </div>
 </div>
 </div>
