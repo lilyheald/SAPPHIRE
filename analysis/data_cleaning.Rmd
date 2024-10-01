@@ -20,7 +20,7 @@ library(tidyverse)
 
 ## Prepare Your Data
 
-2.  In Google Sheets, make a copy of the original data, save as "serum_vit_D_study_with_lab_results.xlsx" and manually edit the following:
+2.  In Google Sheets, make a copy of the original data, save that copy as "serum_vit_D_study_with_lab_results.xlsx" and manually edit the following:
 
 -   delete floating note in ScreeningDataCollectionWinter sheet: "Note: VDKH001 had no second weight measurement so the initial measurement was used."
 -   delete floating note in ScreeningDataCollection6Weeks sheet: "Note: VDKH007 and VDKH012 had no second weight measurement so the initial measurement was used."
@@ -29,7 +29,7 @@ library(tidyverse)
 
 ## Begin Wrangling in R
 
-3.  Specify the path to the new Excel file. This .xlsx file is located in \~GitHub/SAPPHIRE/data.
+3.  Specify the path to the new Excel file. This .xlsx file is located in \~/GitHub/SAPPHIRE/data.
 
 ```{r}
 file_path <- "~/GitHub/SAPPHIRE/data/serum_vit_D_study_with_lab_results.xlsx"

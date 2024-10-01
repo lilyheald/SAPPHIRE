@@ -542,15 +542,15 @@ data/serum_vit_D_study_with_lab_results.xlsx
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreed81bea03d0cd0af7f8f1671d83f2c51fa0c28de0targetblankd81bea0a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree081cd7616eed7fad4927fcc45d239e1b2364f448targetblank081cd76a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/d81bea03d0cd0af7f8f1671d83f2c51fa0c28de0" target="_blank">d81bea0</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/081cd7616eed7fad4927fcc45d239e1b2364f448" target="_blank">081cd76</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreed81bea03d0cd0af7f8f1671d83f2c51fa0c28de0targetblankd81bea0a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree081cd7616eed7fad4927fcc45d239e1b2364f448targetblank081cd76a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -560,7 +560,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/d81bea03d0cd0af7f8f1671d83f2c51fa0c28de0" target="_blank">d81bea0</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/081cd7616eed7fad4927fcc45d239e1b2364f448" target="_blank">081cd76</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -583,6 +583,7 @@ Ignored files:
 
 Unstaged changes:
     Modified:   analysis/data_cleaning.Rmd
+    Modified:   data/serum_vit_D_study_with_lab_results.xlsx
 
 </code></pre>
 <p>
@@ -627,6 +628,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/081cd7616eed7fad4927fcc45d239e1b2364f448/analysis/data_cleaning.Rmd" target="_blank">081cd76</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+correction
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/081cd7616eed7fad4927fcc45d239e1b2364f448/docs/data_cleaning.html" target="_blank">081cd76</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+correction
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -788,8 +823,8 @@ Attaching package: &#39;janitor&#39;</code></pre>
 <div id="prepare-your-data" class="section level2">
 <h2>Prepare Your Data</h2>
 <ol start="2" style="list-style-type: decimal">
-<li>In Google Sheets, make a copy of the original data, save as
-“serum_vit_D_study_with_lab_results.xlsx” and manually edit the
+<li>In Google Sheets, make a copy of the original data, save that copy
+as “serum_vit_D_study_with_lab_results.xlsx” and manually edit the
 following:</li>
 </ol>
 <ul>
@@ -812,7 +847,7 @@ workbook</li>
 <h2>Begin Wrangling in R</h2>
 <ol start="3" style="list-style-type: decimal">
 <li>Specify the path to the new Excel file. This .xlsx file is located
-in ~GitHub/SAPPHIRE/data.</li>
+in ~/GitHub/SAPPHIRE/data.</li>
 </ol>
 <pre class="r"><code>file_path &lt;- &quot;~/GitHub/SAPPHIRE/data/serum_vit_D_study_with_lab_results.xlsx&quot;</code></pre>
 <ol start="4" style="list-style-type: decimal">
@@ -849,22 +884,22 @@ screening_6weeks &lt;- screening_6weeks %&gt;% mutate(collection_period = &quot;
 <li>View the resulting long-form dataset</li>
 </ol>
 <pre class="r"><code>print(head(screening_long))</code></pre>
-<pre><code># A tibble: 6 × 126
-  participant_id participant_centre participant_centre_id interviewer_name
-  &lt;chr&gt;          &lt;chr&gt;              &lt;chr&gt;                 &lt;chr&gt;           
-1 001            VDKH               VDKH001               Betty           
-2 002            VDKH               VDKH002               Betty           
-3 003            VDKH               VDKH003               Betty           
-4 004            VDKH               VDKH004               Betty           
-5 005            VDKH               VDKH005               Betty           
-6 006            VDKH               VDKH006               Betty           
-# ℹ 122 more variables: today_date &lt;dttm&gt;, age_years &lt;dbl&gt;,
-#   date_of_birth &lt;dttm&gt;, gender &lt;dbl&gt;, ethnicity_coloured &lt;lgl&gt;,
-#   ethnicity_white &lt;lgl&gt;, ethnicity_african_black &lt;lgl&gt;,
-#   ethnicity_indian_asian &lt;lgl&gt;, ethnicity_other &lt;lgl&gt;,
-#   ethnicity_specify_other &lt;lgl&gt;, ethnicity &lt;lgl&gt;, refuse_to_answer &lt;lgl&gt;,
-#   weight_measure1 &lt;dbl&gt;, weight_measure2 &lt;dbl&gt;, avg_weight &lt;dbl&gt;,
-#   height_measure1 &lt;dbl&gt;, height_measure2 &lt;dbl&gt;, avg_height &lt;dbl&gt;, …</code></pre>
+<pre><code># A tibble: 6 × 124
+  participant_centre_id interviewer_name today_date          age_years
+  &lt;chr&gt;                 &lt;chr&gt;            &lt;dttm&gt;                  &lt;dbl&gt;
+1 VDKH001               Betty            2013-02-11 00:00:00        20
+2 VDKH002               Betty            2013-02-11 00:00:00        23
+3 VDKH003               Betty            2013-02-11 00:00:00        23
+4 VDKH004               Betty            2013-02-12 00:00:00        20
+5 VDKH005               Betty            2013-02-12 00:00:00        19
+6 VDKH006               Betty            2013-02-12 00:00:00        21
+# ℹ 120 more variables: date_of_birth &lt;dttm&gt;, gender &lt;dbl&gt;,
+#   ethnicity_coloured &lt;lgl&gt;, ethnicity_white &lt;lgl&gt;,
+#   ethnicity_african_black &lt;lgl&gt;, ethnicity_indian_asian &lt;lgl&gt;,
+#   ethnicity_other &lt;lgl&gt;, ethnicity_specify_other &lt;lgl&gt;, ethnicity &lt;lgl&gt;,
+#   refuse_to_answer &lt;lgl&gt;, weight_measure1 &lt;dbl&gt;, weight_measure2 &lt;dbl&gt;,
+#   avg_weight &lt;dbl&gt;, height_measure1 &lt;dbl&gt;, height_measure2 &lt;dbl&gt;,
+#   avg_height &lt;dbl&gt;, bmi &lt;dbl&gt;, sore_throat_yes &lt;lgl&gt;, sore_throat_no &lt;lgl&gt;, …</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
