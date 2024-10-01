@@ -542,15 +542,15 @@ data/serum_vit_D_study_with_lab_results.xlsx
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreeee535e4c4f02f13c707b6974c0754108817a427ftargetblankee535e4a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree49fef89a889e64a1ed90c6d356ef13a6f00561detargetblank49fef89a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/ee535e4c4f02f13c707b6974c0754108817a427f" target="_blank">ee535e4</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/49fef89a889e64a1ed90c6d356ef13a6f00561de" target="_blank">49fef89</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreeee535e4c4f02f13c707b6974c0754108817a427ftargetblankee535e4a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree49fef89a889e64a1ed90c6d356ef13a6f00561detargetblank49fef89a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -560,7 +560,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/ee535e4c4f02f13c707b6974c0754108817a427f" target="_blank">ee535e4</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/49fef89a889e64a1ed90c6d356ef13a6f00561de" target="_blank">49fef89</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -583,6 +583,7 @@ Ignored files:
 
 Unstaged changes:
     Modified:   analysis/data_cleaning.Rmd
+    Modified:   data/serum_vit_D_study_with_lab_results.xlsx
 
 </code></pre>
 <p>
@@ -627,6 +628,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/49fef89a889e64a1ed90c6d356ef13a6f00561de/analysis/data_cleaning.Rmd" target="_blank">49fef89</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+updated manual edits
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/49fef89a889e64a1ed90c6d356ef13a6f00561de/docs/data_cleaning.html" target="_blank">49fef89</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+updated manual edits
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -950,9 +985,94 @@ and in the Sun Exposure category.</p>
 <ol start="4" style="list-style-type: decimal">
 <li>Load data from the Food Frequency sheets.</li>
 </ol>
-<pre class="r"><code>screening_summer &lt;- read_excel(file_path, sheet = &quot;FoodFrequencySummer&quot;)
-screening_winter &lt;- read_excel(file_path, sheet = &quot;FoodFrequencyWinter&quot;)
-screening_6weeks &lt;- read_excel(file_path, sheet = &quot;FoodFrequency6Weeks&quot;)</code></pre>
+<pre class="r"><code>food_freq_summer &lt;- read_excel(file_path, sheet = &quot;FoodFrequencySummer&quot;)
+food_freq_winter &lt;- read_excel(file_path, sheet = &quot;FoodFrequencyWinter&quot;)
+food_freq_6weeks &lt;- read_excel(file_path, sheet = &quot;FoodFrequency6Weeks&quot;)</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Convert the column names to snake_case.</li>
+</ol>
+<pre class="r"><code>food_freq_summer &lt;- food_freq_summer %&gt;% clean_names()
+food_freq_winter &lt;- food_freq_winter %&gt;% clean_names()
+food_freq_6weeks &lt;- food_freq_6weeks %&gt;% clean_names()</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li><p>Only do Step 6 if necessary.</p></li>
+<li><p>Add a ‘collection_period’ column to each data frame to indicate
+when the data was collected.</p></li>
+</ol>
+<pre class="r"><code>food_freq_summer &lt;- food_freq_summer %&gt;% mutate(collection_period = &quot;Summer&quot;)
+food_freq_winter &lt;- food_freq_winter %&gt;% mutate(collection_period = &quot;Winter&quot;)
+food_freq_6weeks &lt;- food_freq_6weeks %&gt;% mutate(collection_period = &quot;6Weeks&quot;)</code></pre>
+<ol start="8" style="list-style-type: decimal">
+<li>Combine the dataframes into a long-form dataset.</li>
+</ol>
+<pre class="r"><code>food_freq_long &lt;- bind_rows(food_freq_summer, food_freq_winter, food_freq_6weeks)</code></pre>
+<ol start="9" style="list-style-type: decimal">
+<li>View the resulting long-form dataset</li>
+</ol>
+<pre class="r"><code>print(head(food_freq_long))</code></pre>
+<pre><code># A tibble: 6 × 201
+  participant_centre_id interviewer_name today_date          sardines_no
+  &lt;chr&gt;                 &lt;chr&gt;            &lt;dttm&gt;              &lt;lgl&gt;      
+1 VDKH001               Betty            2013-02-11 00:00:00 TRUE       
+2 VDKH002               Betty            2013-02-11 00:00:00 TRUE       
+3 VDKH003               Betty            2013-02-11 00:00:00 TRUE       
+4 VDKH004               Betty            2013-02-12 00:00:00 TRUE       
+5 VDKH005               Betty            2013-02-12 00:00:00 TRUE       
+6 VDKH006               Betty            2013-02-12 00:00:00 TRUE       
+# ℹ 197 more variables: sardines_yes &lt;lgl&gt;, sardines_times_per_week &lt;dbl&gt;,
+#   sardines_times_per_day &lt;dbl&gt;, sardines_brand_description &lt;chr&gt;,
+#   sardines_amount_usually_eaten_per_occasion &lt;chr&gt;,
+#   sardines_amount_eaten_per_day_as_proportion_of100g &lt;dbl&gt;,
+#   sardines_vit_d_micrograms_per_100g &lt;dbl&gt;,
+#   sardines_total_daily_vit_d_intake_micro_grams &lt;dbl&gt;, sardines_source &lt;lgl&gt;,
+#   sardines_notes &lt;lgl&gt;, pilchards_no &lt;lgl&gt;, pilchards_yes &lt;lgl&gt;, …</code></pre>
+</div>
+<div id="category-3-sun-exposure" class="section level3">
+<h3>Category 3: Sun Exposure</h3>
+<ol start="4" style="list-style-type: decimal">
+<li>Load data from the Sun Exposure sheets.</li>
+</ol>
+<pre class="r"><code>sun_expos_summer &lt;- read_excel(file_path, sheet = &quot;SunExposureSummer&quot;)
+sun_expos_winter &lt;- read_excel(file_path, sheet = &quot;SunExposureWinter&quot;)
+sun_expos_6weeks &lt;- read_excel(file_path, sheet = &quot;SunExposure6Weeks&quot;)</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Convert the column names to snake_case.</li>
+</ol>
+<pre class="r"><code>sun_expos_summer &lt;- sun_expos_summer %&gt;% clean_names()
+sun_expos_winter &lt;- sun_expos_winter %&gt;% clean_names()
+sun_expos_6weeks &lt;- sun_expos_6weeks %&gt;% clean_names()</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li><p>Only do Step 6 if necessary.</p></li>
+<li><p>Add a ‘collection_period’ column to each data frame to indicate
+when the data was collected.</p></li>
+</ol>
+<pre class="r"><code>sun_expos_summer &lt;- sun_expos_summer %&gt;% mutate(collection_period = &quot;Summer&quot;)
+sun_expos_winter &lt;- sun_expos_winter %&gt;% mutate(collection_period = &quot;Winter&quot;)
+sun_expos_6weeks &lt;- sun_expos_6weeks %&gt;% mutate(collection_period = &quot;6Weeks&quot;)</code></pre>
+<ol start="8" style="list-style-type: decimal">
+<li>Combine the dataframes into a long-form dataset.</li>
+</ol>
+<pre class="r"><code>sun_expos_long &lt;- bind_rows(sun_expos_summer, sun_expos_winter, sun_expos_6weeks)</code></pre>
+<ol start="9" style="list-style-type: decimal">
+<li>View the resulting long-form dataset</li>
+</ol>
+<pre class="r"><code>print(head(sun_expos_long))</code></pre>
+<pre><code># A tibble: 6 × 29
+  participant_centre_id interviewer_name today_date         
+  &lt;chr&gt;                 &lt;chr&gt;            &lt;dttm&gt;             
+1 VDKH001               Rene             2013-02-11 00:00:00
+2 VDKH002               Betty            2013-02-11 00:00:00
+3 VDKH003               Rene             2013-02-11 00:00:00
+4 VDKH004               Rene             2013-02-12 00:00:00
+5 VDKH005               Rene             2013-02-12 00:00:00
+6 VDKH006               Rene             2013-02-12 00:00:00
+# ℹ 26 more variables: x1time_spent_outdoors_weekday &lt;chr&gt;,
+#   x2time_of_day_begin_of_exposure_weekday &lt;chr&gt;,
+#   x3time_spent_outdoors_weekend_day &lt;chr&gt;,
+#   x4time_of_day_begin_of_exposure_weekend &lt;chr&gt;, x5forehead_exposed &lt;chr&gt;,
+#   x5cheek_exposed &lt;chr&gt;, x5hand_exposed &lt;chr&gt;, x5shoulder_exposed &lt;chr&gt;,
+#   x5arm_exposed &lt;chr&gt;, x5back_exposed &lt;chr&gt;, x5chest_exposed &lt;chr&gt;,
+#   x5thigh_exposed &lt;chr&gt;, x5calf_exposed &lt;chr&gt;, …</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">

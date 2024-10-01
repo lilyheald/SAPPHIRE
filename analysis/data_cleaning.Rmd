@@ -90,7 +90,77 @@ Repeat the above steps for the sheets in the Food Frequency category and in the 
 4.  Load data from the Food Frequency sheets.
 
 ```{r}
-screening_summer <- read_excel(file_path, sheet = "FoodFrequencySummer")
-screening_winter <- read_excel(file_path, sheet = "FoodFrequencyWinter")
-screening_6weeks <- read_excel(file_path, sheet = "FoodFrequency6Weeks")
+food_freq_summer <- read_excel(file_path, sheet = "FoodFrequencySummer")
+food_freq_winter <- read_excel(file_path, sheet = "FoodFrequencyWinter")
+food_freq_6weeks <- read_excel(file_path, sheet = "FoodFrequency6Weeks")
+```
+
+5.  Convert the column names to snake_case.
+
+```{r}
+food_freq_summer <- food_freq_summer %>% clean_names()
+food_freq_winter <- food_freq_winter %>% clean_names()
+food_freq_6weeks <- food_freq_6weeks %>% clean_names()
+```
+
+6.  Only do Step 6 if necessary.
+
+7.  Add a 'collection_period' column to each data frame to indicate when the data was collected.
+
+```{r}
+food_freq_summer <- food_freq_summer %>% mutate(collection_period = "Summer")
+food_freq_winter <- food_freq_winter %>% mutate(collection_period = "Winter")
+food_freq_6weeks <- food_freq_6weeks %>% mutate(collection_period = "6Weeks")
+```
+
+8.  Combine the dataframes into a long-form dataset.
+
+```{r}
+food_freq_long <- bind_rows(food_freq_summer, food_freq_winter, food_freq_6weeks)
+```
+
+9.  View the resulting long-form dataset
+
+```{r}
+print(head(food_freq_long))
+```
+
+### Category 3: Sun Exposure
+
+4.  Load data from the Sun Exposure sheets.
+
+```{r}
+sun_expos_summer <- read_excel(file_path, sheet = "SunExposureSummer")
+sun_expos_winter <- read_excel(file_path, sheet = "SunExposureWinter")
+sun_expos_6weeks <- read_excel(file_path, sheet = "SunExposure6Weeks")
+```
+
+5.  Convert the column names to snake_case.
+
+```{r}
+sun_expos_summer <- sun_expos_summer %>% clean_names()
+sun_expos_winter <- sun_expos_winter %>% clean_names()
+sun_expos_6weeks <- sun_expos_6weeks %>% clean_names()
+```
+
+6.  Only do Step 6 if necessary.
+
+7.  Add a 'collection_period' column to each data frame to indicate when the data was collected.
+
+```{r}
+sun_expos_summer <- sun_expos_summer %>% mutate(collection_period = "Summer")
+sun_expos_winter <- sun_expos_winter %>% mutate(collection_period = "Winter")
+sun_expos_6weeks <- sun_expos_6weeks %>% mutate(collection_period = "6Weeks")
+```
+
+8.  Combine the dataframes into a long-form dataset.
+
+```{r}
+sun_expos_long <- bind_rows(sun_expos_summer, sun_expos_winter, sun_expos_6weeks)
+```
+
+9.  View the resulting long-form dataset
+
+```{r}
+print(head(sun_expos_long))
 ```
