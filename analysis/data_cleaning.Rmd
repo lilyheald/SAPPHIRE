@@ -36,7 +36,7 @@ library(tidyverse)
 3.  Specify the path to the new Excel file. This .xlsx file is located in \~/GitHub/SAPPHIRE/data.
 
 ```{r}
-file_path <- "~/GitHub/SAPPHIRE/data/serum_vit_D_study_with_lab_results.xlsx"
+file_path <- "data/serum_vit_D_study_with_lab_results.xlsx"
 ```
 
 ### Category 1: Screening Data Collection

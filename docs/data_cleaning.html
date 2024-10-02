@@ -386,9 +386,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 5
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 2
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>SAPPHIRE/</code> <span
@@ -501,56 +501,30 @@ run.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongabsolute">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>File paths:</strong> absolute </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
 </p>
 </div>
-<div id="strongFilepathsstrongabsolute" class="panel-collapse collapse">
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
 <div class="panel-body">
-<p>
-Using absolute paths to the files within your workflowr project makes it
-difficult for you and others to run your code on a different machine.
-Change the absolute path(s) below to the suggested relative path(s) to
-make your code more reproducible.
-</p>
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th style="text-align:left;">
-absolute
-</th>
-<th style="text-align:left;">
-relative
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-~/GitHub/SAPPHIRE/data/serum_vit_D_study_with_lab_results.xlsx
-</td>
-<td style="text-align:left;">
-data/serum_vit_D_study_with_lab_results.xlsx
-</td>
-</tr>
-</tbody>
-</table>
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreec851756ebd708ee7852d214f775aab390abc0525targetblankc851756a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree30f4c4b85d12d293f9ec74c2d56a9f31bc3cadb1targetblank30f4c4ba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/c851756ebd708ee7852d214f775aab390abc0525" target="_blank">c851756</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/30f4c4b85d12d293f9ec74c2d56a9f31bc3cadb1" target="_blank">30f4c4b</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreec851756ebd708ee7852d214f775aab390abc0525targetblankc851756a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree30f4c4b85d12d293f9ec74c2d56a9f31bc3cadb1targetblank30f4c4ba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -560,7 +534,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/c851756ebd708ee7852d214f775aab390abc0525" target="_blank">c851756</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/30f4c4b85d12d293f9ec74c2d56a9f31bc3cadb1" target="_blank">30f4c4b</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -627,6 +601,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/30f4c4b85d12d293f9ec74c2d56a9f31bc3cadb1/analysis/data_cleaning.Rmd" target="_blank">30f4c4b</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-02
+</td>
+<td>
+making directions bolded
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/30f4c4b85d12d293f9ec74c2d56a9f31bc3cadb1/docs/data_cleaning.html" target="_blank">30f4c4b</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-02
+</td>
+<td>
+making directions bolded
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1046,7 +1054,7 @@ percentage was used to calculate Vit D ie VDTG023, 032,045”</li>
 <li>Specify the path to the new Excel file. This .xlsx file is located
 in ~/GitHub/SAPPHIRE/data.</li>
 </ol>
-<pre class="r"><code>file_path &lt;- &quot;~/GitHub/SAPPHIRE/data/serum_vit_D_study_with_lab_results.xlsx&quot;</code></pre>
+<pre class="r"><code>file_path &lt;- &quot;data/serum_vit_D_study_with_lab_results.xlsx&quot;</code></pre>
 <div id="category-1-screening-data-collection" class="section level3">
 <h3>Category 1: Screening Data Collection</h3>
 <ol start="4" style="list-style-type: decimal">
@@ -1238,8 +1246,8 @@ loaded via a namespace (and not attached):
 [33] lifecycle_1.0.4   git2r_0.33.0      snakecase_0.11.1  fs_1.6.4         
 [37] pkgconfig_2.0.3   pillar_1.9.0      bslib_0.8.0       later_1.3.2      
 [41] gtable_0.3.5      glue_1.7.0        Rcpp_1.0.13       xfun_0.47        
-[45] tidyselect_1.2.1  highr_0.11        rstudioapi_0.16.0 knitr_1.48       
-[49] htmltools_0.5.8.1 rmarkdown_2.28    compiler_4.4.1   </code></pre>
+[45] tidyselect_1.2.1  rstudioapi_0.16.0 knitr_1.48        htmltools_0.5.8.1
+[49] rmarkdown_2.28    compiler_4.4.1   </code></pre>
 </div>
 </div>
 </div>
