@@ -1,0 +1,36 @@
+---
+title: "screening_mixed_effects_model"
+author: "calliquire"
+date: "2024-10-03"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Fitting Mixed-Effects Model
+
+For this analysis, I am only running the PCA on the screening_long.csv dataset for practice. This analysis focuses on the simplified version of the model, where we include key factors like collection_period, body_site, and reflectance_type while accounting for participant-level variability.
+
+## Set Up
+
+1. Install the relevant packages.
+
+```{r}
+install.packages("lme4")
+install.packages("reshape2")
+```
+
+2. Load the relevant packages.
+```{r}
+library(lme4)
+library(reshape2)
+```
+
+3. Load the screening data.
+```{r}
+data <- read.csv("~/GitHub/SAPPHIRE/data/screening_long.csv")
+```
+
+## Cleaning and Reshaping the Data
+
+4. 
