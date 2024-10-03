@@ -121,7 +121,7 @@ food_freq_6weeks <- food_freq_6weeks %>% mutate(collection_period = "6Weeks")
 food_freq_long <- bind_rows(food_freq_summer, food_freq_winter, food_freq_6weeks)
 ```
 
-9.  View the resulting long-form dataset
+9.  View the resulting long-form dataset.
 
 ```{r}
 print(head(food_freq_long))
@@ -161,8 +161,18 @@ sun_expos_6weeks <- sun_expos_6weeks %>% mutate(collection_period = "6Weeks")
 sun_expos_long <- bind_rows(sun_expos_summer, sun_expos_winter, sun_expos_6weeks)
 ```
 
-9.  View the resulting long-form dataset
+9.  View the resulting long-form dataset.
 
 ```{r}
 print(head(sun_expos_long))
 ```
+
+## Save Your Work
+
+10. Save your long-form datasets as .csv files in /data.
+```{r}
+write.csv(screening_long, "data/screening_long.csv", row.names = FALSE)
+write.csv(food_freq_long, "data/food_freq_long.csv", row.names = FALSE)
+write.csv(sun_expos_long, "data/sun_expos_long.csv", row.names = FALSE)
+```
+
