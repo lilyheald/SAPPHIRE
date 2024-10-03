@@ -38,10 +38,6 @@ data_long <- pivot_longer(data,
 
 5. Separate the measurement column into body_site and reflectance_type.
 ```{r}
-data_long <- separate(data_long, 
-                      col = "measurement", 
-                      into = c("Prefix", "body_site", "reflectance_type"), 
-                      sep = "_", 
-                      extra = "drop")
+
 ```
 

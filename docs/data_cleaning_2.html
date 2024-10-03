@@ -420,10 +420,10 @@ changes </a>
 <div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
 <code>wflow_publish</code> to commit the R Markdown file and build the
 HTML.</p>
 </div>
@@ -516,15 +516,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreeb3f933f0c84962bbb0189fb1b48942cb53beaaeatargetblankb3f933fa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreee8e0e54765737554a77f8b2128619321fe9bfb96targetblanke8e0e54a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/b3f933f0c84962bbb0189fb1b48942cb53beaaea" target="_blank">b3f933f</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/e8e0e54765737554a77f8b2128619321fe9bfb96" target="_blank">e8e0e54</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreeb3f933f0c84962bbb0189fb1b48942cb53beaaeatargetblankb3f933fa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreee8e0e54765737554a77f8b2128619321fe9bfb96targetblanke8e0e54a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -534,7 +534,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/b3f933f0c84962bbb0189fb1b48942cb53beaaea" target="_blank">b3f933f</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/e8e0e54765737554a77f8b2128619321fe9bfb96" target="_blank">e8e0e54</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -555,12 +555,8 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    data/.DS_Store
 
-Untracked files:
-    Untracked:  analysis/data_cleaning_1.Rmd
-    Untracked:  analysis/data_cleaning_2.Rmd
-
 Unstaged changes:
-    Deleted:    analysis/data_cleaning.Rmd
+    Modified:   analysis/data_cleaning_2.Rmd
 
 </code></pre>
 <p>
@@ -576,9 +572,72 @@ have uncommitted changes.
 </div>
 <div id="versions" class="tab-pane fade">
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/data_cleaning_2.Rmd</code>) and
+HTML (<code>docs/data_cleaning_2.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/e8e0e54765737554a77f8b2128619321fe9bfb96/analysis/data_cleaning_2.Rmd" target="_blank">e8e0e54</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-03
+</td>
+<td>
+data cleaning 2
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/e8e0e54765737554a77f8b2128619321fe9bfb96/docs/data_cleaning_2.html" target="_blank">e8e0e54</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-03
+</td>
+<td>
+data cleaning 2
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -1138,11 +1197,6 @@ skin_reflectance_forehead_M1).</li>
 <li>Separate the measurement column into body_site and
 reflectance_type.</li>
 </ol>
-<pre class="r"><code>data_long &lt;- separate(data_long, 
-                      col = &quot;measurement&quot;, 
-                      into = c(&quot;Prefix&quot;, &quot;body_site&quot;, &quot;reflectance_type&quot;), 
-                      sep = &quot;_&quot;, 
-                      extra = &quot;drop&quot;)</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1182,8 +1236,8 @@ loaded via a namespace (and not attached):
 [25] httpuv_1.6.15     xfun_0.47         fs_1.6.4          sass_0.4.9       
 [29] cli_3.6.3         withr_3.0.1       magrittr_2.0.3    digest_0.6.37    
 [33] rstudioapi_0.16.0 lifecycle_1.0.4   vctrs_0.6.5       evaluate_1.0.0   
-[37] glue_1.7.0        fansi_1.0.6       rmarkdown_2.28    purrr_1.0.2      
-[41] tools_4.4.1       pkgconfig_2.0.3   htmltools_0.5.8.1</code></pre>
+[37] glue_1.7.0        whisker_0.4.1     fansi_1.0.6       purrr_1.0.2      
+[41] rmarkdown_2.28    tools_4.4.1       pkgconfig_2.0.3   htmltools_0.5.8.1</code></pre>
 </div>
 </div>
 </div>
