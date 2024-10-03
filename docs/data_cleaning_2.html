@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="calliquire" />
+
+<meta name="date" content="2024-10-03" />
+
+<title>data_cleaning_2</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SAPPHIRE</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">data_cleaning_2</h1>
+<h4 class="author">calliquire</h4>
+<h4 class="date">2024-10-03</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2024-10-03
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SAPPHIRE/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown is untracked by Git. To know which version of the R
+Markdown file created these results, you’ll want to first commit it to
+the Git repo. If you’re still working on the analysis, you can ignore
+this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240923code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240923)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240923code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240923)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreeb3f933f0c84962bbb0189fb1b48942cb53beaaeatargetblankb3f933fa">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/b3f933f0c84962bbb0189fb1b48942cb53beaaea" target="_blank">b3f933f</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreeb3f933f0c84962bbb0189fb1b48942cb53beaaeatargetblankb3f933fa"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/b3f933f0c84962bbb0189fb1b48942cb53beaaea" target="_blank">b3f933f</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rapp.history
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/.DS_Store
+
+Untracked files:
+    Untracked:  analysis/data_cleaning_1.Rmd
+    Untracked:  analysis/data_cleaning_2.Rmd
+
+Unstaged changes:
+    Deleted:    analysis/data_cleaning.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+There are no past versions. Publish this analysis with
+<code>wflow_publish()</code> to start tracking its development.
+</p>
+<hr>
+</div>
+</div>
+</div>
+<p><strong>About:</strong> This is the second iteration of data cleaning
+that must be done after data_cleaning_1. Here, I clean the
+screening_long long-form dataset to have columns for body_site and
+reflectance_type (as well as collection_period, which was done in
+data_cleaning_1).</p>
+<div id="set-up" class="section level2">
+<h2>Set Up</h2>
+<ol style="list-style-type: decimal">
+<li>Load the relevant packages.</li>
+</ol>
+<pre class="r"><code>library(tidyr)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Load the data.</li>
+</ol>
+<pre class="r"><code>data &lt;- read.csv(&quot;data/screening_long.csv&quot;)</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>View the first few rows.</li>
+</ol>
+<pre class="r"><code>head(data)</code></pre>
+<pre><code>  participant_centre_id interviewer_name today_date age_years date_of_birth
+1               VDKH001            Betty 2013-02-11        20    1993-08-07
+2               VDKH002            Betty 2013-02-11        23    1990-01-20
+3               VDKH003            Betty 2013-02-11        23    1989-05-05
+4               VDKH004            Betty 2013-02-12        20    1992-08-10
+5               VDKH005            Betty 2013-02-12        19    1993-05-06
+6               VDKH006            Betty 2013-02-12        21    1992-04-14
+  gender ethnicity_coloured ethnicity_white ethnicity_african_black
+1      1              FALSE           FALSE                    TRUE
+2      1              FALSE           FALSE                    TRUE
+3      2              FALSE           FALSE                    TRUE
+4      2              FALSE           FALSE                    TRUE
+5      1              FALSE           FALSE                    TRUE
+6      1              FALSE           FALSE                    TRUE
+  ethnicity_indian_asian ethnicity_other ethnicity_specify_other ethnicity
+1                  FALSE           FALSE                      NA        NA
+2                  FALSE           FALSE                      NA        NA
+3                  FALSE           FALSE                      NA        NA
+4                  FALSE           FALSE                      NA        NA
+5                  FALSE           FALSE                      NA        NA
+6                  FALSE           FALSE                      NA        NA
+  refuse_to_answer weight_measure1 weight_measure2 avg_weight height_measure1
+1            FALSE            60.6            60.6       60.6           1.728
+2            FALSE            60.5            60.5       60.5           1.678
+3            FALSE            63.5            63.5       63.5           1.588
+4            FALSE            64.4            64.4       64.4           1.595
+5            FALSE            53.7            53.7       53.7           1.632
+6            FALSE            53.3            53.3       53.3           1.523
+  height_measure2 avg_height      bmi sore_throat_yes sore_throat_no
+1           1.728      1.728 20.29482           FALSE           TRUE
+2           1.678      1.678 21.48679           FALSE           TRUE
+3           1.588      1.588 25.18098           FALSE           TRUE
+4           1.595      1.595 25.31421           FALSE           TRUE
+5           1.632      1.632 20.16202           FALSE           TRUE
+6           1.523      1.523 22.97880           FALSE           TRUE
+  runny_nose_yes runny_nose_no cough_yes cough_no fever_yes fever_no
+1          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+2          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+3          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+4          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+5          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+6          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+  night_sweats_yes night_sweats_no unexplained_weight_loss_yes
+1            FALSE            TRUE                       FALSE
+2            FALSE            TRUE                       FALSE
+3            FALSE            TRUE                       FALSE
+4            FALSE            TRUE                       FALSE
+5            FALSE            TRUE                       FALSE
+6            FALSE            TRUE                       FALSE
+  unexplained_weight_loss_no currently_taking_supplements_yes
+1                       TRUE                            FALSE
+2                       TRUE                            FALSE
+3                       TRUE                            FALSE
+4                       TRUE                            FALSE
+5                       TRUE                            FALSE
+6                       TRUE                            FALSE
+  currently_taking_supplements_no supplements currently_taking_medications_yes
+1                            TRUE        &lt;NA&gt;                            FALSE
+2                            TRUE        &lt;NA&gt;                            FALSE
+3                            TRUE        &lt;NA&gt;                            FALSE
+4                            TRUE        &lt;NA&gt;                            FALSE
+5                            TRUE        &lt;NA&gt;                            FALSE
+6                            TRUE        &lt;NA&gt;                            FALSE
+  currently_taking_medications_no medications participant_included_yes
+1                            TRUE        &lt;NA&gt;                     TRUE
+2                            TRUE        &lt;NA&gt;                     TRUE
+3                            TRUE        &lt;NA&gt;                     TRUE
+4                            TRUE        &lt;NA&gt;                     TRUE
+5                            TRUE        &lt;NA&gt;                     TRUE
+6                            TRUE        &lt;NA&gt;                     TRUE
+  participant_included_no if_no_reason_for_exclusion
+1                   FALSE                       &lt;NA&gt;
+2                   FALSE                       &lt;NA&gt;
+3                   FALSE                       &lt;NA&gt;
+4                   FALSE                       &lt;NA&gt;
+5                   FALSE                       &lt;NA&gt;
+6                   FALSE                       &lt;NA&gt;
+  smoking_do_you_regularly_smoke_at_least1cigarette5daysa_week smoking_comments
+1                                                        FALSE             &lt;NA&gt;
+2                                                        FALSE             &lt;NA&gt;
+3                                                        FALSE             &lt;NA&gt;
+4                                                        FALSE             &lt;NA&gt;
+5                                                        FALSE             &lt;NA&gt;
+6                                                        FALSE             &lt;NA&gt;
+  skin_reflectance_forehead_e1 skin_reflectance_forehead_e2
+1                        17.01                        18.73
+2                        17.22                        19.82
+3                        14.33                        16.13
+4                        22.46                        21.45
+5                        18.57                        19.73
+6                        14.06                        15.28
+  skin_reflectance_forehead_e3 skin_reflectance_forehead_m1
+1                        18.61                        55.99
+2                        17.41                        76.41
+3                        14.25                        71.54
+4                        20.53                        77.36
+5                        21.06                        62.27
+6                        16.76                        82.08
+  skin_reflectance_forehead_m2 skin_reflectance_forehead_m3
+1                        70.57                        76.28
+2                        70.03                        74.73
+3                        69.23                        69.63
+4                        58.49                        57.67
+5                        62.95                        65.07
+6                        80.85                        85.21
+  skin_reflectance_forehead_r1 skin_reflectance_forehead_r2
+1                           70                           50
+2                           44                           51
+3                           49                           52
+4                           46                           67
+5                           57                           59
+6                           38                           40
+  skin_reflectance_forehead_r3 skin_reflectance_forehead_g1
+1                           44                           47
+2                           45                           30
+3                           51                           36
+4                           67                           26
+5                           57                           36
+6                           34                           27
+  skin_reflectance_forehead_g2 skin_reflectance_forehead_g3
+1                           33                           30
+2                           32                           30
+3                           36                           37
+4                           42                           42
+5                           38                           36
+6                           28                           23
+  skin_reflectance_forehead_b1 skin_reflectance_forehead_b2
+1                           43                           30
+2                           26                           29
+3                           28                           30
+4                           24                           38
+5                           29                           34
+6                           25                           26
+  skin_reflectance_forehead_b3 skin_reflectance_forehead_l_1
+1                           27                         19.93
+2                           26                         11.93
+3                           32                         13.88
+4                           37                          8.59
+5                           32                         15.02
+6                           22                          9.24
+  skin_reflectance_forehead_l_2 skin_reflectance_forehead_l_3
+1                         13.10                         11.45
+2                         12.82                         12.02
+3                         14.54                         13.98
+4                         16.59                         17.97
+5                         15.19                         14.38
+6                         10.28                          7.74
+  skin_reflectance_foreheada_1 skin_reflectance_foreheada_2
+1                        14.37                        11.16
+2                         8.13                        12.65
+3                         7.69                         9.87
+4                        10.58                        16.24
+5                        13.25                        13.04
+6                         7.36                         7.99
+  skin_reflectance_foreheada_3 skin_reflectance_foreheadb_1
+1                         9.18                        11.62
+2                         8.84                        10.60
+3                        10.20                        13.20
+4                        15.90                         5.72
+5                        13.87                        14.01
+6                         7.65                         6.62
+  skin_reflectance_foreheadb_2 skin_reflectance_foreheadb_3
+1                         9.28                         8.64
+2                         9.39                        10.69
+3                        12.56                        10.37
+4                        11.40                        12.58
+5                         9.78                         9.77
+6                         7.15                         4.98
+  skin_reflectance_right_upper_inner_arm_e1
+1                                     20.92
+2                                     20.11
+3                                     16.17
+4                                     14.98
+5                                     20.45
+6                                     18.83
+  skin_reflectance_right_upper_inner_arm_e2
+1                                     19.88
+2                                     19.56
+3                                     17.44
+4                                     14.61
+5                                     22.16
+6                                     18.95
+  skin_reflectance_right_upper_inner_arm_e3
+1                                     19.99
+2                                     19.41
+3                                     16.59
+4                                     12.84
+5                                     19.50
+6                                     18.95
+  skin_reflectance_right_upper_inner_arm_m1
+1                                     74.58
+2                                     70.30
+3                                     59.75
+4                                     48.55
+5                                     65.67
+6                                     67.29
+  skin_reflectance_right_upper_inner_arm_m2
+1                                     71.88
+2                                     70.57
+3                                     62.50
+4                                     46.70
+5                                     70.56
+6                                     66.16
+  skin_reflectance_right_upper_inner_arm_m3
+1                                     70.71
+2                                     70.17
+3                                     62.05
+4                                     43.95
+5                                     62.95
+6                                     66.66
+  skin_reflectance_right_upper_inner_arm_r1
+1                                        47
+2                                        50
+3                                        64
+4                                        84
+5                                        56
+6                                        54
+  skin_reflectance_right_upper_inner_arm_r2
+1                                        49
+2                                        50
+3                                        60
+4                                        87
+5                                        49
+6                                        56
+  skin_reflectance_right_upper_inner_arm_r3
+1                                        50
+2                                        50
+3                                        60
+4                                        89
+5                                        60
+6                                        55
+  skin_reflectance_right_upper_inner_arm_g1
+1                                        31
+2                                        32
+3                                        44
+4                                        59
+5                                        35
+6                                        34
+  skin_reflectance_right_upper_inner_arm_g2
+1                                        31
+2                                        32
+3                                        40
+4                                        63
+5                                        30
+6                                        36
+  skin_reflectance_right_upper_inner_arm_g3
+1                                        32
+2                                        32
+3                                        41
+4                                        64
+5                                        38
+6                                        35
+  skin_reflectance_right_upper_inner_arm_b1
+1                                        29
+2                                        29
+3                                        39
+4                                        54
+5                                        32
+6                                        31
+  skin_reflectance_right_upper_inner_arm_b2
+1                                        28
+2                                        30
+3                                        35
+4                                        56
+5                                        27
+6                                        31
+  skin_reflectance_right_upper_inner_arm_b3
+1                                        30
+2                                        30
+3                                        36
+4                                        58
+5                                        35
+6                                        32
+  skin_reflectance_right_upper_inner_arm_l_1
+1                                      12.03
+2                                      12.73
+3                                      18.41
+4                                      25.68
+5                                      14.38
+6                                      13.83
+  skin_reflectance_right_upper_inner_arm_l_2
+1                                      12.27
+2                                      12.68
+3                                      16.64
+4                                      26.54
+5                                      11.90
+6                                      14.34
+  skin_reflectance_right_upper_inner_arm_l_3
+1                                      12.68
+2                                      12.68
+3                                      16.95
+4                                      27.43
+5                                      16.23
+6                                      14.28
+  skin_reflectance_right_upper_inner_arma_1
+1                                     10.72
+2                                     11.94
+3                                     12.36
+4                                     14.09
+5                                     13.87
+6                                     13.23
+  skin_reflectance_right_upper_inner_arma_2
+1                                     12.00
+2                                     12.09
+3                                     12.58
+4                                     14.51
+5                                     12.78
+6                                     13.02
+  skin_reflectance_right_upper_inner_arma_3
+1                                     12.09
+2                                     12.09
+3                                     11.97
+4                                     14.54
+5                                     13.47
+6                                     13.17
+  skin_reflectance_right_upper_inner_armb_1
+1                                      7.97
+2                                      9.29
+3                                     12.24
+4                                     14.37
+5                                      9.77
+6                                      9.62
+  skin_reflectance_right_upper_inner_armb_2
+1                                      9.18
+2                                      8.25
+3                                     12.04
+4                                     15.54
+5                                      9.15
+6                                     10.73
+  skin_reflectance_right_upper_inner_armb_3
+1                                      8.25
+2                                      8.25
+3                                     10.95
+4                                     14.65
+5                                     11.03
+6                                      9.68
+  skin_reflectance_left_upper_inner_arm_e1
+1                                    18.45
+2                                    19.83
+3                                    17.43
+4                                    16.39
+5                                    21.18
+6                                    20.32
+  skin_reflectance_left_upper_inner_arm_e2
+1                                    18.08
+2                                    20.32
+3                                    17.19
+4                                    14.77
+5                                    21.63
+6                                    20.12
+  skin_reflectance_left_upper_inner_arm_e3
+1                                    20.77
+2                                    18.59
+3                                    16.80
+4                                    14.96
+5                                    20.96
+6                                    19.72
+  skin_reflectance_left_upper_inner_arm_m1
+1                                    73.11
+2                                    70.30
+3                                    62.95
+4                                    49.64
+5                                    69.23
+6                                    65.55
+  skin_reflectance_left_upper_inner_arm_m2
+1                                    67.04
+2                                    71.82
+3                                    63.65
+4                                    46.54
+5                                    67.67
+6                                    67.04
+  skin_reflectance_left_upper_inner_arm_m3
+1                                    69.36
+2                                    70.99
+3                                    65.19
+4                                    46.78
+5                                    65.67
+6                                    66.66
+  skin_reflectance_left_upper_inner_arm_r1
+1                                       50
+2                                       51
+3                                       59
+4                                       81
+5                                       51
+6                                       57
+  skin_reflectance_left_upper_inner_arm_r2
+1                                       53
+2                                       49
+3                                       59
+4                                       86
+5                                       52
+6                                       55
+  skin_reflectance_left_upper_inner_arm_r3
+1                                       51
+2                                       50
+3                                       57
+4                                       85
+5                                       55
+6                                       55
+  skin_reflectance_left_upper_inner_arm_g1
+1                                       33
+2                                       32
+3                                       40
+4                                       56
+5                                       31
+6                                       35
+  skin_reflectance_left_upper_inner_arm_g2
+1                                       35
+2                                       31
+3                                       40
+4                                       60
+5                                       32
+6                                       34
+  skin_reflectance_left_upper_inner_arm_g3
+1                                       31
+2                                       33
+3                                       39
+4                                       59
+5                                       34
+6                                       35
+  skin_reflectance_left_upper_inner_arm_b1
+1                                       30
+2                                       29
+3                                       35
+4                                       50
+5                                       29
+6                                       32
+  skin_reflectance_left_upper_inner_arm_b2
+1                                       33
+2                                       28
+3                                       36
+4                                       54
+5                                       30
+6                                       31
+  skin_reflectance_left_upper_inner_arm_b3
+1                                       28
+2                                       29
+3                                       34
+4                                       54
+5                                       31
+6                                       31
+  skin_reflectance_left_upper_inner_arm_l_1
+1                                     13.10
+2                                     12.82
+3                                     16.55
+4                                     24.07
+5                                     12.31
+6                                     14.38
+  skin_reflectance_left_upper_inner_arm_l_2
+1                                     14.05
+2                                     12.27
+3                                     16.50
+4                                     25.79
+5                                     12.86
+6                                     13.88
+  skin_reflectance_left_upper_inner_arm_l_3
+1                                     12.36
+2                                     12.73
+3                                     16.55
+4                                     24.95
+5                                     13.56
+6                                     13.92
+  skin_reflectance_left_upper_inner_arma_1
+1                                    11.16
+2                                    12.65
+3                                    11.89
+4                                    14.94
+5                                    12.87
+6                                    13.87
+  skin_reflectance_left_upper_inner_arma_2
+1                                    11.91
+2                                    12.00
+3                                    12.03
+4                                    15.52
+5                                    13.51
+6                                    13.08
+  skin_reflectance_left_upper_inner_arma_3
+1                                    12.71
+2                                    11.94
+3                                    11.89
+4                                    15.62
+5                                    14.72
+6                                    13.94
+  skin_reflectance_left_upper_inner_armb_1
+1                                     9.28
+2                                     9.39
+3                                    11.96
+4                                    14.26
+5                                     8.28
+6                                     9.77
+  skin_reflectance_left_upper_inner_armb_2
+1                                     8.43
+2                                     9.18
+3                                    10.90
+4                                    13.55
+5                                     8.46
+6                                    10.68
+  skin_reflectance_left_upper_inner_armb_3 pathcare_sticker_barcode   req_num
+1                                     9.28                785293139 785293139
+2                                     9.29                785293140 785293140
+3                                    11.96                785293141 785293141
+4                                    13.45                785293142        NA
+5                                     9.76                785293143 785293143
+6                                     9.72                785293144 785293144
+            serv_date vit_d_result       res_date_time collection_period
+1 2013-02-11 10:40:00        29.50 2013-02-13 12:13:00            Summer
+2 2013-02-11 11:00:00        17.80 2013-02-13 12:13:00            Summer
+3 2013-02-11 00:00:11        25.00 2013-02-13 12:13:00            Summer
+4          2013-02-12        20.83                &lt;NA&gt;            Summer
+5 2013-02-12 00:00:11        29.20 2013-02-13 14:39:00            Summer
+6 2013-02-12 00:00:11        20.50 2013-02-13 12:13:00            Summer
+  continued_in_study if_not_continued_in_study_reason
+1               &lt;NA&gt;                             &lt;NA&gt;
+2               &lt;NA&gt;                             &lt;NA&gt;
+3               &lt;NA&gt;                             &lt;NA&gt;
+4               &lt;NA&gt;                             &lt;NA&gt;
+5               &lt;NA&gt;                             &lt;NA&gt;
+6               &lt;NA&gt;                             &lt;NA&gt;</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Reshaping the data to include each reflectance value in its own row,
+with separate columns for body site and reflectance type. This will
+create a long format dataset with two new columns:</li>
+</ol>
+<ul>
+<li>Measurement: Contains the original column names (e.g.,
+skin_reflectance_forehead_M1).</li>
+<li>Reflectance: Contains the reflectance values.</li>
+</ul>
+<pre class="r"><code>data_long &lt;- pivot_longer(data, 
+                          cols = starts_with(&quot;skin_reflectance&quot;), 
+                          names_to = &quot;measurement&quot;, 
+                          values_to = &quot;reflectance&quot;)</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Separate the measurement column into body_site and
+reflectance_type.</li>
+</ol>
+<pre class="r"><code>data_long &lt;- separate(data_long, 
+                      col = &quot;measurement&quot;, 
+                      into = c(&quot;Prefix&quot;, &quot;body_site&quot;, &quot;reflectance_type&quot;), 
+                      sep = &quot;_&quot;, 
+                      extra = &quot;drop&quot;)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.1 (2024-06-14)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sonoma 14.6.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Detroit
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] tidyr_1.3.1
+
+loaded via a namespace (and not attached):
+ [1] jsonlite_1.8.9    dplyr_1.1.4       compiler_4.4.1    promises_1.3.0   
+ [5] tidyselect_1.2.1  Rcpp_1.0.13       stringr_1.5.1     git2r_0.33.0     
+ [9] later_1.3.2       jquerylib_0.1.4   yaml_2.3.10       fastmap_1.2.0    
+[13] R6_2.5.1          generics_0.1.3    workflowr_1.7.1   knitr_1.48       
+[17] tibble_3.2.1      rprojroot_2.0.4   bslib_0.8.0       pillar_1.9.0     
+[21] rlang_1.1.4       utf8_1.2.4        cachem_1.1.0      stringi_1.8.4    
+[25] httpuv_1.6.15     xfun_0.47         fs_1.6.4          sass_0.4.9       
+[29] cli_3.6.3         withr_3.0.1       magrittr_2.0.3    digest_0.6.37    
+[33] rstudioapi_0.16.0 lifecycle_1.0.4   vctrs_0.6.5       evaluate_1.0.0   
+[37] glue_1.7.0        fansi_1.0.6       rmarkdown_2.28    purrr_1.0.2      
+[41] tools_4.4.1       pkgconfig_2.0.3   htmltools_0.5.8.1</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
