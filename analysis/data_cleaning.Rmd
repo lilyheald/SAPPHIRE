@@ -176,3 +176,4 @@ write.csv(food_freq_long, "data/food_freq_long.csv", row.names = FALSE)
 write.csv(sun_expos_long, "data/sun_expos_long.csv", row.names = FALSE)
 ```
 
+11. Manually copy these files over into the project_SAPPHIRE google drive. 
