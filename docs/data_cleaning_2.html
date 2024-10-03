@@ -516,15 +516,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreee8e0e54765737554a77f8b2128619321fe9bfb96targetblanke8e0e54a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree1ff7d1af6f2bf2ded22c53ab2440fd107472927ftargetblank1ff7d1aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/e8e0e54765737554a77f8b2128619321fe9bfb96" target="_blank">e8e0e54</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/1ff7d1af6f2bf2ded22c53ab2440fd107472927f" target="_blank">1ff7d1a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreee8e0e54765737554a77f8b2128619321fe9bfb96targetblanke8e0e54a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree1ff7d1af6f2bf2ded22c53ab2440fd107472927ftargetblank1ff7d1aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -534,7 +534,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/e8e0e54765737554a77f8b2128619321fe9bfb96" target="_blank">e8e0e54</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/1ff7d1af6f2bf2ded22c53ab2440fd107472927f" target="_blank">1ff7d1a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -553,7 +553,11 @@ Ignored files:
     Ignored:    .Rapp.history
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
     Ignored:    data/.DS_Store
+
+Untracked files:
+    Untracked:  data/cleaned_screening_long.csv
 
 Unstaged changes:
     Modified:   analysis/data_cleaning_2.Rmd
@@ -606,6 +610,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/1ff7d1af6f2bf2ded22c53ab2440fd107472927f/analysis/data_cleaning_2.Rmd" target="_blank">1ff7d1a</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-03
+</td>
+<td>
+edit step 5
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/1ff7d1af6f2bf2ded22c53ab2440fd107472927f/docs/data_cleaning_2.html" target="_blank">1ff7d1a</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-03
+</td>
+<td>
+edit step 5
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/lasisilab/SAPPHIRE/blob/e8e0e54765737554a77f8b2128619321fe9bfb96/analysis/data_cleaning_2.Rmd" target="_blank">e8e0e54</a>
 </td>
 <td>
@@ -652,534 +690,16 @@ data_cleaning_1).</p>
 <ol style="list-style-type: decimal">
 <li>Load the relevant packages.</li>
 </ol>
-<pre class="r"><code>library(tidyr)</code></pre>
+<pre class="r"><code>library(tidyr)
+library(dplyr)</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Load the data.</li>
 </ol>
 <pre class="r"><code>data &lt;- read.csv(&quot;data/screening_long.csv&quot;)</code></pre>
+</div>
+<div id="reshape-and-clean-data" class="section level2">
+<h2>Reshape and Clean Data</h2>
 <ol start="3" style="list-style-type: decimal">
-<li>View the first few rows.</li>
-</ol>
-<pre class="r"><code>head(data)</code></pre>
-<pre><code>  participant_centre_id interviewer_name today_date age_years date_of_birth
-1               VDKH001            Betty 2013-02-11        20    1993-08-07
-2               VDKH002            Betty 2013-02-11        23    1990-01-20
-3               VDKH003            Betty 2013-02-11        23    1989-05-05
-4               VDKH004            Betty 2013-02-12        20    1992-08-10
-5               VDKH005            Betty 2013-02-12        19    1993-05-06
-6               VDKH006            Betty 2013-02-12        21    1992-04-14
-  gender ethnicity_coloured ethnicity_white ethnicity_african_black
-1      1              FALSE           FALSE                    TRUE
-2      1              FALSE           FALSE                    TRUE
-3      2              FALSE           FALSE                    TRUE
-4      2              FALSE           FALSE                    TRUE
-5      1              FALSE           FALSE                    TRUE
-6      1              FALSE           FALSE                    TRUE
-  ethnicity_indian_asian ethnicity_other ethnicity_specify_other ethnicity
-1                  FALSE           FALSE                      NA        NA
-2                  FALSE           FALSE                      NA        NA
-3                  FALSE           FALSE                      NA        NA
-4                  FALSE           FALSE                      NA        NA
-5                  FALSE           FALSE                      NA        NA
-6                  FALSE           FALSE                      NA        NA
-  refuse_to_answer weight_measure1 weight_measure2 avg_weight height_measure1
-1            FALSE            60.6            60.6       60.6           1.728
-2            FALSE            60.5            60.5       60.5           1.678
-3            FALSE            63.5            63.5       63.5           1.588
-4            FALSE            64.4            64.4       64.4           1.595
-5            FALSE            53.7            53.7       53.7           1.632
-6            FALSE            53.3            53.3       53.3           1.523
-  height_measure2 avg_height      bmi sore_throat_yes sore_throat_no
-1           1.728      1.728 20.29482           FALSE           TRUE
-2           1.678      1.678 21.48679           FALSE           TRUE
-3           1.588      1.588 25.18098           FALSE           TRUE
-4           1.595      1.595 25.31421           FALSE           TRUE
-5           1.632      1.632 20.16202           FALSE           TRUE
-6           1.523      1.523 22.97880           FALSE           TRUE
-  runny_nose_yes runny_nose_no cough_yes cough_no fever_yes fever_no
-1          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
-2          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
-3          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
-4          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
-5          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
-6          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
-  night_sweats_yes night_sweats_no unexplained_weight_loss_yes
-1            FALSE            TRUE                       FALSE
-2            FALSE            TRUE                       FALSE
-3            FALSE            TRUE                       FALSE
-4            FALSE            TRUE                       FALSE
-5            FALSE            TRUE                       FALSE
-6            FALSE            TRUE                       FALSE
-  unexplained_weight_loss_no currently_taking_supplements_yes
-1                       TRUE                            FALSE
-2                       TRUE                            FALSE
-3                       TRUE                            FALSE
-4                       TRUE                            FALSE
-5                       TRUE                            FALSE
-6                       TRUE                            FALSE
-  currently_taking_supplements_no supplements currently_taking_medications_yes
-1                            TRUE        &lt;NA&gt;                            FALSE
-2                            TRUE        &lt;NA&gt;                            FALSE
-3                            TRUE        &lt;NA&gt;                            FALSE
-4                            TRUE        &lt;NA&gt;                            FALSE
-5                            TRUE        &lt;NA&gt;                            FALSE
-6                            TRUE        &lt;NA&gt;                            FALSE
-  currently_taking_medications_no medications participant_included_yes
-1                            TRUE        &lt;NA&gt;                     TRUE
-2                            TRUE        &lt;NA&gt;                     TRUE
-3                            TRUE        &lt;NA&gt;                     TRUE
-4                            TRUE        &lt;NA&gt;                     TRUE
-5                            TRUE        &lt;NA&gt;                     TRUE
-6                            TRUE        &lt;NA&gt;                     TRUE
-  participant_included_no if_no_reason_for_exclusion
-1                   FALSE                       &lt;NA&gt;
-2                   FALSE                       &lt;NA&gt;
-3                   FALSE                       &lt;NA&gt;
-4                   FALSE                       &lt;NA&gt;
-5                   FALSE                       &lt;NA&gt;
-6                   FALSE                       &lt;NA&gt;
-  smoking_do_you_regularly_smoke_at_least1cigarette5daysa_week smoking_comments
-1                                                        FALSE             &lt;NA&gt;
-2                                                        FALSE             &lt;NA&gt;
-3                                                        FALSE             &lt;NA&gt;
-4                                                        FALSE             &lt;NA&gt;
-5                                                        FALSE             &lt;NA&gt;
-6                                                        FALSE             &lt;NA&gt;
-  skin_reflectance_forehead_e1 skin_reflectance_forehead_e2
-1                        17.01                        18.73
-2                        17.22                        19.82
-3                        14.33                        16.13
-4                        22.46                        21.45
-5                        18.57                        19.73
-6                        14.06                        15.28
-  skin_reflectance_forehead_e3 skin_reflectance_forehead_m1
-1                        18.61                        55.99
-2                        17.41                        76.41
-3                        14.25                        71.54
-4                        20.53                        77.36
-5                        21.06                        62.27
-6                        16.76                        82.08
-  skin_reflectance_forehead_m2 skin_reflectance_forehead_m3
-1                        70.57                        76.28
-2                        70.03                        74.73
-3                        69.23                        69.63
-4                        58.49                        57.67
-5                        62.95                        65.07
-6                        80.85                        85.21
-  skin_reflectance_forehead_r1 skin_reflectance_forehead_r2
-1                           70                           50
-2                           44                           51
-3                           49                           52
-4                           46                           67
-5                           57                           59
-6                           38                           40
-  skin_reflectance_forehead_r3 skin_reflectance_forehead_g1
-1                           44                           47
-2                           45                           30
-3                           51                           36
-4                           67                           26
-5                           57                           36
-6                           34                           27
-  skin_reflectance_forehead_g2 skin_reflectance_forehead_g3
-1                           33                           30
-2                           32                           30
-3                           36                           37
-4                           42                           42
-5                           38                           36
-6                           28                           23
-  skin_reflectance_forehead_b1 skin_reflectance_forehead_b2
-1                           43                           30
-2                           26                           29
-3                           28                           30
-4                           24                           38
-5                           29                           34
-6                           25                           26
-  skin_reflectance_forehead_b3 skin_reflectance_forehead_l_1
-1                           27                         19.93
-2                           26                         11.93
-3                           32                         13.88
-4                           37                          8.59
-5                           32                         15.02
-6                           22                          9.24
-  skin_reflectance_forehead_l_2 skin_reflectance_forehead_l_3
-1                         13.10                         11.45
-2                         12.82                         12.02
-3                         14.54                         13.98
-4                         16.59                         17.97
-5                         15.19                         14.38
-6                         10.28                          7.74
-  skin_reflectance_foreheada_1 skin_reflectance_foreheada_2
-1                        14.37                        11.16
-2                         8.13                        12.65
-3                         7.69                         9.87
-4                        10.58                        16.24
-5                        13.25                        13.04
-6                         7.36                         7.99
-  skin_reflectance_foreheada_3 skin_reflectance_foreheadb_1
-1                         9.18                        11.62
-2                         8.84                        10.60
-3                        10.20                        13.20
-4                        15.90                         5.72
-5                        13.87                        14.01
-6                         7.65                         6.62
-  skin_reflectance_foreheadb_2 skin_reflectance_foreheadb_3
-1                         9.28                         8.64
-2                         9.39                        10.69
-3                        12.56                        10.37
-4                        11.40                        12.58
-5                         9.78                         9.77
-6                         7.15                         4.98
-  skin_reflectance_right_upper_inner_arm_e1
-1                                     20.92
-2                                     20.11
-3                                     16.17
-4                                     14.98
-5                                     20.45
-6                                     18.83
-  skin_reflectance_right_upper_inner_arm_e2
-1                                     19.88
-2                                     19.56
-3                                     17.44
-4                                     14.61
-5                                     22.16
-6                                     18.95
-  skin_reflectance_right_upper_inner_arm_e3
-1                                     19.99
-2                                     19.41
-3                                     16.59
-4                                     12.84
-5                                     19.50
-6                                     18.95
-  skin_reflectance_right_upper_inner_arm_m1
-1                                     74.58
-2                                     70.30
-3                                     59.75
-4                                     48.55
-5                                     65.67
-6                                     67.29
-  skin_reflectance_right_upper_inner_arm_m2
-1                                     71.88
-2                                     70.57
-3                                     62.50
-4                                     46.70
-5                                     70.56
-6                                     66.16
-  skin_reflectance_right_upper_inner_arm_m3
-1                                     70.71
-2                                     70.17
-3                                     62.05
-4                                     43.95
-5                                     62.95
-6                                     66.66
-  skin_reflectance_right_upper_inner_arm_r1
-1                                        47
-2                                        50
-3                                        64
-4                                        84
-5                                        56
-6                                        54
-  skin_reflectance_right_upper_inner_arm_r2
-1                                        49
-2                                        50
-3                                        60
-4                                        87
-5                                        49
-6                                        56
-  skin_reflectance_right_upper_inner_arm_r3
-1                                        50
-2                                        50
-3                                        60
-4                                        89
-5                                        60
-6                                        55
-  skin_reflectance_right_upper_inner_arm_g1
-1                                        31
-2                                        32
-3                                        44
-4                                        59
-5                                        35
-6                                        34
-  skin_reflectance_right_upper_inner_arm_g2
-1                                        31
-2                                        32
-3                                        40
-4                                        63
-5                                        30
-6                                        36
-  skin_reflectance_right_upper_inner_arm_g3
-1                                        32
-2                                        32
-3                                        41
-4                                        64
-5                                        38
-6                                        35
-  skin_reflectance_right_upper_inner_arm_b1
-1                                        29
-2                                        29
-3                                        39
-4                                        54
-5                                        32
-6                                        31
-  skin_reflectance_right_upper_inner_arm_b2
-1                                        28
-2                                        30
-3                                        35
-4                                        56
-5                                        27
-6                                        31
-  skin_reflectance_right_upper_inner_arm_b3
-1                                        30
-2                                        30
-3                                        36
-4                                        58
-5                                        35
-6                                        32
-  skin_reflectance_right_upper_inner_arm_l_1
-1                                      12.03
-2                                      12.73
-3                                      18.41
-4                                      25.68
-5                                      14.38
-6                                      13.83
-  skin_reflectance_right_upper_inner_arm_l_2
-1                                      12.27
-2                                      12.68
-3                                      16.64
-4                                      26.54
-5                                      11.90
-6                                      14.34
-  skin_reflectance_right_upper_inner_arm_l_3
-1                                      12.68
-2                                      12.68
-3                                      16.95
-4                                      27.43
-5                                      16.23
-6                                      14.28
-  skin_reflectance_right_upper_inner_arma_1
-1                                     10.72
-2                                     11.94
-3                                     12.36
-4                                     14.09
-5                                     13.87
-6                                     13.23
-  skin_reflectance_right_upper_inner_arma_2
-1                                     12.00
-2                                     12.09
-3                                     12.58
-4                                     14.51
-5                                     12.78
-6                                     13.02
-  skin_reflectance_right_upper_inner_arma_3
-1                                     12.09
-2                                     12.09
-3                                     11.97
-4                                     14.54
-5                                     13.47
-6                                     13.17
-  skin_reflectance_right_upper_inner_armb_1
-1                                      7.97
-2                                      9.29
-3                                     12.24
-4                                     14.37
-5                                      9.77
-6                                      9.62
-  skin_reflectance_right_upper_inner_armb_2
-1                                      9.18
-2                                      8.25
-3                                     12.04
-4                                     15.54
-5                                      9.15
-6                                     10.73
-  skin_reflectance_right_upper_inner_armb_3
-1                                      8.25
-2                                      8.25
-3                                     10.95
-4                                     14.65
-5                                     11.03
-6                                      9.68
-  skin_reflectance_left_upper_inner_arm_e1
-1                                    18.45
-2                                    19.83
-3                                    17.43
-4                                    16.39
-5                                    21.18
-6                                    20.32
-  skin_reflectance_left_upper_inner_arm_e2
-1                                    18.08
-2                                    20.32
-3                                    17.19
-4                                    14.77
-5                                    21.63
-6                                    20.12
-  skin_reflectance_left_upper_inner_arm_e3
-1                                    20.77
-2                                    18.59
-3                                    16.80
-4                                    14.96
-5                                    20.96
-6                                    19.72
-  skin_reflectance_left_upper_inner_arm_m1
-1                                    73.11
-2                                    70.30
-3                                    62.95
-4                                    49.64
-5                                    69.23
-6                                    65.55
-  skin_reflectance_left_upper_inner_arm_m2
-1                                    67.04
-2                                    71.82
-3                                    63.65
-4                                    46.54
-5                                    67.67
-6                                    67.04
-  skin_reflectance_left_upper_inner_arm_m3
-1                                    69.36
-2                                    70.99
-3                                    65.19
-4                                    46.78
-5                                    65.67
-6                                    66.66
-  skin_reflectance_left_upper_inner_arm_r1
-1                                       50
-2                                       51
-3                                       59
-4                                       81
-5                                       51
-6                                       57
-  skin_reflectance_left_upper_inner_arm_r2
-1                                       53
-2                                       49
-3                                       59
-4                                       86
-5                                       52
-6                                       55
-  skin_reflectance_left_upper_inner_arm_r3
-1                                       51
-2                                       50
-3                                       57
-4                                       85
-5                                       55
-6                                       55
-  skin_reflectance_left_upper_inner_arm_g1
-1                                       33
-2                                       32
-3                                       40
-4                                       56
-5                                       31
-6                                       35
-  skin_reflectance_left_upper_inner_arm_g2
-1                                       35
-2                                       31
-3                                       40
-4                                       60
-5                                       32
-6                                       34
-  skin_reflectance_left_upper_inner_arm_g3
-1                                       31
-2                                       33
-3                                       39
-4                                       59
-5                                       34
-6                                       35
-  skin_reflectance_left_upper_inner_arm_b1
-1                                       30
-2                                       29
-3                                       35
-4                                       50
-5                                       29
-6                                       32
-  skin_reflectance_left_upper_inner_arm_b2
-1                                       33
-2                                       28
-3                                       36
-4                                       54
-5                                       30
-6                                       31
-  skin_reflectance_left_upper_inner_arm_b3
-1                                       28
-2                                       29
-3                                       34
-4                                       54
-5                                       31
-6                                       31
-  skin_reflectance_left_upper_inner_arm_l_1
-1                                     13.10
-2                                     12.82
-3                                     16.55
-4                                     24.07
-5                                     12.31
-6                                     14.38
-  skin_reflectance_left_upper_inner_arm_l_2
-1                                     14.05
-2                                     12.27
-3                                     16.50
-4                                     25.79
-5                                     12.86
-6                                     13.88
-  skin_reflectance_left_upper_inner_arm_l_3
-1                                     12.36
-2                                     12.73
-3                                     16.55
-4                                     24.95
-5                                     13.56
-6                                     13.92
-  skin_reflectance_left_upper_inner_arma_1
-1                                    11.16
-2                                    12.65
-3                                    11.89
-4                                    14.94
-5                                    12.87
-6                                    13.87
-  skin_reflectance_left_upper_inner_arma_2
-1                                    11.91
-2                                    12.00
-3                                    12.03
-4                                    15.52
-5                                    13.51
-6                                    13.08
-  skin_reflectance_left_upper_inner_arma_3
-1                                    12.71
-2                                    11.94
-3                                    11.89
-4                                    15.62
-5                                    14.72
-6                                    13.94
-  skin_reflectance_left_upper_inner_armb_1
-1                                     9.28
-2                                     9.39
-3                                    11.96
-4                                    14.26
-5                                     8.28
-6                                     9.77
-  skin_reflectance_left_upper_inner_armb_2
-1                                     8.43
-2                                     9.18
-3                                    10.90
-4                                    13.55
-5                                     8.46
-6                                    10.68
-  skin_reflectance_left_upper_inner_armb_3 pathcare_sticker_barcode   req_num
-1                                     9.28                785293139 785293139
-2                                     9.29                785293140 785293140
-3                                    11.96                785293141 785293141
-4                                    13.45                785293142        NA
-5                                     9.76                785293143 785293143
-6                                     9.72                785293144 785293144
-            serv_date vit_d_result       res_date_time collection_period
-1 2013-02-11 10:40:00        29.50 2013-02-13 12:13:00            Summer
-2 2013-02-11 11:00:00        17.80 2013-02-13 12:13:00            Summer
-3 2013-02-11 00:00:11        25.00 2013-02-13 12:13:00            Summer
-4          2013-02-12        20.83                &lt;NA&gt;            Summer
-5 2013-02-12 00:00:11        29.20 2013-02-13 14:39:00            Summer
-6 2013-02-12 00:00:11        20.50 2013-02-13 12:13:00            Summer
-  continued_in_study if_not_continued_in_study_reason
-1               &lt;NA&gt;                             &lt;NA&gt;
-2               &lt;NA&gt;                             &lt;NA&gt;
-3               &lt;NA&gt;                             &lt;NA&gt;
-4               &lt;NA&gt;                             &lt;NA&gt;
-5               &lt;NA&gt;                             &lt;NA&gt;
-6               &lt;NA&gt;                             &lt;NA&gt;</code></pre>
-<ol start="4" style="list-style-type: decimal">
 <li>Reshaping the data to include each reflectance value in its own row,
 with separate columns for body site and reflectance type. This will
 create a long format dataset with two new columns:</li>
@@ -1193,10 +713,25 @@ skin_reflectance_forehead_M1).</li>
                           cols = starts_with(&quot;skin_reflectance&quot;), 
                           names_to = &quot;measurement&quot;, 
                           values_to = &quot;reflectance&quot;)</code></pre>
-<ol start="5" style="list-style-type: decimal">
-<li>Separate the measurement column into body_site and
-reflectance_type.</li>
+<ol start="4" style="list-style-type: decimal">
+<li>Extract body site and reflectance type data from the new measurement
+column.</li>
 </ol>
+<pre class="r"><code>data_long &lt;- data_long %&gt;%
+  extract(col = &quot;measurement&quot;,
+          into = c(&quot;body_site&quot;, &quot;reflectance_type&quot;),
+          regex = &quot;skin_reflectance_([a-zA-Z_]+?)(l[123]|l_[123]|a[123]|a_[123]|b[123]|b_[123]|g[123]|r[123]|m[123]|e[123])&quot;,
+          remove = FALSE) %&gt;%
+  mutate(body_site = gsub(&quot;_$&quot;, &quot;&quot;, body_site))  # Remove any trailing underscore from body_site</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Delete the “measurements” column since it is no longer needed.</li>
+</ol>
+<pre class="r"><code>data_long &lt;- data_long %&gt;%
+  select(-measurement)</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li>Save the cleaned data file.</li>
+</ol>
+<pre class="r"><code>write.csv(data_long, &quot;data/cleaned_screening_long.csv&quot;, row.names = FALSE)</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1224,20 +759,20 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] tidyr_1.3.1
+[1] dplyr_1.1.4 tidyr_1.3.1
 
 loaded via a namespace (and not attached):
- [1] jsonlite_1.8.9    dplyr_1.1.4       compiler_4.4.1    promises_1.3.0   
- [5] tidyselect_1.2.1  Rcpp_1.0.13       stringr_1.5.1     git2r_0.33.0     
- [9] later_1.3.2       jquerylib_0.1.4   yaml_2.3.10       fastmap_1.2.0    
-[13] R6_2.5.1          generics_0.1.3    workflowr_1.7.1   knitr_1.48       
-[17] tibble_3.2.1      rprojroot_2.0.4   bslib_0.8.0       pillar_1.9.0     
-[21] rlang_1.1.4       utf8_1.2.4        cachem_1.1.0      stringi_1.8.4    
-[25] httpuv_1.6.15     xfun_0.47         fs_1.6.4          sass_0.4.9       
-[29] cli_3.6.3         withr_3.0.1       magrittr_2.0.3    digest_0.6.37    
-[33] rstudioapi_0.16.0 lifecycle_1.0.4   vctrs_0.6.5       evaluate_1.0.0   
-[37] glue_1.7.0        whisker_0.4.1     fansi_1.0.6       purrr_1.0.2      
-[41] rmarkdown_2.28    tools_4.4.1       pkgconfig_2.0.3   htmltools_0.5.8.1</code></pre>
+ [1] jsonlite_1.8.9    compiler_4.4.1    promises_1.3.0    tidyselect_1.2.1 
+ [5] Rcpp_1.0.13       stringr_1.5.1     git2r_0.33.0      later_1.3.2      
+ [9] jquerylib_0.1.4   yaml_2.3.10       fastmap_1.2.0     R6_2.5.1         
+[13] generics_0.1.3    workflowr_1.7.1   knitr_1.48        tibble_3.2.1     
+[17] rprojroot_2.0.4   bslib_0.8.0       pillar_1.9.0      rlang_1.1.4      
+[21] utf8_1.2.4        cachem_1.1.0      stringi_1.8.4     httpuv_1.6.15    
+[25] xfun_0.47         fs_1.6.4          sass_0.4.9        cli_3.6.3        
+[29] withr_3.0.1       magrittr_2.0.3    digest_0.6.37     rstudioapi_0.16.0
+[33] lifecycle_1.0.4   vctrs_0.6.5       evaluate_1.0.0    glue_1.7.0       
+[37] whisker_0.4.1     fansi_1.0.6       purrr_1.0.2       rmarkdown_2.28   
+[41] tools_4.4.1       pkgconfig_2.0.3   htmltools_0.5.8.1</code></pre>
 </div>
 </div>
 </div>
