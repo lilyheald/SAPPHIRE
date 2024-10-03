@@ -11,9 +11,9 @@
 
 <meta name="author" content="calliquire" />
 
-<meta name="date" content="2024-10-03" />
+<meta name="date" content="2024-10-01" />
 
-<title>data_cleaning_2</title>
+<title>data_cleaning_1</title>
 
 <script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -351,9 +351,9 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">data_cleaning_2</h1>
+<h1 class="title toc-ignore">data_cleaning_1</h1>
 <h4 class="author">calliquire</h4>
-<h4 class="date">2024-10-03</h4>
+<h4 class="date">2024-10-01</h4>
 
 </div>
 
@@ -558,7 +558,6 @@ Ignored files:
 
 Unstaged changes:
     Modified:   analysis/data_cleaning_1.Rmd
-    Modified:   analysis/data_cleaning_2.Rmd
 
 </code></pre>
 <p>
@@ -575,8 +574,8 @@ have uncommitted changes.
 <div id="versions" class="tab-pane fade">
 <p>
 These are the previous versions of the repository in which changes were
-made to the R Markdown (<code>analysis/data_cleaning_2.Rmd</code>) and
-HTML (<code>docs/data_cleaning_2.html</code>) files. If you’ve
+made to the R Markdown (<code>analysis/data_cleaning_1.Rmd</code>) and
+HTML (<code>docs/data_cleaning_1.html</code>) files. If you’ve
 configured a remote Git repository (see <code>?wflow_git_remote</code>),
 click on the hyperlinks in the table below to view the files as they
 were in that past version.
@@ -608,92 +607,7 @@ Message
 Rmd
 </td>
 <td>
-<a href="https://github.com/lasisilab/SAPPHIRE/blob/b0ffd8333fdd2685088365ca5321337bf1e9e0f5/analysis/data_cleaning_2.Rmd" target="_blank">b0ffd83</a>
-</td>
-<td>
-calliquire
-</td>
-<td>
-2024-10-03
-</td>
-<td>
-fixed regular expressions to separate measurement column
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/b0ffd8333fdd2685088365ca5321337bf1e9e0f5/docs/data_cleaning_2.html" target="_blank">b0ffd83</a>
-</td>
-<td>
-calliquire
-</td>
-<td>
-2024-10-03
-</td>
-<td>
-fixed regular expressions to separate measurement column
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/lasisilab/SAPPHIRE/blob/1ff7d1af6f2bf2ded22c53ab2440fd107472927f/analysis/data_cleaning_2.Rmd" target="_blank">1ff7d1a</a>
-</td>
-<td>
-calliquire
-</td>
-<td>
-2024-10-03
-</td>
-<td>
-edit step 5
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/1ff7d1af6f2bf2ded22c53ab2440fd107472927f/docs/data_cleaning_2.html" target="_blank">1ff7d1a</a>
-</td>
-<td>
-calliquire
-</td>
-<td>
-2024-10-03
-</td>
-<td>
-edit step 5
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/lasisilab/SAPPHIRE/blob/e8e0e54765737554a77f8b2128619321fe9bfb96/analysis/data_cleaning_2.Rmd" target="_blank">e8e0e54</a>
-</td>
-<td>
-calliquire
-</td>
-<td>
-2024-10-03
-</td>
-<td>
-data cleaning 2
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/e8e0e54765737554a77f8b2128619321fe9bfb96/docs/data_cleaning_2.html" target="_blank">e8e0e54</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/e8e0e54765737554a77f8b2128619321fe9bfb96/analysis/data_cleaning_1.Rmd" target="_blank">e8e0e54</a>
 </td>
 <td>
 calliquire
@@ -712,58 +626,219 @@ data cleaning 2
 </div>
 </div>
 </div>
-<p><strong>About This Analysis:</strong> This is the second iteration of
-data cleaning that must be done after data_cleaning_1. Here, I clean the
-screening_long long-form dataset to have columns for body_site and
-reflectance_type (as well as collection_period, which was done in
-data_cleaning_1).</p>
+<p><strong>About This Analysis:</strong> The goal of this analysis is to
+initiate the wrangling of the original, raw data through manual editing
+in Google Sheets and a R pipeline to leave us with three long-form data
+sets (one for each category of data).</p>
 <div id="set-up" class="section level2">
 <h2>Set Up</h2>
 <ol style="list-style-type: decimal">
 <li>Load the relevant packages.</li>
 </ol>
-<pre class="r"><code>library(tidyr)
-library(dplyr)</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>Load the data.</li>
-</ol>
-<pre class="r"><code>data &lt;- read.csv(&quot;data/screening_long.csv&quot;)</code></pre>
+<pre class="r"><code>library(readxl)
+library(dplyr)
+library(janitor)
+library(tidyverse)</code></pre>
 </div>
-<div id="reshape-and-clean-data" class="section level2">
-<h2>Reshape and Clean Data</h2>
-<ol start="3" style="list-style-type: decimal">
-<li>Reshaping the data to include each reflectance value in its own row,
-with separate columns for body site and reflectance type. This will
-create a long format dataset with two new columns:</li>
+<div id="prepare-your-data" class="section level2">
+<h2>Prepare Your Data</h2>
+<ol start="2" style="list-style-type: decimal">
+<li>In Google Sheets, make a copy of the original data, save that copy
+as “serum_vit_D_study_with_lab_results.xlsx” and manually edit the
+following:</li>
 </ol>
 <ul>
-<li>Measurement: Contains the original column names (e.g.,
-skin_reflectance_forehead_M1).</li>
-<li>Reflectance: Contains the reflectance values.</li>
+<li>delete floating note in ScreeningDataCollectionWinter sheet: “Note:
+VDKH001 had no second weight measurement so the initial measurement was
+used.”</li>
+<li>delete floating note in ScreeningDataCollection6Weeks sheet: “Note:
+VDKH007 and VDKH012 had no second weight measurement so the initial
+measurement was used.”</li>
+<li>change column DT name in ScreeningDataCollectionWinter sheet from
+“Result” to “VitDResult” to match the same measures in the Summer and 6
+Weeks sheets</li>
+<li>delete columns A and B (named ParticipantID and ParticipantCentre,
+respectively) so that column C becomes your unique identifier (named
+ParticipantCentreID) in all of the individual sheets within the
+workbook</li>
+<li>delete floating notes in FoodFrequencySummer sheet: “Notes: VDKH016
+- No information for Pilchards or Liver beef/lamb; VDTG011 - No Vit D
+for Marg soft.”</li>
+<li>delete floating notes in FoodFrequencyWinter sheet: “Note: No
+amounts calculated for VDKH047 - Soft Marg - or VDKH050 - Snoek; Where
+two types of margerine were specified, the brand with the lower Vit D
+percentage was used to calculate Vit D ie VDTG023, 032,045”</li>
 </ul>
-<pre class="r"><code>data_long &lt;- pivot_longer(data, 
-                          cols = starts_with(&quot;skin_reflectance&quot;), 
-                          names_to = &quot;measurement&quot;, 
-                          values_to = &quot;reflectance&quot;)</code></pre>
+</div>
+<div id="begin-wrangling-in-r" class="section level2">
+<h2>Begin Wrangling in R</h2>
+<ol start="3" style="list-style-type: decimal">
+<li>Specify the path to the new Excel file. This .xlsx file is located
+in ~/GitHub/SAPPHIRE/data.</li>
+</ol>
+<pre class="r"><code>file_path &lt;- &quot;data/serum_vit_D_study_with_lab_results.xlsx&quot;</code></pre>
+<div id="category-1-screening-data-collection" class="section level3">
+<h3>Category 1: Screening Data Collection</h3>
 <ol start="4" style="list-style-type: decimal">
-<li>Extract body site and reflectance type data from the new measurement
-column.</li>
+<li>Load data from the Screening Data Collection sheets.</li>
 </ol>
-<pre class="r"><code>data_long &lt;- data_long %&gt;%
-  extract(col = &quot;measurement&quot;,
-          into = c(&quot;body_site&quot;, &quot;reflectance_type&quot;),
-          regex = &quot;skin_reflectance_([a-zA-Z_]+?)(l[123]|l_[123]|a[123]|a_[123]|b[123]|b_[123]|g[123]|r[123]|m[123]|e[123])&quot;,
-          remove = FALSE) %&gt;%
-  mutate(body_site = gsub(&quot;_$&quot;, &quot;&quot;, body_site))  # Remove any trailing underscore from body_site</code></pre>
+<pre class="r"><code>screening_summer &lt;- read_excel(file_path, sheet = &quot;ScreeningDataCollectionSummer&quot;)
+screening_winter &lt;- read_excel(file_path, sheet = &quot;ScreeningDataCollectionWinter&quot;)
+screening_6weeks &lt;- read_excel(file_path, sheet = &quot;ScreeningDataCollection6Weeks&quot;)</code></pre>
 <ol start="5" style="list-style-type: decimal">
-<li>Delete the “measurements” column since it is no longer needed.</li>
+<li>Convert the column names to snake_case.</li>
 </ol>
-<pre class="r"><code>data_long &lt;- data_long %&gt;%
-  select(-measurement)</code></pre>
+<pre class="r"><code>screening_summer &lt;- screening_summer %&gt;% clean_names()
+screening_winter &lt;- screening_winter %&gt;% clean_names()
+screening_6weeks &lt;- screening_6weeks %&gt;% clean_names()</code></pre>
 <ol start="6" style="list-style-type: decimal">
-<li>Save the cleaned data file.</li>
+<li>Standardize the data types for critical columns, for example,
+age_years.</li>
 </ol>
-<pre class="r"><code>write.csv(data_long, &quot;data/cleaned_screening_long.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code>screening_summer &lt;- screening_summer %&gt;% mutate(age_years = as.numeric(age_years))
+screening_winter &lt;- screening_winter %&gt;% mutate(age_years = as.numeric(age_years))
+screening_6weeks &lt;- screening_6weeks %&gt;% mutate(age_years = as.numeric(age_years))</code></pre>
+<ol start="7" style="list-style-type: decimal">
+<li>Add a ‘collection_period’ column to each data frame to indicate when
+the data was collected.</li>
+</ol>
+<pre class="r"><code>screening_summer &lt;- screening_summer %&gt;% mutate(collection_period = &quot;Summer&quot;)
+screening_winter &lt;- screening_winter %&gt;% mutate(collection_period = &quot;Winter&quot;)
+screening_6weeks &lt;- screening_6weeks %&gt;% mutate(collection_period = &quot;6Weeks&quot;)</code></pre>
+<ol start="8" style="list-style-type: decimal">
+<li>Combine the dataframes into a long-form dataset.</li>
+</ol>
+<pre class="r"><code>screening_long &lt;- bind_rows(screening_summer, screening_winter, screening_6weeks)</code></pre>
+<ol start="9" style="list-style-type: decimal">
+<li>View the resulting long-form dataset</li>
+</ol>
+<pre class="r"><code>print(head(screening_long))</code></pre>
+<pre><code># A tibble: 6 × 124
+  participant_centre_id interviewer_name today_date          age_years
+  &lt;chr&gt;                 &lt;chr&gt;            &lt;dttm&gt;                  &lt;dbl&gt;
+1 VDKH001               Betty            2013-02-11 00:00:00        20
+2 VDKH002               Betty            2013-02-11 00:00:00        23
+3 VDKH003               Betty            2013-02-11 00:00:00        23
+4 VDKH004               Betty            2013-02-12 00:00:00        20
+5 VDKH005               Betty            2013-02-12 00:00:00        19
+6 VDKH006               Betty            2013-02-12 00:00:00        21
+# ℹ 120 more variables: date_of_birth &lt;dttm&gt;, gender &lt;dbl&gt;,
+#   ethnicity_coloured &lt;lgl&gt;, ethnicity_white &lt;lgl&gt;,
+#   ethnicity_african_black &lt;lgl&gt;, ethnicity_indian_asian &lt;lgl&gt;,
+#   ethnicity_other &lt;lgl&gt;, ethnicity_specify_other &lt;lgl&gt;, ethnicity &lt;lgl&gt;,
+#   refuse_to_answer &lt;lgl&gt;, weight_measure1 &lt;dbl&gt;, weight_measure2 &lt;dbl&gt;,
+#   avg_weight &lt;dbl&gt;, height_measure1 &lt;dbl&gt;, height_measure2 &lt;dbl&gt;,
+#   avg_height &lt;dbl&gt;, bmi &lt;dbl&gt;, sore_throat_yes &lt;lgl&gt;, sore_throat_no &lt;lgl&gt;, …</code></pre>
+<p><strong><em>Repeat the above steps for the sheets in the Food
+Frequency category and in the Sun Exposure category.</em></strong></p>
+</div>
+<div id="category-2-food-frequency" class="section level3">
+<h3>Category 2: Food Frequency</h3>
+<ol start="4" style="list-style-type: decimal">
+<li>Load data from the Food Frequency sheets.</li>
+</ol>
+<pre class="r"><code>food_freq_summer &lt;- read_excel(file_path, sheet = &quot;FoodFrequencySummer&quot;)
+food_freq_winter &lt;- read_excel(file_path, sheet = &quot;FoodFrequencyWinter&quot;)
+food_freq_6weeks &lt;- read_excel(file_path, sheet = &quot;FoodFrequency6Weeks&quot;)</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Convert the column names to snake_case.</li>
+</ol>
+<pre class="r"><code>food_freq_summer &lt;- food_freq_summer %&gt;% clean_names()
+food_freq_winter &lt;- food_freq_winter %&gt;% clean_names()
+food_freq_6weeks &lt;- food_freq_6weeks %&gt;% clean_names()</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li><p>Step 6 unnecessary.</p></li>
+<li><p>Add a ‘collection_period’ column to each data frame to indicate
+when the data was collected.</p></li>
+</ol>
+<pre class="r"><code>food_freq_summer &lt;- food_freq_summer %&gt;% mutate(collection_period = &quot;Summer&quot;)
+food_freq_winter &lt;- food_freq_winter %&gt;% mutate(collection_period = &quot;Winter&quot;)
+food_freq_6weeks &lt;- food_freq_6weeks %&gt;% mutate(collection_period = &quot;6Weeks&quot;)</code></pre>
+<ol start="8" style="list-style-type: decimal">
+<li>Combine the dataframes into a long-form dataset.</li>
+</ol>
+<pre class="r"><code>food_freq_long &lt;- bind_rows(food_freq_summer, food_freq_winter, food_freq_6weeks)</code></pre>
+<ol start="9" style="list-style-type: decimal">
+<li>View the resulting long-form dataset.</li>
+</ol>
+<pre class="r"><code>print(head(food_freq_long))</code></pre>
+<pre><code># A tibble: 6 × 201
+  participant_centre_id interviewer_name today_date          sardines_no
+  &lt;chr&gt;                 &lt;chr&gt;            &lt;dttm&gt;              &lt;lgl&gt;      
+1 VDKH001               Betty            2013-02-11 00:00:00 TRUE       
+2 VDKH002               Betty            2013-02-11 00:00:00 TRUE       
+3 VDKH003               Betty            2013-02-11 00:00:00 TRUE       
+4 VDKH004               Betty            2013-02-12 00:00:00 TRUE       
+5 VDKH005               Betty            2013-02-12 00:00:00 TRUE       
+6 VDKH006               Betty            2013-02-12 00:00:00 TRUE       
+# ℹ 197 more variables: sardines_yes &lt;lgl&gt;, sardines_times_per_week &lt;dbl&gt;,
+#   sardines_times_per_day &lt;dbl&gt;, sardines_brand_description &lt;chr&gt;,
+#   sardines_amount_usually_eaten_per_occasion &lt;chr&gt;,
+#   sardines_amount_eaten_per_day_as_proportion_of100g &lt;dbl&gt;,
+#   sardines_vit_d_micrograms_per_100g &lt;dbl&gt;,
+#   sardines_total_daily_vit_d_intake_micro_grams &lt;dbl&gt;, sardines_source &lt;lgl&gt;,
+#   sardines_notes &lt;lgl&gt;, pilchards_no &lt;lgl&gt;, pilchards_yes &lt;lgl&gt;, …</code></pre>
+</div>
+<div id="category-3-sun-exposure" class="section level3">
+<h3>Category 3: Sun Exposure</h3>
+<ol start="4" style="list-style-type: decimal">
+<li>Load data from the Sun Exposure sheets.</li>
+</ol>
+<pre class="r"><code>sun_expos_summer &lt;- read_excel(file_path, sheet = &quot;SunExposureSummer&quot;)
+sun_expos_winter &lt;- read_excel(file_path, sheet = &quot;SunExposureWinter&quot;)
+sun_expos_6weeks &lt;- read_excel(file_path, sheet = &quot;SunExposure6Weeks&quot;)</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Convert the column names to snake_case.</li>
+</ol>
+<pre class="r"><code>sun_expos_summer &lt;- sun_expos_summer %&gt;% clean_names()
+sun_expos_winter &lt;- sun_expos_winter %&gt;% clean_names()
+sun_expos_6weeks &lt;- sun_expos_6weeks %&gt;% clean_names()</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li><p>Step 6 unnecessary.</p></li>
+<li><p>Add a ‘collection_period’ column to each data frame to indicate
+when the data was collected.</p></li>
+</ol>
+<pre class="r"><code>sun_expos_summer &lt;- sun_expos_summer %&gt;% mutate(collection_period = &quot;Summer&quot;)
+sun_expos_winter &lt;- sun_expos_winter %&gt;% mutate(collection_period = &quot;Winter&quot;)
+sun_expos_6weeks &lt;- sun_expos_6weeks %&gt;% mutate(collection_period = &quot;6Weeks&quot;)</code></pre>
+<ol start="8" style="list-style-type: decimal">
+<li>Combine the dataframes into a long-form dataset.</li>
+</ol>
+<pre class="r"><code>sun_expos_long &lt;- bind_rows(sun_expos_summer, sun_expos_winter, sun_expos_6weeks)</code></pre>
+<ol start="9" style="list-style-type: decimal">
+<li>View the resulting long-form dataset.</li>
+</ol>
+<pre class="r"><code>print(head(sun_expos_long))</code></pre>
+<pre><code># A tibble: 6 × 29
+  participant_centre_id interviewer_name today_date         
+  &lt;chr&gt;                 &lt;chr&gt;            &lt;dttm&gt;             
+1 VDKH001               Rene             2013-02-11 00:00:00
+2 VDKH002               Betty            2013-02-11 00:00:00
+3 VDKH003               Rene             2013-02-11 00:00:00
+4 VDKH004               Rene             2013-02-12 00:00:00
+5 VDKH005               Rene             2013-02-12 00:00:00
+6 VDKH006               Rene             2013-02-12 00:00:00
+# ℹ 26 more variables: x1time_spent_outdoors_weekday &lt;chr&gt;,
+#   x2time_of_day_begin_of_exposure_weekday &lt;chr&gt;,
+#   x3time_spent_outdoors_weekend_day &lt;chr&gt;,
+#   x4time_of_day_begin_of_exposure_weekend &lt;chr&gt;, x5forehead_exposed &lt;chr&gt;,
+#   x5cheek_exposed &lt;chr&gt;, x5hand_exposed &lt;chr&gt;, x5shoulder_exposed &lt;chr&gt;,
+#   x5arm_exposed &lt;chr&gt;, x5back_exposed &lt;chr&gt;, x5chest_exposed &lt;chr&gt;,
+#   x5thigh_exposed &lt;chr&gt;, x5calf_exposed &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+<div id="save-your-work" class="section level2">
+<h2>Save Your Work</h2>
+<ol start="10" style="list-style-type: decimal">
+<li>Save your long-form datasets as .csv files in /data.</li>
+</ol>
+<pre class="r"><code>write.csv(screening_long, &quot;data/screening_long.csv&quot;, row.names = FALSE)
+write.csv(food_freq_long, &quot;data/food_freq_long.csv&quot;, row.names = FALSE)
+write.csv(sun_expos_long, &quot;data/sun_expos_long.csv&quot;, row.names = FALSE)</code></pre>
+<ol start="11" style="list-style-type: decimal">
+<li>Manually copy these files over into the project_SAPPHIRE google
+drive.</li>
+</ol>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -791,20 +866,24 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] dplyr_1.1.4 tidyr_1.3.1
+ [1] lubridate_1.9.3 forcats_1.0.0   stringr_1.5.1   purrr_1.0.2    
+ [5] readr_2.1.5     tidyr_1.3.1     tibble_3.2.1    ggplot2_3.5.1  
+ [9] tidyverse_2.0.0 janitor_2.2.0   dplyr_1.1.4     readxl_1.4.3   
 
 loaded via a namespace (and not attached):
- [1] jsonlite_1.8.9    compiler_4.4.1    promises_1.3.0    tidyselect_1.2.1 
- [5] Rcpp_1.0.13       stringr_1.5.1     git2r_0.33.0      later_1.3.2      
- [9] jquerylib_0.1.4   yaml_2.3.10       fastmap_1.2.0     R6_2.5.1         
-[13] generics_0.1.3    workflowr_1.7.1   knitr_1.48        tibble_3.2.1     
-[17] rprojroot_2.0.4   bslib_0.8.0       pillar_1.9.0      rlang_1.1.4      
-[21] utf8_1.2.4        cachem_1.1.0      stringi_1.8.4     httpuv_1.6.15    
-[25] xfun_0.47         fs_1.6.4          sass_0.4.9        cli_3.6.3        
-[29] withr_3.0.1       magrittr_2.0.3    digest_0.6.37     rstudioapi_0.16.0
-[33] lifecycle_1.0.4   vctrs_0.6.5       evaluate_1.0.0    glue_1.7.0       
-[37] whisker_0.4.1     fansi_1.0.6       purrr_1.0.2       rmarkdown_2.28   
-[41] tools_4.4.1       pkgconfig_2.0.3   htmltools_0.5.8.1</code></pre>
+ [1] sass_0.4.9        utf8_1.2.4        generics_0.1.3    stringi_1.8.4    
+ [5] hms_1.1.3         digest_0.6.37     magrittr_2.0.3    evaluate_1.0.0   
+ [9] grid_4.4.1        timechange_0.3.0  fastmap_1.2.0     cellranger_1.1.0 
+[13] rprojroot_2.0.4   workflowr_1.7.1   jsonlite_1.8.9    whisker_0.4.1    
+[17] promises_1.3.0    fansi_1.0.6       scales_1.3.0      jquerylib_0.1.4  
+[21] cli_3.6.3         rlang_1.1.4       munsell_0.5.1     withr_3.0.1      
+[25] cachem_1.1.0      yaml_2.3.10       tools_4.4.1       tzdb_0.4.0       
+[29] colorspace_2.1-1  httpuv_1.6.15     vctrs_0.6.5       R6_2.5.1         
+[33] lifecycle_1.0.4   git2r_0.33.0      snakecase_0.11.1  fs_1.6.4         
+[37] pkgconfig_2.0.3   pillar_1.9.0      bslib_0.8.0       later_1.3.2      
+[41] gtable_0.3.5      glue_1.7.0        Rcpp_1.0.13       xfun_0.47        
+[45] tidyselect_1.2.1  rstudioapi_0.16.0 knitr_1.48        htmltools_0.5.8.1
+[49] rmarkdown_2.28    compiler_4.4.1   </code></pre>
 </div>
 </div>
 </div>

@@ -13,7 +13,7 @@ editor_options:
 
 1.  Load the relevant packages.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(readxl)
 library(dplyr)
 library(janitor)

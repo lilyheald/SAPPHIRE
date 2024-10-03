@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-**About:** This is the second iteration of data cleaning that must be done after data_cleaning_1. Here, I clean the screening_long long-form dataset to have columns for body_site and reflectance_type (as well as collection_period, which was done in data_cleaning_1).
+**About This Analysis:** This is the second iteration of data cleaning that must be done after data_cleaning_1. Here, I clean the screening_long long-form dataset to have columns for body_site and reflectance_type (as well as collection_period, which was done in data_cleaning_1).
 
 ## Set Up
 
