@@ -28,7 +28,7 @@ library(reshape2)
 
 3. Load the screening data.
 ```{r}
-data <- read.csv("~/GitHub/SAPPHIRE/data/screening_long.csv")
+data <- read.csv("data/screening_long.csv")
 ```
 
 ## Cleaning and Reshaping the Data
