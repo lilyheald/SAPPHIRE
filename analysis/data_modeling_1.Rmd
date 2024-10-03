@@ -45,3 +45,12 @@ ggplot(data, aes(x = body_site, y = reflectance, color = reflectance_type)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for readability
 ```
 
+5. Save the plot.
+```{r}
+# Save the last plot you made
+ggsave("data/reflectance_plot.png", width = 8, height = 6)
+
+# Or save it as a PDF
+ggsave("data/reflectance_plot.pdf", width = 8, height = 6)
+```
+
