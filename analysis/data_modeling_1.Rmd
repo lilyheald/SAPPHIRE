@@ -7,9 +7,41 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Introduction
+**About This Analysis:** This analysis markdown page is for fitting the initial multivariate model to the cleaned_screening_data.csv. Baby's first data visualization.
 
+## Set Up
+
+1. Load the cleaned data.
 ```{r}
+data <- read.csv("data/cleaned_screening_long.csv")
+```
 
+2. Load relevant libraries.
+```{r, message=FALSE, warning=FALSE}
+library(lme4)
+library(car)
+library(ggplot2)
+```
+
+3. Fit the Multivariate Mixed-Effects Model.
+Here’s a general structure for the multivariate model:
+-   Dependent Variable: Reflectance
+-   Fixed Effects: Reflectance Type, Body Site, Time Point
+-   Random Effects: Individual participants (to account for variability across individuals)
+```{r}
+model <- lmer(reflectance ~ body_site * reflectance_type * collection_period + (1|participant_centre_id), data = data)
+```
+
+4. Visualize the results.
+```{r}
+ggplot(data, aes(x = body_site, y = reflectance, color = reflectance_type)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ collection_period) +
+  labs(title = "Reflectance by Body Site and Reflectance Type",
+       x = "Body Site",
+       y = "Reflectance",
+       color = "Reflectance Type") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for readability
 ```
 
