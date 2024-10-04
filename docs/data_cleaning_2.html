@@ -382,7 +382,7 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-10-03
+<strong>Last updated:</strong> 2024-10-04
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -516,15 +516,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreeb0ffd8333fdd2685088365ca5321337bf1e9e0f5targetblankb0ffd83a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree47459671469fbd16f4c127ebb45b09d3f333e92atargetblank4745967a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/b0ffd8333fdd2685088365ca5321337bf1e9e0f5" target="_blank">b0ffd83</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/47459671469fbd16f4c127ebb45b09d3f333e92a" target="_blank">4745967</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreeb0ffd8333fdd2685088365ca5321337bf1e9e0f5targetblankb0ffd83a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree47459671469fbd16f4c127ebb45b09d3f333e92atargetblank4745967a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -534,7 +534,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/b0ffd8333fdd2685088365ca5321337bf1e9e0f5" target="_blank">b0ffd83</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/47459671469fbd16f4c127ebb45b09d3f333e92a" target="_blank">4745967</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -557,8 +557,8 @@ Ignored files:
     Ignored:    data/.DS_Store
 
 Unstaged changes:
-    Modified:   analysis/data_cleaning_1.Rmd
     Modified:   analysis/data_cleaning_2.Rmd
+    Modified:   data/cleaned_screening_long.csv
 
 </code></pre>
 <p>
@@ -603,6 +603,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/42f748a2a71df1f86f334ecf7b45fe7b8cbcb218/analysis/data_cleaning_2.Rmd" target="_blank">42f748a</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-03
+</td>
+<td>
+cleaning up output
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/42f748a2a71df1f86f334ecf7b45fe7b8cbcb218/docs/data_cleaning_2.html" target="_blank">42f748a</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-03
+</td>
+<td>
+cleaning up output
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -744,14 +778,14 @@ skin_reflectance_forehead_M1).</li>
 <pre class="r"><code>data_long &lt;- pivot_longer(data, 
                           cols = starts_with(&quot;skin_reflectance&quot;), 
                           names_to = &quot;measurement&quot;, 
-                          values_to = &quot;reflectance&quot;)</code></pre>
+                          values_to = &quot;reflectance_value&quot;)</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>Extract body site and reflectance type data from the new measurement
 column.</li>
 </ol>
 <pre class="r"><code>data_long &lt;- data_long %&gt;%
   extract(col = &quot;measurement&quot;,
-          into = c(&quot;body_site&quot;, &quot;reflectance_type&quot;),
+          into = c(&quot;body_site&quot;, &quot;reflectance_metric&quot;),
           regex = &quot;skin_reflectance_([a-zA-Z_]+?)(l[123]|l_[123]|a[123]|a_[123]|b[123]|b_[123]|g[123]|r[123]|m[123]|e[123])&quot;,
           remove = FALSE) %&gt;%
   mutate(body_site = gsub(&quot;_$&quot;, &quot;&quot;, body_site))  # Remove any trailing underscore from body_site</code></pre>

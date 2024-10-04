@@ -31,14 +31,14 @@ data <- read.csv("data/screening_long.csv")
 data_long <- pivot_longer(data, 
                           cols = starts_with("skin_reflectance"), 
                           names_to = "measurement", 
-                          values_to = "reflectance")
+                          values_to = "reflectance_value")
 ```
 
 4. Extract body site and reflectance type data from the new measurement column. 
 ```{r}
 data_long <- data_long %>%
   extract(col = "measurement",
-          into = c("body_site", "reflectance_type"),
+          into = c("body_site", "reflectance_metric"),
           regex = "skin_reflectance_([a-zA-Z_]+?)(l[123]|l_[123]|a[123]|a_[123]|b[123]|b_[123]|g[123]|r[123]|m[123]|e[123])",
           remove = FALSE) %>%
   mutate(body_site = gsub("_$", "", body_site))  # Remove any trailing underscore from body_site
