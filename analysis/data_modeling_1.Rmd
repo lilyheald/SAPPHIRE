@@ -25,23 +25,23 @@ library(ggplot2)
 
 3. Fit the Multivariate Mixed-Effects Model.
 Here’s a general structure for the multivariate model:
--   Dependent Variable: Reflectance
--   Fixed Effects: Reflectance Type, Body Site, Time Point
+-   Dependent Variable: Reflectance Value
+-   Fixed Effects: Reflectance Metric, Body Site, Collection Period
 -   Random Effects: Individual participants (to account for variability across individuals)
 ```{r}
-model <- lmer(reflectance ~ body_site * reflectance_type * collection_period + (1|participant_centre_id), data = data)
+model <- lmer(reflectance_value ~ body_site * reflectance_metric * collection_period + (1|participant_centre_id), data = data)
 ```
 
 4. Visualize the results.
 ```{r}
-ggplot(data, aes(x = body_site, y = reflectance, color = reflectance_type)) +
+ggplot(data, aes(x = body_site, y = reflectance_value, color = reflectance_metric)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
   facet_wrap(~ collection_period) +
-  labs(title = "Reflectance by Body Site and Reflectance Type",
+  labs(title = "Reflectance Values by Body Site and Reflectance Metric",
        x = "Body Site",
-       y = "Reflectance",
-       color = "Reflectance Type") +
+       y = "Reflectance Value",
+       color = "Reflectance Metric") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for readability
 ```
 
