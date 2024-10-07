@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-**About This Analysis:** This is the third iteration of data cleaning that must be done after data_cleaning_2. 
+**About This Analysis:** This is the third iteration of data cleaning that must be done after data_cleaning_2.
 
 ## Overview
 -   Handling Missing Values.
@@ -81,5 +81,8 @@ df_filtered <- df %>%
          reflectance_metric, reflectance_value)
 ```
 
-
+Save the filtered data frame.
+```{r}
+write.csv(df_filtered, "data/filtered_screening_long.csv", row.names = FALSE)
+```
 
