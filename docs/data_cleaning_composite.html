@@ -516,15 +516,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreec17b81afb66c5ea11fb33e67e5e3101d635255fdtargetblankc17b81aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree7edaefa176c9160a2aeb7324218a783506e94952targetblank7edaefaa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/c17b81afb66c5ea11fb33e67e5e3101d635255fd" target="_blank">c17b81a</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/7edaefa176c9160a2aeb7324218a783506e94952" target="_blank">7edaefa</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreec17b81afb66c5ea11fb33e67e5e3101d635255fdtargetblankc17b81aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree7edaefa176c9160a2aeb7324218a783506e94952targetblank7edaefaa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -534,7 +534,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/c17b81afb66c5ea11fb33e67e5e3101d635255fd" target="_blank">c17b81a</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/7edaefa176c9160a2aeb7324218a783506e94952" target="_blank">7edaefa</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -556,8 +556,17 @@ Ignored files:
     Ignored:    analysis/.DS_Store
     Ignored:    data/.DS_Store
 
+Untracked files:
+    Untracked:  data/food_freq_data/
+    Untracked:  data/screening_data/
+    Untracked:  data/sun_expos_data/
+
 Unstaged changes:
     Modified:   analysis/data_cleaning_composite.Rmd
+    Modified:   analysis/data_modeling_1.Rmd
+    Modified:   data/filtered_screening_long.csv
+    Deleted:    data/food_freq_long.csv
+    Deleted:    data/sun_expos_long.csv
 
 </code></pre>
 <p>
@@ -603,6 +612,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/7edaefa176c9160a2aeb7324218a783506e94952/analysis/data_cleaning_composite.Rmd" target="_blank">7edaefa</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+stupid mistake 3
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/7edaefa176c9160a2aeb7324218a783506e94952/docs/data_cleaning_composite.html" target="_blank">7edaefa</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+stupid mistake 3
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -872,7 +915,7 @@ screening_6weeks &lt;- screening_6weeks %&gt;% mutate(collection_period = &quot;
 <ol start="9" style="list-style-type: decimal">
 <li>Save the long-form datasets as .csv files in /data.</li>
 </ol>
-<pre class="r"><code>write.csv(screening_long, &quot;data/screening_long.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code>write.csv(screening_long, &quot;data/screening_data/screening_long.csv&quot;, row.names = FALSE)</code></pre>
 <ol start="10" style="list-style-type: decimal">
 <li>Manually copy these files over into the project_SAPPHIRE google
 drive.</li>
@@ -931,7 +974,7 @@ column.</li>
 <ol start="6" style="list-style-type: decimal">
 <li>Save the cleaned data file.</li>
 </ol>
-<pre class="r"><code>write.csv(data_long, &quot;data/cleaned_screening_long.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code>write.csv(data_long, &quot;data/screening_data/cleaned_screening_long.csv&quot;, row.names = FALSE)</code></pre>
 </div>
 </div>
 <div id="part-3-tertiary-and-final-data-cleaning"
@@ -1114,13 +1157,12 @@ df$ethnicity &lt;- factor(df$ethnicity)</code></pre>
 through filtering for the columns/variables that are relevant.</p></li>
 </ol>
 <pre class="r"><code>df_filtered &lt;- df %&gt;%
-  select(participant_centre_id, gender, ethnicity, 
-         vit_d_result, collection_period, body_site, 
+  select(participant_centre_id, ethnicity, collection_period, body_site, 
          reflectance_metric, reflectance_value)</code></pre>
 <ol start="9" style="list-style-type: decimal">
 <li>Save the filtered data frame.</li>
 </ol>
-<pre class="r"><code>write.csv(df_filtered, &quot;data/filtered_screening_long.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code>write.csv(df_filtered, &quot;data/screening_data/filtered_screening_long.csv&quot;, row.names = FALSE)</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">

@@ -59,16 +59,7 @@ emm_df <- as.data.frame(emm)
 
 7. Visualize the results. Create a faceted plot to see each reflectance metric separately.
 ```{r}
-custom_palette <- viridis(24)
 
-ggplot(emm_df, aes(x = collection_period, y = emmean, color = reflectance_metric, group = reflectance_metric)) +
-  geom_line() +
-  geom_point() +
-  theme_minimal() +
-  labs(title = "Estimated Marginal Means of Reflectance Values by Collection Period", 
-       x = "Collection Period", 
-       y = "Estimated Reflectance Value") +
-  scale_color_manual(values = custom_palette)  # Use your custom palette
 ```
 
 

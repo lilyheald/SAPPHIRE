@@ -78,7 +78,7 @@ screening_long <- bind_rows(screening_summer, screening_winter, screening_6weeks
 
 9.  Save the long-form datasets as .csv files in /data.
 ```{r}
-write.csv(screening_long, "data/screening_long.csv", row.names = FALSE)
+write.csv(screening_long, "data/screening_data/screening_long.csv", row.names = FALSE)
 ```
 
 10. Manually copy these files over into the project_SAPPHIRE google drive.
@@ -131,7 +131,7 @@ data_long <- data_long %>%
 
 6.  Save the cleaned data file.
 ```{r}
-write.csv(data_long, "data/cleaned_screening_long.csv", row.names = FALSE)
+write.csv(data_long, "data/screening_data/cleaned_screening_long.csv", row.names = FALSE)
 ```
 
 # Part 3: Tertiary and Final Data-Cleaning
@@ -210,12 +210,11 @@ str(df)
 8.  Remove columns that are irrelevant to the analysis. Do this through filtering for the columns/variables that are relevant.
 ```{r}
 df_filtered <- df %>%
-  select(participant_centre_id, gender, ethnicity, 
-         vit_d_result, collection_period, body_site, 
+  select(participant_centre_id, ethnicity, collection_period, body_site, 
          reflectance_metric, reflectance_value)
 ```
 
 9.  Save the filtered data frame.
 ```{r}
-write.csv(df_filtered, "data/filtered_screening_long.csv", row.names = FALSE)
+write.csv(df_filtered, "data/screening_data/filtered_screening_long.csv", row.names = FALSE)
 ```
