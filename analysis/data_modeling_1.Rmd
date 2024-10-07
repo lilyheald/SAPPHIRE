@@ -9,14 +9,26 @@ editor_options:
 
 **About This Analysis:** The goal of this analysis is to fit a Linear Mixed Effects Model to the cleaned and filtered data set.
 
+**Purpose of the Model:** The linear mixed-effects model aims to predict the reflectance values while accounting for both fixed effects (collection periods and reflectance metrics) and random effects (individual differences among participants). This is especially useful in repeated measures data, where you want to understand how specific factors influence the response while considering individual variability.
+
+*Fixed Effects Interpretation:* The fixed effects coefficients will tell you:
+
+-   How much the reflectance value changes with different collection periods, holding the reflectance metric constant.
+
+-   How much the reflectance value changes with different reflectance metrics, holding the collection period constant. - How the relationship between reflectance values and collection period varies for different metrics.
+
+*Random Effects Interpretation:* The random effects component allows you to model the inherent variability between participants. For example, if one participant consistently has higher reflectance values than another, the model accounts for that difference.
+
 ## Set Up
 
 1.  Load the data.
+
 ```{r}
 data <- read.csv("data/screening_data/filtered_screening_long.csv")
 ```
 
 2.  Load relevant libraries.
+
 ```{r, message=FALSE, warning=FALSE}
 library(ggstatsplot)
 library(ggplot2)
@@ -26,13 +38,39 @@ library(viridis)
 library(lme4)
 ```
 
-3. Convert the categorical columns into factors. 
+## Linear Mixed Effects Modeling
+
+3.  Convert the categorical columns into factors.
+
 ```{r}
 data$collection_period <- factor(data$collection_period, levels = c("Summer", "Winter", "6Weeks"))
 data$reflectance_metric <- as.factor(data$reflectance_metric)
 ```
 
-4. Fit the Linear Mixed Effects Model.
+4.  Fit the Linear Mixed Effects Model.
+
+An overview of this model:
+
+*Response Variable:*
+
+-   reflectance_value: This is the dependent variable (response) that you are trying to predict or explain. It represents the measured reflectance values from the different metrics across various collection periods.
+
+*Fixed Effects:*
+
+-   collection_period: This is a categorical independent variable that denotes different time periods when the measurements were taken (e.g., Summer, Winter, and 6 Weeks). It helps in examining how reflectance values vary across these periods.
+
+-   reflectance_metric: This is another categorical independent variable representing different types of reflectance metrics (e.g., e1, e2, m1, etc.). It helps assess how the type of metric influences reflectance values.
+
+-   collection_period \* reflectance_metric: The asterisk (\*) indicates that you are including both main effects (collection period and reflectance metric) and their interaction. This allows you to see not only the individual effects of each variable but also how the effect of one variable depends on the level of the other (e.g., how the relationship between reflectance values and collection period changes across different metrics).
+
+*Random Effects:*
+
+-   (1 \| participant_centre_id): This part of the model specifies a random intercept for participants. Here, participant_centre_id is the grouping variable representing individual participants (or centres, depending on the context). By including this random effect:
+
+    -   You allow for individual differences in the baseline level of reflectance values. Each participant can have their own average reflectance value, accounting for natural variability between participants.
+
+    -   The model captures correlations in reflectance values within the same participant, given that repeated measurements are taken on each individual.
+
 ```{r}
 model <- lmer(reflectance_value ~ collection_period * reflectance_metric + (1 | participant_centre_id), data = data)
 
@@ -40,7 +78,8 @@ model <- lmer(reflectance_value ~ collection_period * reflectance_metric + (1 | 
 summary(model)
 ```
 
-5. Generate predicted values using ggpredict.
+5.  Generate predicted values using ggpredict.
+
 ```{r}
 predicted_values <- ggpredict(model, terms = c("collection_period", "reflectance_metric"))
 
@@ -48,7 +87,8 @@ predicted_values <- ggpredict(model, terms = c("collection_period", "reflectance
 predicted_values$x <- factor(predicted_values$x, levels = c("Summer", "Winter", "6Weeks"))
 ```
 
-5. Visualize the predicted values of the model. Define a custom color palette that corresponds to the meaning of each reflectance metric. 
+5.  Visualize the predicted values of the model. Define a custom color palette that corresponds to the meaning of each reflectance metric.
+
 ```{r}
 # Define the custom color palette
 color_palette <- c(
@@ -88,8 +128,8 @@ p <- ggplot(predicted_values, aes(x = x, y = predicted, group = group, color = g
   theme_minimal()
 ```
 
-6. Save the plot as a .pdf.
+6.  Save the plot as a .pdf.
+
 ```{r}
 ggsave("output/predicted_reflectance_values.pdf", plot = p, width = 8, height = 6, device = "pdf")
 ```
-

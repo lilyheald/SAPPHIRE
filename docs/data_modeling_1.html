@@ -516,15 +516,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreed7208096251f9dbb27497627849f7674343a19cetargetblankd720809a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree97aea4527b9a8d7637efec72480c3c77b4cd8c1ftargetblank97aea45a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/d7208096251f9dbb27497627849f7674343a19ce" target="_blank">d720809</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/97aea4527b9a8d7637efec72480c3c77b4cd8c1f" target="_blank">97aea45</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreed7208096251f9dbb27497627849f7674343a19cetargetblankd720809a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree97aea4527b9a8d7637efec72480c3c77b4cd8c1ftargetblank97aea45a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -534,7 +534,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/d7208096251f9dbb27497627849f7674343a19ce" target="_blank">d720809</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/97aea4527b9a8d7637efec72480c3c77b4cd8c1f" target="_blank">97aea45</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -556,11 +556,9 @@ Ignored files:
     Ignored:    analysis/.DS_Store
     Ignored:    data/.DS_Store
 
-Untracked files:
-    Untracked:  output/predicted_reflectance_values.pdf
-
 Unstaged changes:
     Modified:   analysis/data_modeling_1.Rmd
+    Modified:   output/predicted_reflectance_values.pdf
 
 </code></pre>
 <p>
@@ -605,6 +603,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/97aea4527b9a8d7637efec72480c3c77b4cd8c1f/analysis/data_modeling_1.Rmd" target="_blank">97aea45</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+doing the linear mixed effects model
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/97aea4527b9a8d7637efec72480c3c77b4cd8c1f/docs/data_modeling_1.html" target="_blank">97aea45</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+doing the linear mixed effects model
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -768,6 +800,27 @@ Create data_modeling_1.Rmd
 <p><strong>About This Analysis:</strong> The goal of this analysis is to
 fit a Linear Mixed Effects Model to the cleaned and filtered data
 set.</p>
+<p><strong>Purpose of the Model:</strong> The linear mixed-effects model
+aims to predict the reflectance values while accounting for both fixed
+effects (collection periods and reflectance metrics) and random effects
+(individual differences among participants). This is especially useful
+in repeated measures data, where you want to understand how specific
+factors influence the response while considering individual
+variability.</p>
+<p><em>Fixed Effects Interpretation:</em> The fixed effects coefficients
+will tell you:</p>
+<ul>
+<li><p>How much the reflectance value changes with different collection
+periods, holding the reflectance metric constant.</p></li>
+<li><p>How much the reflectance value changes with different reflectance
+metrics, holding the collection period constant. - How the relationship
+between reflectance values and collection period varies for different
+metrics.</p></li>
+</ul>
+<p><em>Random Effects Interpretation:</em> The random effects component
+allows you to model the inherent variability between participants. For
+example, if one participant consistently has higher reflectance values
+than another, the model accounts for that difference.</p>
 <div id="set-up" class="section level2">
 <h2>Set Up</h2>
 <ol style="list-style-type: decimal">
@@ -783,6 +836,9 @@ library(ggeffects)
 library(dplyr)
 library(viridis)
 library(lme4)</code></pre>
+</div>
+<div id="linear-mixed-effects-modeling" class="section level2">
+<h2>Linear Mixed Effects Modeling</h2>
 <ol start="3" style="list-style-type: decimal">
 <li>Convert the categorical columns into factors.</li>
 </ol>
@@ -791,6 +847,48 @@ data$reflectance_metric &lt;- as.factor(data$reflectance_metric)</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>Fit the Linear Mixed Effects Model.</li>
 </ol>
+<p>An overview of this model:</p>
+<p><em>Response Variable:</em></p>
+<ul>
+<li>reflectance_value: This is the dependent variable (response) that
+you are trying to predict or explain. It represents the measured
+reflectance values from the different metrics across various collection
+periods.</li>
+</ul>
+<p><em>Fixed Effects:</em></p>
+<ul>
+<li><p>collection_period: This is a categorical independent variable
+that denotes different time periods when the measurements were taken
+(e.g., Summer, Winter, and 6 Weeks). It helps in examining how
+reflectance values vary across these periods.</p></li>
+<li><p>reflectance_metric: This is another categorical independent
+variable representing different types of reflectance metrics (e.g., e1,
+e2, m1, etc.). It helps assess how the type of metric influences
+reflectance values.</p></li>
+<li><p>collection_period * reflectance_metric: The asterisk (*)
+indicates that you are including both main effects (collection period
+and reflectance metric) and their interaction. This allows you to see
+not only the individual effects of each variable but also how the effect
+of one variable depends on the level of the other (e.g., how the
+relationship between reflectance values and collection period changes
+across different metrics).</p></li>
+</ul>
+<p><em>Random Effects:</em></p>
+<ul>
+<li><p>(1 | participant_centre_id): This part of the model specifies a
+random intercept for participants. Here, participant_centre_id is the
+grouping variable representing individual participants (or centres,
+depending on the context). By including this random effect:</p>
+<ul>
+<li><p>You allow for individual differences in the baseline level of
+reflectance values. Each participant can have their own average
+reflectance value, accounting for natural variability between
+participants.</p></li>
+<li><p>The model captures correlations in reflectance values within the
+same participant, given that repeated measurements are taken on each
+individual.</p></li>
+</ul></li>
+</ul>
 <pre class="r"><code>model &lt;- lmer(reflectance_value ~ collection_period * reflectance_metric + (1 | participant_centre_id), data = data)
 
 # Summarize the model
