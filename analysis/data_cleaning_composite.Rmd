@@ -196,7 +196,7 @@ head(df)
 6.  Covert categorical variables into factors.
 ```{r}
 df$body_site <- factor(df$body_site)
-data$collection_period <- factor(data$collection_period, 
+df$collection_period <- factor(data$collection_period, 
                                   levels = c("Summer", "Winter", "6 Weeks"))
 df$reflectance_metric <- factor(df$reflectance_metric)
 df$ethnicity <- factor(df$ethnicity)
