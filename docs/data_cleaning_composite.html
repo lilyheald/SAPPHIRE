@@ -516,15 +516,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree5f88ad513340cef2873cefda9cc7362e9a1d8f2etargetblank5f88ad5a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree488d51321ec31c2c5f199cb0cf5e6f1cfdd64feetargetblank488d513a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/5f88ad513340cef2873cefda9cc7362e9a1d8f2e" target="_blank">5f88ad5</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/488d51321ec31c2c5f199cb0cf5e6f1cfdd64fee" target="_blank">488d513</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree5f88ad513340cef2873cefda9cc7362e9a1d8f2etargetblank5f88ad5a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree488d51321ec31c2c5f199cb0cf5e6f1cfdd64feetargetblank488d513a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -534,7 +534,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/5f88ad513340cef2873cefda9cc7362e9a1d8f2e" target="_blank">5f88ad5</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/488d51321ec31c2c5f199cb0cf5e6f1cfdd64fee" target="_blank">488d513</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -557,9 +557,6 @@ Ignored files:
     Ignored:    data/.DS_Store
 
 Unstaged changes:
-    Deleted:    analysis/data_cleaning_1.Rmd
-    Deleted:    analysis/data_cleaning_2.Rmd
-    Deleted:    analysis/data_cleaning_3.Rmd
     Modified:   analysis/data_cleaning_composite.Rmd
 
 </code></pre>
@@ -606,6 +603,42 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/ed111ae3cbefb6f2153841bc96b9eca235632db9/analysis/data_cleaning_composite.Rmd" target="_blank">ed111ae</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+stopped being a file hoarder and put all of the data-cleaning steps into
+one page
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/ed111ae3cbefb6f2153841bc96b9eca235632db9/docs/data_cleaning_composite.html" target="_blank">ed111ae</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+stopped being a file hoarder and put all of the data-cleaning steps into
+one page
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -969,7 +1002,8 @@ df$ethnicity[is.na(df$ethnicity)] &lt;- &quot;Other&quot;</code></pre>
 <li><p>Covert categorical variables into factors.</p></li>
 </ol>
 <pre class="r"><code>df$body_site &lt;- factor(df$body_site)
-df$collection_period &lt;- factor(df$collection_period)
+data$collection_period &lt;- factor(data$collection_period, 
+                                  levels = c(&quot;Summer&quot;, &quot;Winter&quot;, &quot;6 Weeks&quot;))
 df$reflectance_metric &lt;- factor(df$reflectance_metric)
 df$ethnicity &lt;- factor(df$ethnicity)</code></pre>
 <ol start="7" style="list-style-type: decimal">
