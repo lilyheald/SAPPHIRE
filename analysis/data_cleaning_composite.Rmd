@@ -1,0 +1,220 @@
+---
+title: "data_cleaning_composite"
+author: "calliquire"
+date: "2024-10-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+**About This Analysis:** This analysis is the composite data-cleaning process that includes all three data_cleaning\_ pages in one.
+
+# Part 1: Initial Data-Cleaning
+
+The goal of this analysis is to initiate the wrangling of the original, raw data through manual editing in Google Sheets and a R pipeline to leave us with a long-form data set.
+
+## Set Up
+
+1.  Load the relevant packages.
+```{r, message=FALSE, warning=FALSE}
+library(readxl)
+library(dplyr)
+library(janitor)
+library(tidyverse)
+```
+
+## Prepare Data
+
+2.  In Google Sheets, make a copy of the original data, save that copy as "serum_vit_D_study_with_lab_results.xlsx" and manually edit the following:
+
+-   delete floating note in ScreeningDataCollectionWinter sheet: "Note: VDKH001 had no second weight measurement so the initial measurement was used."
+-   delete floating note in ScreeningDataCollection6Weeks sheet: "Note: VDKH007 and VDKH012 had no second weight measurement so the initial measurement was used."
+-   change column DT name in ScreeningDataCollectionWinter sheet from "Result" to "VitDResult" to match the same measures in the Summer and 6 Weeks sheets
+-   delete columns A and B (named ParticipantID and ParticipantCentre, respectively) so that column C becomes your unique identifier (named ParticipantCentreID) in all of the individual sheets within the workbook
+-   delete floating notes in FoodFrequencySummer sheet: "Notes: VDKH016 - No information for Pilchards or Liver beef/lamb; VDTG011 - No Vit D for Marg soft."
+-   delete floating notes in FoodFrequencyWinter sheet: "Note: No amounts calculated for VDKH047 - Soft Marg - or VDKH050 - Snoek; Where two types of margerine were specified, the brand with the lower Vit D percentage was used to calculate Vit D ie VDTG023, 032,045"
+
+## Begin Wrangling in R
+
+3.  Specify the path to the new Excel file. This .xlsx file is located in \~/GitHub/SAPPHIRE/data.
+```{r}
+file_path <- "data/serum_vit_D_study_with_lab_results.xlsx"
+```
+
+### Category 1: Screening Data Collection
+
+4.  Load data from the Screening Data Collection sheets.
+```{r}
+screening_summer <- read_excel(file_path, sheet = "ScreeningDataCollectionSummer")
+screening_winter <- read_excel(file_path, sheet = "ScreeningDataCollectionWinter")
+screening_6weeks <- read_excel(file_path, sheet = "ScreeningDataCollection6Weeks")
+```
+
+5.  Convert the column names to snake_case.
+```{r}
+screening_summer <- screening_summer %>% clean_names()
+screening_winter <- screening_winter %>% clean_names()
+screening_6weeks <- screening_6weeks %>% clean_names()
+```
+
+6.  Standardize the data types for critical columns, for example, age_years.
+```{r}
+screening_summer <- screening_summer %>% mutate(age_years = as.numeric(age_years))
+screening_winter <- screening_winter %>% mutate(age_years = as.numeric(age_years))
+screening_6weeks <- screening_6weeks %>% mutate(age_years = as.numeric(age_years))
+```
+
+7.  Add a 'collection_period' column to each data frame to indicate when the data was collected.
+```{r}
+screening_summer <- screening_summer %>% mutate(collection_period = "Summer")
+screening_winter <- screening_winter %>% mutate(collection_period = "Winter")
+screening_6weeks <- screening_6weeks %>% mutate(collection_period = "6Weeks")
+```
+
+8.  Combine the dataframes into a long-form dataset.
+```{r}
+screening_long <- bind_rows(screening_summer, screening_winter, screening_6weeks)
+```
+
+9.  Save the long-form datasets as .csv files in /data.
+```{r}
+write.csv(screening_long, "data/screening_long.csv", row.names = FALSE)
+```
+
+10. Manually copy these files over into the project_SAPPHIRE google drive.
+
+# Part 2: Secondary Data-Cleaning
+
+The goal of this analysis is to clean the screening_long.csv long-form dataset to have columns for body_site and reflectance_type (as well as collection_period, which was done in Part 1).
+
+## Set Up
+
+1.  Load the relevant packages.
+```{r, message=FALSE, warning=FALSE}
+library(tidyr)
+library(dplyr)
+```
+
+2.  Load the data.
+```{r}
+data <- read.csv("data/screening_long.csv")
+```
+
+## Reshape and Clean Data
+
+3.  Reshaping the data to include each reflectance value in its own row, with separate columns for body site and reflectance type. This will create a long format dataset with two new columns:
+
+-   Measurement: Contains the original column names (e.g., skin_reflectance_forehead_M1).
+-   Reflectance: Contains the reflectance values.
+```{r}
+data_long <- pivot_longer(data, 
+                          cols = starts_with("skin_reflectance"), 
+                          names_to = "measurement", 
+                          values_to = "reflectance_value")
+```
+
+4.  Extract body site and reflectance type data from the new measurement column.
+```{r}
+data_long <- data_long %>%
+  extract(col = "measurement",
+          into = c("body_site", "reflectance_metric"),
+          regex = "skin_reflectance_([a-zA-Z_]+?)(l[123]|l_[123]|a[123]|a_[123]|b[123]|b_[123]|g[123]|r[123]|m[123]|e[123])",
+          remove = FALSE) %>%
+  mutate(body_site = gsub("_$", "", body_site))  # Remove any trailing underscore from body_site
+```
+
+5.  Delete the "measurements" column since it is no longer needed.
+```{r}
+data_long <- data_long %>%
+  select(-measurement)
+```
+
+6.  Save the cleaned data file.
+```{r}
+write.csv(data_long, "data/cleaned_screening_long.csv", row.names = FALSE)
+```
+
+# Part 3: Tertiary and Final Data-Cleaning
+
+The goal of this analysis is to:\
+- Handle missing values\
+- Convert categorical values to factors\
+- Reshape and filter data again\
+- Remove irrelevant data columns
+
+## Set Up
+
+1.  Load relevant libraries.
+```{r, message=FALSE, warning=FALSE}
+# Load necessary libraries
+library(dplyr)
+```
+
+2.  Read in the data.
+```{r}
+df <- read.csv("data/cleaned_screening_long.csv")
+```
+
+## Wrangling
+
+3.  Check for missing values.
+```{r, message=FALSE, warning=FALSE}
+# Check for missing values
+missing_summary <- sapply(df, function(x) sum(is.na(x)))
+print(missing_summary)
+```
+
+4.  Create a column for ethnicity (xhosa or cape_mixed). If participants answered TRUE to ethnicity_african_black, and FALSE to all other ethnicity\_ questions, they are designated as xhosa. If participants answered TRUE to ethnicity_coloured and FALSE to all other ethnicity\_ questions, they are designated as cape_coloured.
+```{r}
+# Create the ethnicity column based on conditions
+df <- df %>%
+  mutate(ethnicity = case_when(
+    ethnicity_african_black == TRUE & 
+    ethnicity_coloured == FALSE & 
+    ethnicity_white == FALSE & 
+    ethnicity_indian_asian == FALSE & 
+    ethnicity_other == FALSE ~ "xhosa",
+    
+    ethnicity_coloured == TRUE & 
+    ethnicity_african_black == FALSE & 
+    ethnicity_white == FALSE & 
+    ethnicity_indian_asian == FALSE & 
+    ethnicity_other == FALSE ~ "cape_coloured",
+    
+    TRUE ~ NA_character_  # Assign NA for all other cases
+  ))
+
+# Fill NA values with 'Other' if needed
+df$ethnicity[is.na(df$ethnicity)] <- "Other"
+```
+
+5.  Check the updated data frame.
+```{r message=FALSE, warning=FALSE, include=FALSE}
+head(df)
+```
+
+6.  Covert categorical variables into factors.
+```{r}
+df$body_site <- factor(df$body_site)
+df$collection_period <- factor(df$collection_period)
+df$reflectance_metric <- factor(df$reflectance_metric)
+df$ethnicity <- factor(df$ethnicity)
+```
+
+7.  Check structure of data frame.
+```{r message=FALSE, warning=FALSE, include=FALSE}
+str(df)
+```
+
+8.  Remove columns that are irrelevant to the analysis. Do this through filtering for the columns/variables that are relevant.
+```{r}
+df_filtered <- df %>%
+  select(participant_centre_id, gender, ethnicity, 
+         vit_d_result, collection_period, body_site, 
+         reflectance_metric, reflectance_value)
+```
+
+9.  Save the filtered data frame.
+```{r}
+write.csv(df_filtered, "data/filtered_screening_long.csv", row.names = FALSE)
+```
