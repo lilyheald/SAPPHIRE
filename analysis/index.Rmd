@@ -9,3 +9,6 @@ editor_options:
 ---
 
 **SAPPHIRE** – **S**outh African **P**igmentation and **P**hysiological **H**ealth in Relation to Solar **I**rradiation and **R**eflectance of the **E**pidermis
+
+Click on this [link](data_cleaning_1.html) to see data_cleaning_1.
+Click on this [link](data_cleaning_2.html) to see data_cleaning_2.
