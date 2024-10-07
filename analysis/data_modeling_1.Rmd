@@ -126,6 +126,8 @@ p <- ggplot(predicted_values, aes(x = x, y = predicted, group = group, color = g
        y = "Predicted Reflectance Value") +
   scale_color_manual(values = color_palette, name = "Reflectance Metric") + 
   theme_minimal()
+
+print(p)
 ```
 
 6.  Save the plot as a .pdf.
