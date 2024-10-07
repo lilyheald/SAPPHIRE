@@ -98,9 +98,9 @@ color_palette <- c(
   "m1" = "#FFD5A1",   # Light Tan
   "m2" = "#C89A5B",   # Tan
   "m3" = "#7D4F26",   # Dark Brown
-  "r1" = "#FFB2B2",   # Light Coral
-  "r2" = "#FF6B6B",   # Red
-  "r3" = "#D52B2B",   # Dark Red
+  "r1" = "#FFA07A",   # Light Orange
+  "r2" = "#FF8C00",   # Medium Orange
+  "r3" = "#FF4500",   # Dark Orange
   "g1" = "#B2FFB2",   # Light Green
   "g2" = "#6BFF6B",   # Green
   "g3" = "#2B5D2B",   # Dark Green
