@@ -10,56 +10,86 @@ editor_options:
 **About This Analysis:** The goal of this analysis is to fit a Linear Mixed Effects Model to the cleaned and filtered data set.
 
 ## Set Up
-0. Install package.
-```{r}
-install.packages("viridis")
-```
 
 1.  Load the data.
 ```{r}
-data <- read.csv("data/filtered_screening_long.csv")
+data <- read.csv("data/screening_data/filtered_screening_long.csv")
 ```
 
 2.  Load relevant libraries.
 ```{r, message=FALSE, warning=FALSE}
-library(lme4)
-library(dplyr)
+library(ggstatsplot)
 library(ggplot2)
+library(ggeffects)
+library(dplyr)
 library(viridis)
+library(lme4)
 ```
 
-3.  Fit the Linear Mixed Effects Model.
-
--   Fixed effects for reflectance metrics, body sites, and collection periods.
--   Random effects for individuals and body sites.
-Note in this model: 
--   reflectance_value: The response variable.
--   reflectance_metric: The fixed effect representing the different metrics.
--   collection_period: The fixed effect for time (Summer, Winter, etc.).
--   (1 | individual_id): Random intercept for each individual.
--   (1 | body_site): Random intercept for each body site (optional).
+3. Convert the categorical columns into factors. 
 ```{r}
-model <- lmer(reflectance_value ~ reflectance_metric * collection_period + (1 | participant_centre_id) + (1 | body_site), data = data)
+data$collection_period <- factor(data$collection_period, levels = c("Summer", "Winter", "6Weeks"))
+data$reflectance_metric <- as.factor(data$reflectance_metric)
 ```
 
-4. Check the model summary.
+4. Fit the Linear Mixed Effects Model.
 ```{r}
-View(model)
+model <- lmer(reflectance_value ~ collection_period * reflectance_metric + (1 | participant_centre_id), data = data)
+
+# Summarize the model
+summary(model)
 ```
 
-5. Calculate the estimated marginal means for the interaction between reflectance_metric and collection_period. This gives the predicted means for each reflectance metric at each collection period.
+5. Generate predicted values using ggpredict.
 ```{r}
-emm <- emmeans(model, ~ reflectance_metric * collection_period)
+predicted_values <- ggpredict(model, terms = c("collection_period", "reflectance_metric"))
+
+# Ensure all levels of collection_period are included in the predictions
+predicted_values$x <- factor(predicted_values$x, levels = c("Summer", "Winter", "6Weeks"))
 ```
 
-6. Convert the results to a data frame for plotting
+5. Visualize the predicted values of the model. Define a custom color palette that corresponds to the meaning of each reflectance metric. 
 ```{r}
-emm_df <- as.data.frame(emm)
+# Define the custom color palette
+color_palette <- c(
+  "e1" = "#FF9AAB",   # Light Pink 
+  "e2" = "#FF6F91",   # Pink
+  "e3" = "#D9385A",   # Deep Pink
+  "m1" = "#FFD5A1",   # Light Tan
+  "m2" = "#C89A5B",   # Tan
+  "m3" = "#7D4F26",   # Dark Brown
+  "r1" = "#FFB2B2",   # Light Coral
+  "r2" = "#FF6B6B",   # Red
+  "r3" = "#D52B2B",   # Dark Red
+  "g1" = "#B2FFB2",   # Light Green
+  "g2" = "#6BFF6B",   # Green
+  "g3" = "#2B5D2B",   # Dark Green
+  "b1" = "#A7C6E7",   # Light Blue
+  "b2" = "#3A8EDB",   # Blue
+  "b3" = "#1A3F78",   # Dark Blue
+  "l_1" = "#D3D3D3",   # Light Grey
+  "l_2" = "#A9A9A9",   # Grey
+  "l_3" = "#7B7B7B",   # Dark Grey
+  "a_1" = "#FFEB91",   # Light Yellow
+  "a_2" = "#FFD300",   # Yellow
+  "a_3" = "#A57B00",   # Goldenrod
+  "b_1" = "#E0BBFF",   # Lavender
+  "b_2" = "#A35CC3",   # Purple
+  "b_3" = "#5E1B94"    # Dark Violet
+)
+
+p <- ggplot(predicted_values, aes(x = x, y = predicted, group = group, color = group)) + 
+  geom_line(size = 1) + 
+  geom_point(size = 2) +
+  labs(title = "Predicted Reflectance Value by Collection Period and Reflectance Metric",
+       x = "Collection Period",
+       y = "Predicted Reflectance Value") +
+  scale_color_manual(values = color_palette, name = "Reflectance Metric") + 
+  theme_minimal()
 ```
 
-7. Visualize the results. Create a faceted plot to see each reflectance metric separately.
+6. Save the plot as a .pdf.
 ```{r}
-
+ggsave("output/predicted_reflectance_values.pdf", plot = p, width = 8, height = 6, device = "pdf")
 ```
-
 
