@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="calliquire" />
+
+<meta name="date" content="2024-10-07" />
+
+<title>data_cleaning_3</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SAPPHIRE</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">data_cleaning_3</h1>
+<h4 class="author">calliquire</h4>
+<h4 class="date">2024-10-07</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2024-10-07
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SAPPHIRE/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240923code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240923)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240923code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240923)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreecfcc9bce938d15791cb653db0faf7a2abee8aeb7targetblankcfcc9bca">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/cfcc9bce938d15791cb653db0faf7a2abee8aeb7" target="_blank">cfcc9bc</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreecfcc9bce938d15791cb653db0faf7a2abee8aeb7targetblankcfcc9bca"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/cfcc9bce938d15791cb653db0faf7a2abee8aeb7" target="_blank">cfcc9bc</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rapp.history
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    data/.DS_Store
+
+Unstaged changes:
+    Modified:   analysis/data_cleaning_3.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/data_cleaning_3.Rmd</code>) and
+HTML (<code>docs/data_cleaning_3.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/cfcc9bce938d15791cb653db0faf7a2abee8aeb7/analysis/data_cleaning_3.Rmd" target="_blank">cfcc9bc</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+made links to data cleaning 1 and 2 on index
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p><strong>About This Analysis:</strong> This is the third iteration of
+data cleaning that must be done after data_cleaning_2.</p>
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<ul>
+<li>Handling Missing Values.</li>
+<li>Converting Categorical Variables to Factors.</li>
+<li>Reshaping or Filtering the Data (if necessary).</li>
+<li>Removing Unnecessary Columns.</li>
+</ul>
+<p>Load relevant libraries.</p>
+<pre class="r"><code># Load necessary libraries
+library(dplyr)</code></pre>
+<p>Read in the data.</p>
+<pre class="r"><code>df &lt;- read.csv(&quot;data/cleaned_screening_long.csv&quot;)</code></pre>
+<p>Check for missing values.</p>
+<pre class="r"><code># Check for missing values
+missing_summary &lt;- sapply(df, function(x) sum(is.na(x)))
+print(missing_summary)</code></pre>
+<pre><code>                                       participant_centre_id 
+                                                           0 
+                                            interviewer_name 
+                                                           0 
+                                                  today_date 
+                                                          72 
+                                                   age_years 
+                                                          72 
+                                               date_of_birth 
+                                                           0 
+                                                      gender 
+                                                           0 
+                                          ethnicity_coloured 
+                                                           0 
+                                             ethnicity_white 
+                                                           0 
+                                     ethnicity_african_black 
+                                                           0 
+                                      ethnicity_indian_asian 
+                                                           0 
+                                             ethnicity_other 
+                                                           0 
+                                     ethnicity_specify_other 
+                                                       15840 
+                                                   ethnicity 
+                                                       15840 
+                                            refuse_to_answer 
+                                                           0 
+                                             weight_measure1 
+                                                           0 
+                                             weight_measure2 
+                                                           0 
+                                                  avg_weight 
+                                                           0 
+                                             height_measure1 
+                                                           0 
+                                             height_measure2 
+                                                          72 
+                                                  avg_height 
+                                                          72 
+                                                         bmi 
+                                                          72 
+                                             sore_throat_yes 
+                                                           0 
+                                              sore_throat_no 
+                                                           0 
+                                              runny_nose_yes 
+                                                           0 
+                                               runny_nose_no 
+                                                           0 
+                                                   cough_yes 
+                                                           0 
+                                                    cough_no 
+                                                           0 
+                                                   fever_yes 
+                                                           0 
+                                                    fever_no 
+                                                           0 
+                                            night_sweats_yes 
+                                                           0 
+                                             night_sweats_no 
+                                                           0 
+                                 unexplained_weight_loss_yes 
+                                                           0 
+                                  unexplained_weight_loss_no 
+                                                           0 
+                            currently_taking_supplements_yes 
+                                                           0 
+                             currently_taking_supplements_no 
+                                                           0 
+                                                 supplements 
+                                                       15120 
+                            currently_taking_medications_yes 
+                                                           0 
+                             currently_taking_medications_no 
+                                                           0 
+                                                 medications 
+                                                       15264 
+                                    participant_included_yes 
+                                                           0 
+                                     participant_included_no 
+                                                           0 
+                                  if_no_reason_for_exclusion 
+                                                       15768 
+smoking_do_you_regularly_smoke_at_least1cigarette5daysa_week 
+                                                           0 
+                                            smoking_comments 
+                                                       11304 
+                                    pathcare_sticker_barcode 
+                                                         288 
+                                                     req_num 
+                                                         288 
+                                                   serv_date 
+                                                         216 
+                                                vit_d_result 
+                                                         216 
+                                               res_date_time 
+                                                         288 
+                                           collection_period 
+                                                           0 
+                                          continued_in_study 
+                                                        9864 
+                            if_not_continued_in_study_reason 
+                                                       15624 
+                                                   body_site 
+                                                           0 
+                                          reflectance_metric 
+                                                           0 
+                                           reflectance_value 
+                                                         319 </code></pre>
+<p>Create column for ethnicity (xhosa or cape_mixed). If participants
+answered TRUE to ethnicity_african_black, and FALSE to all other
+ethnicity_ questions, they are designated as xhosa. If participants
+answered TRUE to ethnicity_coloured and FALSE to all other ethnicity_
+questions, they are designated as cape_coloured.</p>
+<pre class="r"><code># Create the ethnicity column based on conditions
+df &lt;- df %&gt;%
+  mutate(ethnicity = case_when(
+    ethnicity_african_black == TRUE &amp; 
+    ethnicity_coloured == FALSE &amp; 
+    ethnicity_white == FALSE &amp; 
+    ethnicity_indian_asian == FALSE &amp; 
+    ethnicity_other == FALSE ~ &quot;xhosa&quot;,
+    
+    ethnicity_coloured == TRUE &amp; 
+    ethnicity_african_black == FALSE &amp; 
+    ethnicity_white == FALSE &amp; 
+    ethnicity_indian_asian == FALSE &amp; 
+    ethnicity_other == FALSE ~ &quot;cape_coloured&quot;,
+    
+    TRUE ~ NA_character_  # Assign NA for all other cases
+  ))
+
+# Fill NA values with &#39;Other&#39; if needed
+df$ethnicity[is.na(df$ethnicity)] &lt;- &quot;Other&quot;
+
+# Check the updated dataframe
+head(df)</code></pre>
+<pre><code>  participant_centre_id interviewer_name today_date age_years date_of_birth
+1               VDKH001            Betty 2013-02-11        20    1993-08-07
+2               VDKH001            Betty 2013-02-11        20    1993-08-07
+3               VDKH001            Betty 2013-02-11        20    1993-08-07
+4               VDKH001            Betty 2013-02-11        20    1993-08-07
+5               VDKH001            Betty 2013-02-11        20    1993-08-07
+6               VDKH001            Betty 2013-02-11        20    1993-08-07
+  gender ethnicity_coloured ethnicity_white ethnicity_african_black
+1      1              FALSE           FALSE                    TRUE
+2      1              FALSE           FALSE                    TRUE
+3      1              FALSE           FALSE                    TRUE
+4      1              FALSE           FALSE                    TRUE
+5      1              FALSE           FALSE                    TRUE
+6      1              FALSE           FALSE                    TRUE
+  ethnicity_indian_asian ethnicity_other ethnicity_specify_other ethnicity
+1                  FALSE           FALSE                      NA     xhosa
+2                  FALSE           FALSE                      NA     xhosa
+3                  FALSE           FALSE                      NA     xhosa
+4                  FALSE           FALSE                      NA     xhosa
+5                  FALSE           FALSE                      NA     xhosa
+6                  FALSE           FALSE                      NA     xhosa
+  refuse_to_answer weight_measure1 weight_measure2 avg_weight height_measure1
+1            FALSE            60.6            60.6       60.6           1.728
+2            FALSE            60.6            60.6       60.6           1.728
+3            FALSE            60.6            60.6       60.6           1.728
+4            FALSE            60.6            60.6       60.6           1.728
+5            FALSE            60.6            60.6       60.6           1.728
+6            FALSE            60.6            60.6       60.6           1.728
+  height_measure2 avg_height      bmi sore_throat_yes sore_throat_no
+1           1.728      1.728 20.29482           FALSE           TRUE
+2           1.728      1.728 20.29482           FALSE           TRUE
+3           1.728      1.728 20.29482           FALSE           TRUE
+4           1.728      1.728 20.29482           FALSE           TRUE
+5           1.728      1.728 20.29482           FALSE           TRUE
+6           1.728      1.728 20.29482           FALSE           TRUE
+  runny_nose_yes runny_nose_no cough_yes cough_no fever_yes fever_no
+1          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+2          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+3          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+4          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+5          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+6          FALSE          TRUE     FALSE     TRUE     FALSE     TRUE
+  night_sweats_yes night_sweats_no unexplained_weight_loss_yes
+1            FALSE            TRUE                       FALSE
+2            FALSE            TRUE                       FALSE
+3            FALSE            TRUE                       FALSE
+4            FALSE            TRUE                       FALSE
+5            FALSE            TRUE                       FALSE
+6            FALSE            TRUE                       FALSE
+  unexplained_weight_loss_no currently_taking_supplements_yes
+1                       TRUE                            FALSE
+2                       TRUE                            FALSE
+3                       TRUE                            FALSE
+4                       TRUE                            FALSE
+5                       TRUE                            FALSE
+6                       TRUE                            FALSE
+  currently_taking_supplements_no supplements currently_taking_medications_yes
+1                            TRUE        &lt;NA&gt;                            FALSE
+2                            TRUE        &lt;NA&gt;                            FALSE
+3                            TRUE        &lt;NA&gt;                            FALSE
+4                            TRUE        &lt;NA&gt;                            FALSE
+5                            TRUE        &lt;NA&gt;                            FALSE
+6                            TRUE        &lt;NA&gt;                            FALSE
+  currently_taking_medications_no medications participant_included_yes
+1                            TRUE        &lt;NA&gt;                     TRUE
+2                            TRUE        &lt;NA&gt;                     TRUE
+3                            TRUE        &lt;NA&gt;                     TRUE
+4                            TRUE        &lt;NA&gt;                     TRUE
+5                            TRUE        &lt;NA&gt;                     TRUE
+6                            TRUE        &lt;NA&gt;                     TRUE
+  participant_included_no if_no_reason_for_exclusion
+1                   FALSE                       &lt;NA&gt;
+2                   FALSE                       &lt;NA&gt;
+3                   FALSE                       &lt;NA&gt;
+4                   FALSE                       &lt;NA&gt;
+5                   FALSE                       &lt;NA&gt;
+6                   FALSE                       &lt;NA&gt;
+  smoking_do_you_regularly_smoke_at_least1cigarette5daysa_week smoking_comments
+1                                                        FALSE             &lt;NA&gt;
+2                                                        FALSE             &lt;NA&gt;
+3                                                        FALSE             &lt;NA&gt;
+4                                                        FALSE             &lt;NA&gt;
+5                                                        FALSE             &lt;NA&gt;
+6                                                        FALSE             &lt;NA&gt;
+  pathcare_sticker_barcode   req_num           serv_date vit_d_result
+1                785293139 785293139 2013-02-11 10:40:00         29.5
+2                785293139 785293139 2013-02-11 10:40:00         29.5
+3                785293139 785293139 2013-02-11 10:40:00         29.5
+4                785293139 785293139 2013-02-11 10:40:00         29.5
+5                785293139 785293139 2013-02-11 10:40:00         29.5
+6                785293139 785293139 2013-02-11 10:40:00         29.5
+        res_date_time collection_period continued_in_study
+1 2013-02-13 12:13:00            Summer               &lt;NA&gt;
+2 2013-02-13 12:13:00            Summer               &lt;NA&gt;
+3 2013-02-13 12:13:00            Summer               &lt;NA&gt;
+4 2013-02-13 12:13:00            Summer               &lt;NA&gt;
+5 2013-02-13 12:13:00            Summer               &lt;NA&gt;
+6 2013-02-13 12:13:00            Summer               &lt;NA&gt;
+  if_not_continued_in_study_reason body_site reflectance_metric
+1                             &lt;NA&gt;  forehead                 e1
+2                             &lt;NA&gt;  forehead                 e2
+3                             &lt;NA&gt;  forehead                 e3
+4                             &lt;NA&gt;  forehead                 m1
+5                             &lt;NA&gt;  forehead                 m2
+6                             &lt;NA&gt;  forehead                 m3
+  reflectance_value
+1             17.01
+2             18.73
+3             18.61
+4             55.99
+5             70.57
+6             76.28</code></pre>
+<p>Covert categorical variables into factors.</p>
+<pre class="r"><code>df$body_site &lt;- factor(df$body_site)
+df$collection_period &lt;- factor(df$collection_period)
+df$reflectance_metric &lt;- factor(df$reflectance_metric)
+df$ethnicity &lt;- factor(df$ethnicity)</code></pre>
+<p>Check structure of data frame.</p>
+<pre class="r"><code>str(df)</code></pre>
+<pre><code>&#39;data.frame&#39;:   15840 obs. of  55 variables:
+ $ participant_centre_id                                       : chr  &quot;VDKH001&quot; &quot;VDKH001&quot; &quot;VDKH001&quot; &quot;VDKH001&quot; ...
+ $ interviewer_name                                            : chr  &quot;Betty&quot; &quot;Betty&quot; &quot;Betty&quot; &quot;Betty&quot; ...
+ $ today_date                                                  : chr  &quot;2013-02-11&quot; &quot;2013-02-11&quot; &quot;2013-02-11&quot; &quot;2013-02-11&quot; ...
+ $ age_years                                                   : int  20 20 20 20 20 20 20 20 20 20 ...
+ $ date_of_birth                                               : chr  &quot;1993-08-07&quot; &quot;1993-08-07&quot; &quot;1993-08-07&quot; &quot;1993-08-07&quot; ...
+ $ gender                                                      : int  1 1 1 1 1 1 1 1 1 1 ...
+ $ ethnicity_coloured                                          : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ ethnicity_white                                             : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ ethnicity_african_black                                     : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ ethnicity_indian_asian                                      : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ ethnicity_other                                             : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ ethnicity_specify_other                                     : logi  NA NA NA NA NA NA ...
+ $ ethnicity                                                   : Factor w/ 2 levels &quot;cape_coloured&quot;,..: 2 2 2 2 2 2 2 2 2 2 ...
+ $ refuse_to_answer                                            : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ weight_measure1                                             : num  60.6 60.6 60.6 60.6 60.6 ...
+ $ weight_measure2                                             : num  60.6 60.6 60.6 60.6 60.6 ...
+ $ avg_weight                                                  : num  60.6 60.6 60.6 60.6 60.6 ...
+ $ height_measure1                                             : num  1.73 1.73 1.73 1.73 1.73 ...
+ $ height_measure2                                             : num  1.73 1.73 1.73 1.73 1.73 ...
+ $ avg_height                                                  : num  1.73 1.73 1.73 1.73 1.73 ...
+ $ bmi                                                         : num  20.3 20.3 20.3 20.3 20.3 ...
+ $ sore_throat_yes                                             : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ sore_throat_no                                              : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ runny_nose_yes                                              : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ runny_nose_no                                               : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ cough_yes                                                   : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ cough_no                                                    : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ fever_yes                                                   : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ fever_no                                                    : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ night_sweats_yes                                            : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ night_sweats_no                                             : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ unexplained_weight_loss_yes                                 : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ unexplained_weight_loss_no                                  : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ currently_taking_supplements_yes                            : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ currently_taking_supplements_no                             : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ supplements                                                 : chr  NA NA NA NA ...
+ $ currently_taking_medications_yes                            : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ currently_taking_medications_no                             : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ medications                                                 : chr  NA NA NA NA ...
+ $ participant_included_yes                                    : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ participant_included_no                                     : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ if_no_reason_for_exclusion                                  : chr  NA NA NA NA ...
+ $ smoking_do_you_regularly_smoke_at_least1cigarette5daysa_week: logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ smoking_comments                                            : chr  NA NA NA NA ...
+ $ pathcare_sticker_barcode                                    : int  785293139 785293139 785293139 785293139 785293139 785293139 785293139 785293139 785293139 785293139 ...
+ $ req_num                                                     : int  785293139 785293139 785293139 785293139 785293139 785293139 785293139 785293139 785293139 785293139 ...
+ $ serv_date                                                   : chr  &quot;2013-02-11 10:40:00&quot; &quot;2013-02-11 10:40:00&quot; &quot;2013-02-11 10:40:00&quot; &quot;2013-02-11 10:40:00&quot; ...
+ $ vit_d_result                                                : num  29.5 29.5 29.5 29.5 29.5 29.5 29.5 29.5 29.5 29.5 ...
+ $ res_date_time                                               : chr  &quot;2013-02-13 12:13:00&quot; &quot;2013-02-13 12:13:00&quot; &quot;2013-02-13 12:13:00&quot; &quot;2013-02-13 12:13:00&quot; ...
+ $ collection_period                                           : Factor w/ 3 levels &quot;6Weeks&quot;,&quot;Summer&quot;,..: 2 2 2 2 2 2 2 2 2 2 ...
+ $ continued_in_study                                          : chr  NA NA NA NA ...
+ $ if_not_continued_in_study_reason                            : chr  NA NA NA NA ...
+ $ body_site                                                   : Factor w/ 3 levels &quot;forehead&quot;,&quot;left_upper_inner_arm&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ reflectance_metric                                          : Factor w/ 24 levels &quot;a_1&quot;,&quot;a_2&quot;,&quot;a_3&quot;,..: 10 11 12 19 20 21 22 23 24 13 ...
+ $ reflectance_value                                           : num  17 18.7 18.6 56 70.6 ...</code></pre>
+<p>Remove columns that are irrelevant to the analysis. Do this through
+filtering for the columns that are relevant.</p>
+<pre class="r"><code>df_filtered &lt;- df %&gt;%
+  select(participant_centre_id, gender, ethnicity, 
+         vit_d_result, collection_period, body_site, 
+         reflectance_metric, reflectance_value)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.1 (2024-06-14)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sonoma 14.6.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Detroit
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] dplyr_1.1.4
+
+loaded via a namespace (and not attached):
+ [1] jsonlite_1.8.9    compiler_4.4.1    promises_1.3.0    tidyselect_1.2.1 
+ [5] Rcpp_1.0.13       stringr_1.5.1     git2r_0.33.0      later_1.3.2      
+ [9] jquerylib_0.1.4   yaml_2.3.10       fastmap_1.2.0     R6_2.5.1         
+[13] generics_0.1.3    workflowr_1.7.1   knitr_1.48        tibble_3.2.1     
+[17] rprojroot_2.0.4   bslib_0.8.0       pillar_1.9.0      rlang_1.1.4      
+[21] utf8_1.2.4        cachem_1.1.0      stringi_1.8.4     httpuv_1.6.15    
+[25] xfun_0.47         fs_1.6.4          sass_0.4.9        cli_3.6.3        
+[29] withr_3.0.1       magrittr_2.0.3    digest_0.6.37     rstudioapi_0.16.0
+[33] lifecycle_1.0.4   vctrs_0.6.5       evaluate_1.0.0    glue_1.7.0       
+[37] whisker_0.4.1     fansi_1.0.6       rmarkdown_2.28    tools_4.4.1      
+[41] pkgconfig_2.0.3   htmltools_0.5.8.1</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
