@@ -19,7 +19,8 @@ library(janitor)
 
 ```{r}
 # Load the dataset 
-file_path <- "data/serum_vit_D_study_with_lab_results.xlsx"
+# this is the initial data set with manual filtering a floating Notes
+file_path <- "data/serum_vit_D_study_with_lab_results.xlsx" 
 ```
 
 ```{r}
