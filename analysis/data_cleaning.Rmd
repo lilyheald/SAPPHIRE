@@ -1,0 +1,129 @@
+---
+title: "data_cleaning"
+author: "calliquire"
+date: "2024-10-08"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+
+
+```{r}
+# Load necessary libraries
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(janitor)
+```
+
+```{r}
+# Load the dataset 
+file_path <- "data/serum_vit_D_study_with_lab_results.xlsx"
+```
+
+```{r}
+# Load the data for Summer, Winter, and 6 Weeks Later
+data_summer <- read_excel(file_path, sheet = "ScreeningDataCollectionSummer")
+data_winter <- read_excel(file_path, sheet = "ScreeningDataCollectionWinter")
+data_6weeks <- read_excel(file_path, sheet = "ScreeningDataCollection6Weeks")
+```
+
+```{r}
+# List of reflectance columns
+reflectance_columns <- c(
+  'SkinReflectanceForeheadE1', 'SkinReflectanceForeheadE2', 'SkinReflectanceForeheadE3',
+  'SkinReflectanceForeheadM1', 'SkinReflectanceForeheadM2', 'SkinReflectanceForeheadM3',
+  'SkinReflectanceForeheadR1', 'SkinReflectanceForeheadR2', 'SkinReflectanceForeheadR3',
+  'SkinReflectanceForeheadG1', 'SkinReflectanceForeheadG2', 'SkinReflectanceForeheadG3',
+  'SkinReflectanceForeheadB1', 'SkinReflectanceForeheadB2', 'SkinReflectanceForeheadB3',
+  'SkinReflectanceForeheadL*1', 'SkinReflectanceForeheadL*2', 'SkinReflectanceForeheadL*3',
+  'SkinReflectanceForeheada*1', 'SkinReflectanceForeheada*2', 'SkinReflectanceForeheada*3',
+  'SkinReflectanceForeheadb*1', 'SkinReflectanceForeheadb*2', 'SkinReflectanceForeheadb*3',
+  'SkinReflectanceRightUpperInnerArmE1', 'SkinReflectanceRightUpperInnerArmE2', 'SkinReflectanceRightUpperInnerArmE3',
+  'SkinReflectanceRightUpperInnerArmM1', 'SkinReflectanceRightUpperInnerArmM2', 'SkinReflectanceRightUpperInnerArmM3',
+  'SkinReflectanceRightUpperInnerArmR1', 'SkinReflectanceRightUpperInnerArmR2', 'SkinReflectanceRightUpperInnerArmR3',
+  'SkinReflectanceRightUpperInnerArmG1', 'SkinReflectanceRightUpperInnerArmG2', 'SkinReflectanceRightUpperInnerArmG3',
+  'SkinReflectanceRightUpperInnerArmB1', 'SkinReflectanceRightUpperInnerArmB2', 'SkinReflectanceRightUpperInnerArmB3',
+  'SkinReflectanceRightUpperInnerArmL*1', 'SkinReflectanceRightUpperInnerArmL*2', 'SkinReflectanceRightUpperInnerArmL*3',
+  'SkinReflectanceRightUpperInnerArma*1', 'SkinReflectanceRightUpperInnerArma*2', 'SkinReflectanceRightUpperInnerArma*3',
+  'SkinReflectanceRightUpperInnerArmb*1', 'SkinReflectanceRightUpperInnerArmb*2', 'SkinReflectanceRightUpperInnerArmb*3',
+  'SkinReflectanceLeftUpperInnerArmE1', 'SkinReflectanceLeftUpperInnerArmE2', 'SkinReflectanceLeftUpperInnerArmE3',
+  'SkinReflectanceLeftUpperInnerArmM1', 'SkinReflectanceLeftUpperInnerArmM2', 'SkinReflectanceLeftUpperInnerArmM3',
+  'SkinReflectanceLeftUpperInnerArmR1', 'SkinReflectanceLeftUpperInnerArmR2', 'SkinReflectanceLeftUpperInnerArmR3',
+  'SkinReflectanceLeftUpperInnerArmG1', 'SkinReflectanceLeftUpperInnerArmG2', 'SkinReflectanceLeftUpperInnerArmG3',
+  'SkinReflectanceLeftUpperInnerArmB1', 'SkinReflectanceLeftUpperInnerArmB2', 'SkinReflectanceLeftUpperInnerArmB3',
+  'SkinReflectanceLeftUpperInnerArmL*1', 'SkinReflectanceLeftUpperInnerArmL*2', 'SkinReflectanceLeftUpperInnerArmL*3',
+  'SkinReflectanceLeftUpperInnerArma*1', 'SkinReflectanceLeftUpperInnerArma*2', 'SkinReflectanceLeftUpperInnerArma*3',
+  'SkinReflectanceLeftUpperInnerArmb*1', 'SkinReflectanceLeftUpperInnerArmb*2', 'SkinReflectanceLeftUpperInnerArmb*3'
+)
+```
+
+```{r}
+# Subset relevant columns: Participant ID, demographic info, and reflectance metrics
+subset_columns <- c('ParticipantCentreID', reflectance_columns)
+```
+
+```{r}
+reshape_long <- function(data, time_point) {
+  data %>%
+    select(all_of(subset_columns)) %>%
+    pivot_longer(cols = starts_with("SkinReflectance"),
+                 names_to = "Metric_Repeat_Site", 
+                 values_to = "ReflectanceValue") %>%
+    mutate(
+      Metric = gsub(".*Reflectance(.*?)[1-3]", "\\1", Metric_Repeat_Site),
+      Repeat = gsub(".*(\\d)$", "\\1", Metric_Repeat_Site),
+      BodySite = case_when(
+        grepl("Forehead", Metric_Repeat_Site) ~ "Forehead",
+        grepl("RightUpperInnerArm", Metric_Repeat_Site) ~ "RightUpperInnerArm",
+        grepl("LeftUpperInnerArm", Metric_Repeat_Site) ~ "LeftUpperInnerArm"
+      ),
+      TimePoint = time_point
+    ) %>%
+    select(-Metric_Repeat_Site)  # Drop unnecessary column
+}
+```
+
+```{r}
+# Reshape each dataset
+summer_long <- reshape_long(data_summer, "Summer")
+winter_long <- reshape_long(data_winter, "Winter")
+sixweeks_long <- reshape_long(data_6weeks, "6Weeks")
+```
+
+
+```{r}
+# Combine the datasets
+combined_long <- bind_rows(summer_long, winter_long, sixweeks_long)
+```
+
+```{r}
+# Convert column names to snake case
+combined_long <- combined_long %>%
+  janitor::clean_names()
+```
+
+```{r}
+# Remove the body site prefix from the Metric column
+# Here, we assume that the body site was included in the "Metric" column, and you want just the metric
+# For example, 'ForeheadE' will become 'E', 'RightUpperInnerArmR' will become 'R', etc.
+
+combined_long <- combined_long %>%
+  mutate(metric = gsub(".*?(E|M|R|G|B|L\\*|a\\*|b\\*)$", "\\1", metric))
+```
+
+
+```{r}
+# Display the first few rows of the combined dataset
+head(combined_long)
+```
+
+```{r}
+# Checking for missing values in the combined dataset
+# Summarize missing values by column
+missing_summary <- colSums(is.na(combined_long))
+print(missing_summary)
+```
+
+
