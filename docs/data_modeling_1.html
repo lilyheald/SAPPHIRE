@@ -516,15 +516,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree2f349620b54eee0b53775f3d8bb2fb9847bce1betargetblank2f34962a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreeb0835d26078915ad6a9a693cb6362bbfe4145532targetblankb0835d2a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/2f349620b54eee0b53775f3d8bb2fb9847bce1be" target="_blank">2f34962</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/b0835d26078915ad6a9a693cb6362bbfe4145532" target="_blank">b0835d2</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree2f349620b54eee0b53775f3d8bb2fb9847bce1betargetblank2f34962a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtreeb0835d26078915ad6a9a693cb6362bbfe4145532targetblankb0835d2a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -534,7 +534,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/2f349620b54eee0b53775f3d8bb2fb9847bce1be" target="_blank">2f34962</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/b0835d26078915ad6a9a693cb6362bbfe4145532" target="_blank">b0835d2</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -556,8 +556,12 @@ Ignored files:
     Ignored:    analysis/.DS_Store
     Ignored:    data/.DS_Store
 
+Untracked files:
+    Untracked:  output/predicted_reflectance_faceted.pdf
+
 Unstaged changes:
     Modified:   analysis/data_modeling_1.Rmd
+    Modified:   output/predicted_reflectance_values.pdf
 
 </code></pre>
 <p>
@@ -602,6 +606,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/b0835d26078915ad6a9a693cb6362bbfe4145532/analysis/data_modeling_1.Rmd" target="_blank">b0835d2</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+changed colors to make mor visible
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/b0835d26078915ad6a9a693cb6362bbfe4145532/docs/data_modeling_1.html" target="_blank">b0835d2</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+changed colors to make mor visible
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1094,7 +1132,7 @@ color_palette &lt;- c(
   &quot;b_3&quot; = &quot;#5E1B94&quot;    # Dark Violet
 )
 
-p &lt;- ggplot(predicted_values, aes(x = x, y = predicted, group = group, color = group)) + 
+p1 &lt;- ggplot(predicted_values, aes(x = x, y = predicted, group = group, color = group)) + 
   geom_line(size = 1) + 
   geom_point(size = 2) +
   labs(title = &quot;Predicted Reflectance Value by Collection Period and Reflectance Metric&quot;,
@@ -1107,8 +1145,9 @@ p &lt;- ggplot(predicted_values, aes(x = x, y = predicted, group = group, color 
 This warning is displayed once every 8 hours.
 Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
 generated.</code></pre>
-<pre class="r"><code>print(p)</code></pre>
-<p><img src="figure/data_modeling_1.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Print the resulting plot
+print(p1)</code></pre>
+<p><img src="figure/data_modeling_1.Rmd/unnamed-chunk-6-1.png" width="1056" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
 Past versions of unnamed-chunk-6-1.png
@@ -1133,6 +1172,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/b0835d26078915ad6a9a693cb6362bbfe4145532/docs/figure/data_modeling_1.Rmd/unnamed-chunk-6-1.png" target="_blank">b0835d2</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/lasisilab/SAPPHIRE/blob/2f349620b54eee0b53775f3d8bb2fb9847bce1be/docs/figure/data_modeling_1.Rmd/unnamed-chunk-6-1.png" target="_blank">2f34962</a>
 </td>
 <td>
@@ -1149,7 +1199,34 @@ calliquire
 <ol start="6" style="list-style-type: decimal">
 <li>Save the plot as a .pdf.</li>
 </ol>
-<pre class="r"><code>ggsave(&quot;output/predicted_reflectance_values.pdf&quot;, plot = p, width = 8, height = 6, device = &quot;pdf&quot;)</code></pre>
+<pre class="r"><code>ggsave(&quot;output/predicted_reflectance_values.pdf&quot;, plot = p1, width = 11, height = 8, device = &quot;pdf&quot;)</code></pre>
+<ol start="7" style="list-style-type: decimal">
+<li>Visualize the same model but faceted by reflectance metric.</li>
+</ol>
+<pre class="r"><code>p2 &lt;- ggplot(predicted_values, aes(x = x, y = predicted, group = group, color = group)) + 
+  geom_line(size = .75) +  # Keep the lines
+  geom_point(size = 1) + # Keep the points
+  labs(title = &quot;Predicted Reflectance Value by Collection Period and Reflectance Metric&quot;,
+       x = &quot;Collection Period&quot;,
+       y = &quot;Predicted Reflectance Value&quot;) +
+  scale_color_manual(values = color_palette) +
+  theme_minimal() +
+  facet_wrap(~ group, ncol = 3) +
+  theme(
+    panel.spacing = unit(1, &quot;lines&quot;),  # Increase spacing between panels
+    strip.text = element_text(size = 10),  # Adjust facet label size
+    axis.text = element_text(size = 8),  # Adjust axis text size
+    axis.title = element_text(size = 10),  # Adjust axis title size
+    legend.position = &quot;none&quot;  # Remove the legend
+  )
+
+# Print the resulting plot
+print(p2)</code></pre>
+<p><img src="figure/data_modeling_1.Rmd/unnamed-chunk-8-1.png" width="1344" style="display: block; margin: auto;" /></p>
+<ol start="8" style="list-style-type: decimal">
+<li>Save the faceted plot as a .pdf.</li>
+</ol>
+<pre class="r"><code>ggsave(&quot;output/predicted_reflectance_faceted.pdf&quot;, plot = p2, width = 11, height = 8, device = &quot;pdf&quot;)</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
