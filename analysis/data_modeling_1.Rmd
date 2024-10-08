@@ -164,4 +164,3 @@ print(p2)
 ```{r}
 ggsave("output/predicted_reflectance_faceted.pdf", plot = p2, width = 11, height = 8, device = "pdf")
 ```
-
