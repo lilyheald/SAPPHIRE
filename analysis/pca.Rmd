@@ -1,0 +1,841 @@
+---
+title: "PCA"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r load include=FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(readxl)
+library('corrr')
+library(ggcorrplot)
+library(factoextra)
+library("FactoMineR")
+library(missMDA)
+library(wesanderson)
+library("ggfortify")
+library(ggcorrplot)
+library(tidyverse)
+library(ggpubr)
+library(rstatix)
+library(readr)
+library(lme4) 
+library(ggplot2)
+```
+
+```{r read}
+file_path <- "~/sapphire/data/serum_vit_D_study_with_lab_results.xlsx" 
+data_summer <- read_excel(file_path, sheet = "ScreeningDataCollectionSummer")
+data_winter <- read_excel(file_path, sheet = "ScreeningDataCollectionWinter")
+data_6weeks <- read_excel(file_path, sheet = "ScreeningDataCollection6Weeks")
+sun_expos <- read.csv("~/sapphire/data/sun_expos_data/sun_expos_long.csv")
+sun_expos_summer <- sun_expos[sun_expos$collection_period == 'Summer', ]
+sun_expos_winter <- sun_expos[sun_expos$collection_period == 'Winter', ]
+sun_expos_6Weeks <- sun_expos[sun_expos$collection_period == '6Weeks', ]
+```
+
+# part 0: cleaning
+
+```{r join_seasonal}
+summer_data <- left_join(data_summer, sun_expos_summer, 
+                     by = c("ParticipantCentreID" = "participant_centre_id"))
+
+winter_data <- left_join(data_winter, sun_expos_winter, 
+                     by = c("ParticipantCentreID" = "participant_centre_id"))
+
+six_week_data <- left_join(data_6weeks, sun_expos_6Weeks, 
+                     by = c("ParticipantCentreID" = "participant_centre_id"))
+```
+
+```{r cleaning_seasonal}
+summer_data = subset(summer_data, select = -c(Supplements, Medications, 
+                                              EthnicitySpecifyOther, SmokingComments,
+                                              x9if_apply_sunscreen_spf_used))
+winter_data = subset(winter_data, select = -c(Supplements, Medications, 
+                                              EthnicitySpecifyOther, SmokingComments, 
+                                              ContinuedInStudy, IfNotContinuedInStudyReason,
+                                              x9if_apply_sunscreen_spf_used))
+six_week_data = subset(six_week_data, select = -c(Supplements, Medications, 
+                                              EthnicitySpecifyOther, SmokingComments, 
+                                              ContinuedInStudy, IfNotContinuedInStudyReason,
+                                              x9if_apply_sunscreen_spf_used))
+six_week_data = six_week_data[,!grepl("IfNoReasonForExclusion:",names(six_week_data))]
+winter_data = winter_data[,!grepl("IfNoReasonForExclusion:",names(winter_data))]
+summer_data = summer_data[,!grepl("IfNoReasonForExclusion:",names(summer_data))]
+six_week_data = six_week_data[,!grepl("Req Num",names(six_week_data))]
+winter_data = winter_data[,!grepl("Req Num",names(winter_data))]
+summer_data = summer_data[,!grepl("Req Num",names(summer_data))]
+```
+
+```{r median_refl}
+# taking the median of three measurements
+sites <- c("Forehead", "RightUpperInnerArm", "LeftUpperInnerArm")
+metrics <- c("E", "M", "R", "G", "B", "L\\*", "a\\*", "b\\*")
+seasons <- c("six_week_data", "summer_data", "winter_data")
+
+for(site in sites) {
+  for(metric in metrics) {
+    six_week_data <- six_week_data %>%
+      rowwise() %>%
+      mutate(!!paste0("Median", site, metric) := median(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE)) %>%
+      ungroup()
+  }
+}
+
+for(site in sites) {
+  for(metric in metrics) {
+    summer_data <- summer_data %>%
+      rowwise() %>%
+      mutate(!!paste0("Median", site, metric) := median(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE)) %>%
+      ungroup()
+  }
+}
+
+for(site in sites) {
+  for(metric in metrics) {
+    winter_data <- winter_data %>%
+      rowwise() %>%
+      mutate(!!paste0("Median", site, metric) := median(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE)) %>%
+      ungroup()
+  }
+}
+
+winter_data <- winter_data %>%
+  select(-matches(".*[EMRGBL\\*a\\*b\\*]\\d$"))
+
+summer_data <- summer_data %>%
+  select(-matches(".*[EMRGBL\\*a\\*b\\*]\\d$"))
+
+six_week_data <- six_week_data %>%
+  select(-matches(".*[EMRGBL\\*a\\*b\\*]\\d$"))
+
+```
+
+
+```{r ethnicity_init}
+ethnicity <- function(EthnicityAfricanBlack, EthnicityColoured, EthnicityWhite, 
+                      EthnicityIndianAsian) {
+  case_when(
+    EthnicityAfricanBlack == TRUE & 
+      EthnicityColoured == FALSE & 
+      EthnicityWhite == FALSE & 
+      EthnicityIndianAsian == FALSE ~ "Xhosa",
+    EthnicityAfricanBlack == FALSE & 
+      EthnicityColoured == TRUE & 
+      EthnicityWhite == FALSE & 
+      EthnicityIndianAsian == FALSE ~ "Cape_colored",
+    TRUE ~ NA_character_
+  )
+}
+
+summer_data <- summer_data %>%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+summer_data = subset(summer_data, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian))
+
+winter_data <- winter_data %>%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+winter_data = subset(winter_data, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian))
+
+six_week_data <- six_week_data %>%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+six_week_data = subset(six_week_data, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian))
+```
+
+```{r dist_initial}
+ggplot(six_week_data, aes(x = VitDResult, y = MedianForeheadM, color = Ethnicity)) +
+  geom_jitter() +
+  theme(legend.position = "right")
+
+ggplot(six_week_data, aes(x = Ethnicity, y = MedianForeheadM, color = Ethnicity, fill = Ethnicity)) + 
+  geom_violin()
+
+ggplot(summer_data, aes(x = VitDResult, y = MedianForeheadM, color = Ethnicity)) +
+  geom_jitter() +
+  theme(legend.position = "right")
+
+ggplot(summer_data, aes(x = Ethnicity, y = MedianForeheadM, color = Ethnicity, fill = Ethnicity)) + 
+  geom_boxplot()
+```
+
+
+```{r trim_outliers}
+# there are still outliers even when taking the median
+for(site in sites) {
+  for(metric in metrics) {
+    column_name <- paste0("Median", site, metric)
+    iqr <- IQR(winter_data[[column_name]], na.rm = TRUE)
+    Q <- quantile(winter_data[[column_name]], probs = c(0.25, 0.75), na.rm = TRUE)
+    up <- Q[2] + 1.5 * iqr
+    low <- Q[1] - 1.5 * iqr
+    winter_data <- winter_data %>%
+      filter(!!sym(column_name) > low & !!sym(column_name) < up)
+  }
+}
+
+for(site in sites) {
+  for(metric in metrics) {
+    column_name <- paste0("Median", site, metric)
+    iqr <- IQR(summer_data[[column_name]], na.rm = TRUE)
+    Q <- quantile(summer_data[[column_name]], probs = c(0.25, 0.75), na.rm = TRUE)
+    up <- Q[2] + 1.5 * iqr
+    low <- Q[1] - 1.5 * iqr
+    summer_data <- summer_data %>%
+      filter(!!sym(column_name) > low & !!sym(column_name) < up)
+  }
+}
+
+for(site in sites) {
+  for(metric in metrics) {
+    column_name <- paste0("Median", site, metric)
+    iqr <- IQR(winter_data[[column_name]], na.rm = TRUE)
+    Q <- quantile(winter_data[[column_name]], probs = c(0.25, 0.75), na.rm = TRUE)
+    up <- Q[2] + 1.5 * iqr
+    low <- Q[1] - 1.5 * iqr
+    six_week_data <- six_week_data %>%
+      filter(!!sym(column_name) > low & !!sym(column_name) < up)
+  }
+}
+```
+
+
+```{r dist_trimmed}
+ggplot(six_week_data, aes(x = VitDResult, y = MedianForeheadM, color = Ethnicity)) +
+  geom_jitter() +
+  theme(legend.position = "right")
+
+ggplot(six_week_data, aes(x = Ethnicity, y = MedianForeheadM, color = Ethnicity, fill = Ethnicity)) + 
+  geom_violin()
+
+ggplot(summer_data, aes(x = VitDResult, y = MedianForeheadM, color = Ethnicity)) +
+  geom_jitter() +
+  theme(legend.position = "right")
+
+ggplot(summer_data, aes(x = Ethnicity, y = MedianForeheadM, color = Ethnicity, fill = Ethnicity)) + 
+  geom_boxplot()
+```
+
+```{r facultative_constitutive}
+# mean left and right inner arm
+for (metric in metrics) {
+  summer_data <- summer_data %>%
+    mutate(!!paste0("InnerArm", metric) := rowMeans(
+      select(., starts_with(paste0("MedianLeftInnerArm", metric)),
+                 starts_with(paste0("MedianRightUpperInnerArm", metric))),
+      na.rm = TRUE
+    ))
+}
+
+for (metric in metrics) {
+  winter_data <- winter_data %>%
+    mutate(!!paste0("InnerArm", metric) := rowMeans(
+      select(., starts_with(paste0("MedianLeftInnerArm", metric)),
+                 starts_with(paste0("MedianRightUpperInnerArm", metric))),
+      na.rm = TRUE
+    ))
+}
+
+for (metric in metrics) {
+  six_week_data <- six_week_data %>%
+    mutate(!!paste0("InnerArm", metric) := rowMeans(
+      select(., starts_with(paste0("MedianLeftInnerArm", metric)),
+                 starts_with(paste0("MedianRightUpperInnerArm", metric))),
+      na.rm = TRUE
+    ))
+}
+
+winter_data <- winter_data %>%
+  select(-matches("Left|Right"))
+
+summer_data <- summer_data %>%
+  select(-matches("Left|Right"))
+
+six_week_data <- six_week_data %>%
+  select(-matches("Left|Right"))
+```
+
+```{r metric_difference}
+for (metric in metrics) {
+  six_week_data <- six_week_data %>%
+    mutate(!!paste0(metric, "Difference") :=
+             .[[paste0("MedianForehead", metric)]] -
+             .[[paste0("InnerArm", metric)]])
+}
+
+for (metric in metrics) {
+  summer_data <- summer_data %>%
+    mutate(!!paste0(metric, "Difference") :=
+             .[[paste0("MedianForehead", metric)]] -
+             .[[paste0("InnerArm", metric)]])
+}
+
+for (metric in metrics) {
+  winter_data <- winter_data %>%
+    mutate(!!paste0(metric, "Difference") :=
+             .[[paste0("MedianForehead", metric)]] -
+             .[[paste0("InnerArm", metric)]])
+}
+```
+
+```{r joining}
+six_week_rename <- six_week_data %>%
+    rename_with(~ paste0(., "-6weeks"), -ParticipantCentreID)
+
+joinone <- left_join(summer_data, winter_data, 
+                     by = "ParticipantCentreID", 
+                     suffix = c("-summer", "-winter"))
+
+joined_data <- left_join(joinone, six_week_rename, 
+                         by = "ParticipantCentreID")
+
+head(joined_data)
+```
+
+# part 1: PCAs
+
+PCAs to run:
+- run wideform pca
+- run pigmentation subset pca for each season 
+- run RGB subset for each season 
+- run ME subset for each season 
+- run CIElab subset for each season 
+
+## wideform
+
+```{r newjoin}
+summer_winter <- left_join(summer_data, winter_data, 
+                     by = "ParticipantCentreID", 
+                     suffix = c("-summer", "-winter"))
+```
+
+```{r summer_winterpca}
+summer_winter_clean <- na.omit(summer_winter)
+reflectance_metrics_ws <- summer_winter_clean %>%
+  select(matches("MedianForehead|InnerArm"))
+reflectance_metrics_ws
+
+reflectance3 <- scale(reflectance_metrics_ws)
+reflectancepcaws <- prcomp(reflectance3)
+summary(reflectancepcaws)
+reflectancepcaws$loadings[, 1:2]
+
+fviz_eig(reflectancepcaws, addlabels = TRUE)
+
+fviz_pca_var(reflectancepcaws, col.var = "black")
+
+fviz_cos2(reflectancepcaws, choice = "var", axes = 1:2)
+```
+
+```{r wspcavis}
+wscomps <- as.data.frame(reflectancepcaws$x)
+reflectance_ws <- cbind(summer_winter_clean,wscomps[,c(1,2)])
+reflectance_ws <- reflectance_ws %>%
+  select(-matches("SkinReflectance"))
+reflectance_ws <- reflectance_ws %>%
+  select(-"Ethnicity-winter")
+names(reflectance_ws)[names(reflectance_ws) == 'Ethnicity-summer'] <- 'Ethnicity'
+
+
+ggplot(reflectance_ws, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Wide Pigmentation PCA")
+
+fviz_contrib(reflectancepcaws, choice = "var", axes = 1, top = 20)
+fviz_contrib(reflectancepcaws, choice = "var", axes = 2, top = 20)
+```
+
+## pigmentation subset
+
+```{r pigmentsubset}
+summer_refl_metrics <- summer_data %>%
+  select(matches("InnerArm|MedianForehead"))
+summer_refl_metrics <- na.omit(summer_refl_metrics)
+
+winter_refl_metrics <- winter_data %>%
+  select(matches("InnerArm|MedianForehead"))
+winter_refl_metrics <- na.omit(winter_refl_metrics)
+
+six_refl_metrics <- six_week_data %>%
+  select(matches("InnerArm|MedianForehead"))
+six_refl_metrics <- na.omit(six_refl_metrics)
+```
+
+```{r sixpigpca}
+six_refl <- scale(six_refl_metrics)
+six_refl_pca <- prcomp(six_refl)
+summary(six_refl_pca)
+six_refl_pca$loadings[, 1:2]
+
+fviz_eig(six_refl_pca, addlabels = TRUE)
+fviz_pca_var(six_refl_pca, col.var = "black")
+fviz_cos2(six_refl_pca, choice = "var", axes = 1:2)
+```
+
+```{r sixpigcomps}
+six_pigm_comps <- as.data.frame(six_refl_pca$x)
+six_pigment <- cbind(six_week_data,six_pigm_comps[,c(1,2)])
+
+ggplot(six_pigment, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Six Week Pigmentation PCA")
+
+fviz_contrib(six_refl_pca, choice = "var", axes = 1, top = 10)
+fviz_contrib(six_refl_pca, choice = "var", axes = 2, top = 10)
+```
+
+```{r summerpigpca}
+summer_refl <- scale(summer_refl_metrics)
+summer_refl_pca <- prcomp(summer_refl)
+summary(summer_refl_pca)
+summer_refl_pca$loadings[, 1:2]
+
+fviz_eig(summer_refl_pca, addlabels = TRUE)
+fviz_pca_var(summer_refl_pca, col.var = "black")
+fviz_cos2(summer_refl_pca, choice = "var", axes = 1:2)
+```
+
+```{r summerpigcomps}
+summer_pigm_comps <- as.data.frame(summer_refl_pca$x)
+summer_pigment <- cbind(summer_data,summer_pigm_comps[,c(1,2)])
+
+ggplot(summer_pigment, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Summer Pigmentation PCA")
+
+fviz_contrib(summer_refl_pca, choice = "var", axes = 1, top = 10)
+fviz_contrib(summer_refl_pca, choice = "var", axes = 2, top = 10)
+```
+
+```{r winterpigpca}
+winter_refl <- scale(winter_refl_metrics)
+winter_refl_pca <- prcomp(winter_refl)
+summary(winter_refl_pca)
+winter_refl_pca$loadings[, 1:2]
+
+fviz_eig(winter_refl_pca, addlabels = TRUE)
+fviz_pca_var(winter_refl_pca, col.var = "black")
+fviz_cos2(winter_refl_pca, choice = "var", axes = 1:2)
+```
+
+```{r winterpigcomps}
+winter_pigm_comps <- as.data.frame(winter_refl_pca$x)
+winter_pigment <- cbind(winter_data,winter_pigm_comps[,c(1,2)])
+
+ggplot(winter_pigment, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Winter Pigmentation PCA")
+
+fviz_contrib(winter_refl_pca, choice = "var", axes = 1, top = 10)
+fviz_contrib(winter_refl_pca, choice = "var", axes = 2, top = 10)
+```
+
+## RGB subset
+
+```{r seasonalrgb}
+summer_winter_clean <- na.omit(summer_winter)
+reflectance_rgb_ws <- summer_winter_clean %>%
+  select(matches("MedianForeheadR|MedianForeheadG|MedianForeheadB|InnerArmR|InnerArmG|InnerArmB", ignore.case = FALSE))
+
+reflectance4 <- scale(reflectance_rgb_ws)
+reflectancergbws <- prcomp(reflectance4)
+summary(reflectancergbws)
+reflectancergbws$loadings[, 1:2]
+
+fviz_eig(reflectancergbws, addlabels = TRUE)
+
+fviz_pca_var(reflectancergbws, col.var = "black")
+
+fviz_cos2(reflectancergbws, choice = "var", axes = 1:2)
+```
+
+```{r wsrgbvis}
+wsrgbcomps <- as.data.frame(reflectancergbws$x)
+rgb_ws_bind <- cbind(summer_winter_clean,wsrgbcomps[,c(1,2)])
+rgb_ws_bind <- rgb_ws_bind %>%
+  select(-matches("SkinReflectance"))
+rgb_ws_bind <- rgb_ws_bind %>%
+  select(-"Ethnicity-winter")
+names(rgb_ws_bind)[names(rgb_ws_bind) == 'Ethnicity-summer'] <- 'Ethnicity'
+
+
+ggplot(rgb_ws_bind, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Wide Pigmentation PCA")
+
+fviz_contrib(reflectancergbws, choice = "var", axes = 1, top = 20)
+fviz_contrib(reflectancergbws, choice = "var", axes = 2, top = 20)
+```
+
+```{r rgbsub}
+summer_rgb <- summer_data %>%
+  select(matches("ForeheadR|ForeheadG|ForeheadB|InnerArmR|InnerArmG|InnerArmB", ignore.case = FALSE))
+summer_rgb <- na.omit(summer_rgb)
+
+winter_rgb <- winter_data %>%
+  select(matches("ForeheadR|ForeheadG|ForeheadB|InnerArmR|InnerArmG|InnerArmB", ignore.case = FALSE))
+winter_rgb <- na.omit(winter_rgb)
+
+six_rgb <- six_week_data %>%
+  select(matches("ForeheadR|ForeheadG|ForeheadB|InnerArmR|InnerArmG|InnerArmB", ignore.case = FALSE))
+six_rgb <- na.omit(six_rgb)
+```
+
+```{r winterrgbpca}
+winter_rgb_scale <- scale(winter_rgb)
+winter_rgb_pca <- prcomp(winter_rgb_scale)
+summary(winter_rgb_pca)
+winter_rgb_pca$loadings[, 1:2]
+
+fviz_eig(winter_rgb_pca, addlabels = TRUE)
+fviz_pca_var(winter_rgb_pca, col.var = "black")
+fviz_cos2(winter_rgb_pca, choice = "var", axes = 1:2)
+```
+
+```{r winterrgbcomps}
+winter_rgb_comps <- as.data.frame(winter_rgb_pca$x)
+winter_rgb_new <- cbind(winter_data,winter_rgb_comps[,c(1,2)])
+
+ggplot(winter_rgb_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Winter RGB PCA")
+
+fviz_contrib(winter_rgb_pca, choice = "var", axes = 1, top = 10)
+fviz_contrib(winter_rgb_pca, choice = "var", axes = 2, top = 10)
+```
+
+```{r summergbpca}
+summer_rgb_scale <- scale(summer_rgb)
+summer_rgb_pca <- prcomp(summer_rgb_scale)
+summary(summer_rgb_pca)
+summer_rgb_pca$loadings[, 1:2]
+
+fviz_eig(summer_rgb_pca, addlabels = TRUE)
+fviz_pca_var(summer_rgb_pca, col.var = "black")
+fviz_cos2(summer_rgb_pca, choice = "var", axes = 1:2)
+```
+
+```{r summerrgbcomps}
+summer_rgb_comps <- as.data.frame(summer_rgb_pca$x)
+summer_rgb_new <- cbind(summer_data,summer_rgb_comps[,c(1,2)])
+
+ggplot(summer_rgb_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Summer RGB PCA")
+
+fviz_contrib(summer_rgb_pca, choice = "var", axes = 1, top = 10)
+fviz_contrib(summer_rgb_pca, choice = "var", axes = 2, top = 10)
+```
+
+```{r sixrgbpca}
+six_rgb_scale <- scale(six_rgb)
+six_rgb_pca <- prcomp(six_rgb_scale)
+summary(six_rgb_pca)
+six_rgb_pca$loadings[, 1:2]
+
+fviz_eig(six_rgb_pca, addlabels = TRUE)
+fviz_pca_var(six_rgb_pca, col.var = "black")
+fviz_cos2(six_rgb_pca, choice = "var", axes = 1:2)
+```
+
+```{r sixgbcomps}
+six_rgb_comps <- as.data.frame(six_rgb_pca$x)
+six_rgb_new <- cbind(six_week_data,six_rgb_comps[,c(1,2)])
+
+ggplot(six_rgb_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Six Week RGB PCA")
+
+fviz_contrib(six_rgb_pca, choice = "var", axes = 1, top = 10)
+fviz_contrib(six_rgb_pca, choice = "var", axes = 2, top = 10)
+```
+
+## CIElab subset
+
+```{r seasonalcie}
+summer_winter_clean <- na.omit(summer_winter)
+reflectance_cie_ws <- summer_winter_clean %>%
+  select(matches("ForeheadL|Foreheada|Foreheadb|InnerArmL|InnerArma|InnerArmb", ignore.case = FALSE))
+
+reflectance5 <- scale(reflectance_cie_ws)
+reflectanceciews <- prcomp(reflectance5)
+summary(reflectanceciews)
+reflectanceciews$loadings[, 1:2]
+
+fviz_eig(reflectanceciews, addlabels = TRUE)
+
+fviz_pca_var(reflectanceciews, col.var = "black")
+
+fviz_cos2(reflectanceciews, choice = "var", axes = 1:2)
+```
+
+```{r wscievis}
+wsciecomps <- as.data.frame(reflectanceciews$x)
+cie_ws_bind <- cbind(summer_winter_clean,wsciecomps[,c(1,2)])
+cie_ws_bind <- rgb_ws_bind %>%
+  select(-matches("SkinReflectance"))
+
+ggplot(cie_ws_bind, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Wide Pigmentation PCA")
+
+fviz_contrib(reflectanceciews, choice = "var", axes = 1, top = 20)
+fviz_contrib(reflectanceciews, choice = "var", axes = 2, top = 20)
+```
+
+```{r ciesub}
+summer_cie <- summer_data %>%
+  select(matches("ForeheadL|Foreheada|Foreheadb|InnerArmL|InnerArma|InnerArmb", ignore.case = FALSE))
+summer_cie <- na.omit(summer_cie)
+
+winter_cie <- winter_data %>%
+  select(matches("ForeheadL|Foreheada|Foreheadb|InnerArmL|InnerArma|InnerArmb", ignore.case = FALSE))
+winter_cie <- na.omit(winter_cie)
+
+six_cie <- six_week_data %>%
+  select(matches("ForeheadL|Foreheada|Foreheadb|InnerArmL|InnerArma|InnerArmb", ignore.case = FALSE))
+six_cie <- na.omit(six_cie)
+```
+
+```{r winterciepca}
+winter_cie_scale <- scale(winter_cie)
+winter_cie_pca <- prcomp(winter_cie_scale)
+summary(winter_cie_pca)
+winter_cie_pca$loadings[, 1:2]
+
+fviz_eig(winter_cie_pca, addlabels = TRUE)
+fviz_pca_var(winter_cie_pca, col.var = "black")
+fviz_cos2(winter_cie_pca, choice = "var", axes = 1:2)
+```
+
+```{r winterciecomps}
+winter_cie_comps <- as.data.frame(winter_cie_pca$x)
+winter_cie_new <- cbind(winter_data,winter_cie_comps[,c(1,2)])
+
+ggplot(winter_cie_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Winter CIELAB PCA")
+
+fviz_contrib(winter_cie_pca, choice = "var", axes = 1, top = 10)
+fviz_contrib(winter_cie_pca, choice = "var", axes = 2, top = 10)
+```
+
+```{r summerciepca}
+summer_cie_scale <- scale(summer_cie)
+summer_cie_pca <- prcomp(summer_cie_scale)
+summary(summer_cie_pca)
+summer_cie_pca$loadings[, 1:2]
+
+fviz_eig(summer_cie_pca, addlabels = TRUE)
+fviz_pca_var(summer_cie_pca, col.var = "black")
+fviz_cos2(summer_cie_pca, choice = "var", axes = 1:2)
+```
+
+```{r summerciecomps}
+summer_cie_comps <- as.data.frame(summer_cie_pca$x)
+summer_cie_new <- cbind(summer_data,summer_cie_comps[,c(1,2)])
+
+ggplot(summer_cie_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Summer CIELAB PCA")
+
+fviz_contrib(summer_cie_pca, choice = "var", axes = 1, top = 10)
+fviz_contrib(summer_cie_pca, choice = "var", axes = 2, top = 10)
+```
+
+```{r sixciepca}
+six_cie_scale <- scale(six_cie)
+six_cie_pca <- prcomp(six_cie_scale)
+summary(six_cie_pca)
+six_cie_pca$loadings[, 1:2]
+
+fviz_eig(six_cie_pca, addlabels = TRUE)
+fviz_pca_var(six_cie_pca, col.var = "black")
+fviz_cos2(six_cie_pca, choice = "var", axes = 1:2)
+```
+
+```{r sixciecomps}
+six_cie_comps <- as.data.frame(six_cie_pca$x)
+six_cie_new <- cbind(six_week_data,six_cie_comps[,c(1,2)])
+
+ggplot(six_rgb_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Six Week CIELAB PCA")
+
+fviz_contrib(six_cie_pca, choice = "var", axes = 1, top = 10)
+fviz_contrib(six_cie_pca, choice = "var", axes = 2, top = 10)
+```
+
+
+# part 2: visualizations
+
+```{r pivot_longer}
+long_data <- joined_data %>%
+  pivot_longer(
+    cols = -ParticipantCentreID,  
+    names_to = c(".value", "Season"),        # Split column names into two parts
+    names_sep = "-"                          # Separate at _
+  )
+```
+
+```{r histogram}
+ggplot(long_data, aes(x = MedianForeheadM, fill = Ethnicity)) +
+  geom_histogram(alpha = 0.5, position = "identity") 
+
+cape_colored <- long_data[long_data$Ethnicity == "Cape_colored",]
+ggplot(cape_colored, aes(x = MedianForeheadM, fill = ..x..)) +
+  geom_histogram() +
+  scale_fill_gradient(low="#D2B48C", high="#1B0000") + 
+  theme_minimal() +
+  labs(
+    title = "Distribution of Forehead Melanin Index by Ethnicity ~ Cape_colored",
+    x = "Forehead Melanin Index",
+    y = "Count"
+  )
+
+xhosa <- long_data[long_data$Ethnicity == "Xhosa",]
+ggplot(xhosa, aes(x = MedianForeheadM, fill = ..x..)) +
+  geom_histogram() +
+  scale_fill_gradient(low="#D2B48C", high="#1B0000") + 
+  theme_minimal() +
+  labs(
+    title = "Distribution of Forehead Melanin Index by Ethnicity ~ Xhosa",
+    x = "Forehead Melanin Index",
+    y = "Count"
+  )
+  
+filtered_data <- long_data %>%
+  filter(!is.na(Ethnicity))
+ggplot(filtered_data, aes(x = MedianForeheadM, fill = ..x..)) +
+  geom_histogram() +
+  facet_grid(Ethnicity ~ .) +
+  scale_fill_gradient(
+    low = "#D2B48C", # Light tan
+    high = "#1B0000" # Dark brown
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Forehead Melanin Index by Ethnicity",
+    x = "Forehead Melanin Index",
+    y = "Count",
+    fill = "Melanin Index"
+  )
+
+filtered_data <- long_data %>%
+  filter(!is.na(Ethnicity))
+ggplot(filtered_data, aes(x = MedianForeheadM, fill = ..x..)) +
+  geom_histogram() +
+  facet_grid(Ethnicity ~ Season) +
+  scale_fill_gradient(
+    low = "#D2B48C", # Light tan
+    high = "#1B0000" # Dark brown
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Forehead Melanin Index by Ethnicity",
+    x = "Forehead Melanin Index",
+    y = "Count",
+    fill = "Melanin Index"
+  )
+```
+
+```{r constitutive_hypothesis}
+xhosa <- xhosa %>%
+  filter(!is.na(Ethnicity)) %>%
+  filter(!is.na(Season))
+xhosa %>%
+  group_by(Season) %>%
+  shapiro_test(InnerArmM)
+# xhosa is normally distributed in each season (p>0.05)
+
+cape_colored <- cape_colored %>%
+  filter(!is.na(Ethnicity)) %>%
+  filter(!is.na(Season))
+cape_colored %>%
+  group_by(Season) %>%
+  shapiro_test(InnerArmM)
+# cape_colored is not normally distributed in each season (p<0.05)
+
+ggqqplot(cape_colored, "InnerArmM", facet.by = "Season")
+ggqqplot(xhosa, "InnerArmM", facet.by = "Season")
+
+aov_result_x <- aov(InnerArmM ~ Season, data = xhosa)
+
+broom::tidy(aov_result_x)
+```
+
+```{r mdiff}
+filtered_data <- long_data %>%
+  filter(!is.na(Ethnicity))
+ggplot(filtered_data, aes(x = MDifference)) +
+  geom_histogram() +
+  facet_grid(Ethnicity ~ Season) +
+  theme_minimal() +
+  labs(
+    title = "Difference in Forehead and Inner Arm Melanin Index by Ethnicity and Season",
+    x = "Difference in Forehead MI and Inner Arm MI",
+    y = "Count",
+  )
+
+filtered_data <- long_data %>%
+  filter(!is.na(Ethnicity))
+ggplot(filtered_data, aes(x = Ethnicity, y = MDifference)) +
+  geom_boxplot() +
+  facet_grid(.~Season) +
+  theme_minimal() +
+  labs(
+    title = "Difference in Forehead and Inner Arm Melanin Index by Ethnicity and Season",
+    x = "Difference in Forehead MI and Inner Arm MI",
+    y = "Count"
+  )
+```
+
+```{r tanning}
+
+newlong$Ethnicity <- as.factor(newlong$Ethnicity)
+model_ethnicity <- lmer(PC1 ~ VitDResult * Ethnicity + Season + (1 | ParticipantCentreID), data = newlong)
+
+summary(model_ethnicity)
+
+# jitter by ethnicity
+ggplot(newlong, aes(x = VitDResult, y = PC1, color = Season)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ Ethnicity) +
+  labs(title = "Relationship between VitDResult and Skin Pigmentation by Ethnicity",
+       x = "Vitamin D Level",
+       y = "Skin Pigmentation")
+
+```
+
+
+
+
+
+
+
+
+
