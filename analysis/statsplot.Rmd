@@ -3,7 +3,7 @@ title: "statsplot"
 output: html_document
 ---
 
-```{r load include=FALSE}
+```{r load, include=FALSE}
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -144,7 +144,7 @@ p3 <- ggwithinstats(
 
 # combining the individual plots into a single plot
 combine_plots(
-  plotlist = list(p1, p3),
+  plotlist = list(p2, p3),
   plotgrid.args = list(nrow = 2),
   annotation.args = list(
     title = "Effect of season on color metrics"),
@@ -153,6 +153,7 @@ combine_plots(
 )
 
 ```
+
 ```{r}
 library(ggstatsplot)
 
@@ -1310,16 +1311,5 @@ combine_plots(
 ```
 
 
-
-
-```{r results="asis"}
-library(stargazer)
-library(kableExtra)
-
-stargazer(mixed.lmer, type = "text",
-          digits = 3,
-          star.cutoffs = c(0.05, 0.01, 0.001),
-          digit.separator = "")
-```
 
 

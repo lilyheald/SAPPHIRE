@@ -9,6 +9,10 @@ navbar:
     href: about.html
   - text: License
     href: license.html
+  - text: PCA
+    href: pca.html
+  - text: statsplot
+    href: statsplot.html
 output:
   workflowr::wflow_html:
     toc: yes

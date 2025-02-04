@@ -5,7 +5,7 @@ output:
   pdf_document: default
 ---
 
-```{r load include=FALSE}
+```{r load, include=FALSE}
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -344,24 +344,6 @@ pheno_dat <- pheno_dat %>%
   select("FID", everything()) 
 tanning_data <- pheno_dat %>%
   select(c("FID", "IID", "foreheadtanning"))
-
-full_IDs <- seq(min(pheno_dat$IID), max(pheno_dat$IID))
-complete_pheno_dat <- full_IDs %>%
-  left_join(full_IDs, pheno_dat, by = "IID")
-
-complete_data <- full_IDs %>%
-  data.frame(ID = .) %>%
-  left_join(data, by = "ID")
-
-write.table(pheno_dat, "~/sapphire/SAfrADMIX/pheno_dat.txt", sep = " ", dec = ".", row.names = F)
-write.table(tanning_data, "~/sapphire/SAfrADMIX/tanning_data.txt", sep = " ", dec = ".", row.names = F)
-mdiff_effect <- pheno_dat %>%
-  select(matches("FID|IID|tanning"))
-write.table(mdiff_effect, "~/sapphire/SAfrADMIX/mdiff_effect.txt", sep = " ", row.names = F)
-
-missingids <- anti_join(tanning_data, SAfrADMIX, by = c("IID" = "V2"))[,c("FID","IID")]
-
-write.table(missingids, "~/sapphire/SAfrADMIX/remove.txt", sep = " ", dec = ".", row.names = F, col.names = c("FID","IID"))
 ```
 
 # part 1: PCAs

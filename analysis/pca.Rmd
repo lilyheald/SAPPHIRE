@@ -5,7 +5,7 @@ output:
   pdf_document: default
 ---
 
-```{r load include=FALSE}
+```{r load, include=FALSE}
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -42,34 +42,34 @@ sun_expos_6Weeks <- sun_expos[sun_expos$collection_period == '6Weeks', ]
 # part 0: cleaning
 
 ```{r join_seasonal}
-# summer_data <- left_join(data_summer, sun_expos_summer, 
-#                      by = c("ParticipantCentreID" = "participant_centre_id"))
-# 
-# winter_data <- left_join(data_winter, sun_expos_winter, 
-#                      by = c("ParticipantCentreID" = "participant_centre_id"))
-# 
-# six_week_data <- left_join(data_6weeks, sun_expos_6Weeks, 
-#                      by = c("ParticipantCentreID" = "participant_centre_id"))
+summer_data <- left_join(data_summer, sun_expos_summer,
+                     by = c("ParticipantCentreID" = "participant_centre_id"))
+
+winter_data <- left_join(data_winter, sun_expos_winter,
+                     by = c("ParticipantCentreID" = "participant_centre_id"))
+
+six_week_data <- left_join(data_6weeks, sun_expos_6Weeks,
+                     by = c("ParticipantCentreID" = "participant_centre_id"))
 ```
 
 ```{r cleaning_seasonal}
-# summer_data = subset(summer_data, select = -c(Supplements, Medications, 
-#                                               EthnicitySpecifyOther, SmokingComments,
-#                                               x9if_apply_sunscreen_spf_used))
-# winter_data = subset(winter_data, select = -c(Supplements, Medications, 
-#                                               EthnicitySpecifyOther, SmokingComments, 
-#                                               ContinuedInStudy, IfNotContinuedInStudyReason,
-#                                               x9if_apply_sunscreen_spf_used))
-# six_week_data = subset(six_week_data, select = -c(Supplements, Medications, 
-#                                               EthnicitySpecifyOther, SmokingComments, 
-#                                               ContinuedInStudy, IfNotContinuedInStudyReason,
-#                                               x9if_apply_sunscreen_spf_used))
-# six_week_data = six_week_data[,!grepl("IfNoReasonForExclusion:",names(six_week_data))]
-# winter_data = winter_data[,!grepl("IfNoReasonForExclusion:",names(winter_data))]
-# summer_data = summer_data[,!grepl("IfNoReasonForExclusion:",names(summer_data))]
-# six_week_data = six_week_data[,!grepl("Req Num",names(six_week_data))]
-# winter_data = winter_data[,!grepl("Req Num",names(winter_data))]
-# summer_data = summer_data[,!grepl("Req Num",names(summer_data))]
+summer_data = subset(summer_data, select = -c(Supplements, Medications,
+                                              EthnicitySpecifyOther, SmokingComments,
+                                              x9if_apply_sunscreen_spf_used))
+winter_data = subset(winter_data, select = -c(Supplements, Medications,
+                                              EthnicitySpecifyOther, SmokingComments,
+                                              ContinuedInStudy, IfNotContinuedInStudyReason,
+                                              x9if_apply_sunscreen_spf_used))
+six_week_data = subset(six_week_data, select = -c(Supplements, Medications,
+                                              EthnicitySpecifyOther, SmokingComments,
+                                              ContinuedInStudy, IfNotContinuedInStudyReason,
+                                              x9if_apply_sunscreen_spf_used))
+six_week_data = six_week_data[,!grepl("IfNoReasonForExclusion:",names(six_week_data))]
+winter_data = winter_data[,!grepl("IfNoReasonForExclusion:",names(winter_data))]
+summer_data = summer_data[,!grepl("IfNoReasonForExclusion:",names(summer_data))]
+six_week_data = six_week_data[,!grepl("Req Num",names(six_week_data))]
+winter_data = winter_data[,!grepl("Req Num",names(winter_data))]
+summer_data = summer_data[,!grepl("Req Num",names(summer_data))]
 six_week_data <- data_6weeks
 summer_data <- data_summer
 winter_data <- data_winter
@@ -295,13 +295,13 @@ for (metric in metrics) {
 }
 ```
 
-```{r joining}
+```{r joining_2}
 six_week_rename <- six_week_data %>%
-    rename_with(~ paste0(., "-6weeks"), -ParticipantCentreID)
+    rename_with(~ paste0(., "_sixweeks"), -ParticipantCentreID)
 
 joinone <- left_join(summer_data, winter_data, 
                      by = "ParticipantCentreID", 
-                     suffix = c("-summer", "-winter"))
+                     suffix = c("_summer", "_winter"))
 
 joined_data <- left_join(joinone, six_week_rename, 
                          by = "ParticipantCentreID")
@@ -334,6 +334,9 @@ summer_winter <- left_join(summer_data, winter_data,
                      by = "ParticipantCentreID", 
                      suffix = c("_summer", "_winter"))
 
+summer_winter <- summer_winter %>%
+  select(-(matches("EthnicitySpecifyOther")))
+
 clean_sw <- summer_winter %>%
   select(
     contains("MedianForehead"), 
@@ -342,12 +345,11 @@ clean_sw <- summer_winter %>%
     contains("Ethnicity"), 
     contains("Difference")
   )
-
-write.csv(clean_sw, "~/sapphire/data/summer_winter.csv", row.names = F)
-head(clean_sw)
 ```
 
 ```{r summer_winterpca}
+summer_winter <- summer_winter %>%
+  select(matches("MedianForehead|InnerArm|VitD|ParticipantCentreID|Ethnicity"))
 summer_winter_clean <- na.omit(summer_winter)
 reflectance_metrics_ws <- summer_winter_clean %>%
   select(matches("MedianForehead|InnerArm"))
@@ -371,8 +373,8 @@ reflectance_ws <- cbind(summer_winter_clean,wscomps[,c(1,2)])
 reflectance_ws <- reflectance_ws %>%
   select(-matches("SkinReflectance"))
 reflectance_ws <- reflectance_ws %>%
-  select(-"Ethnicity-winter")
-names(reflectance_ws)[names(reflectance_ws) == 'Ethnicity-summer'] <- 'Ethnicity'
+  select(-"Ethnicity_winter")
+names(reflectance_ws)[names(reflectance_ws) == 'Ethnicity_summer'] <- 'Ethnicity'
 
 
 
@@ -498,8 +500,8 @@ rgb_ws_bind <- cbind(summer_winter_clean,wsrgbcomps[,c(1,2)])
 rgb_ws_bind <- rgb_ws_bind %>%
   select(-matches("SkinReflectance"))
 rgb_ws_bind <- rgb_ws_bind %>%
-  select(-"Ethnicity-winter")
-names(rgb_ws_bind)[names(rgb_ws_bind) == 'Ethnicity-summer'] <- 'Ethnicity'
+  select(-"Ethnicity_winter")
+names(rgb_ws_bind)[names(rgb_ws_bind) == 'Ethnicity_summer'] <- 'Ethnicity'
 
 
 ggplot(rgb_ws_bind, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
@@ -721,11 +723,13 @@ fviz_contrib(six_cie_pca, choice = "var", axes = 2, top = 10)
 # part 2: visualizations
 
 ```{r pivot_longer}
+joined_data <- joined_data %>%
+  select(matches("Participant|Ethnicity_|InnerArm|MedianForehead|VitD|Diff"))
 long_data <- joined_data %>%
   pivot_longer(
     cols = -ParticipantCentreID,  
     names_to = c(".value", "Season"),        # Split column names into two parts
-    names_sep = "-"                          # Separate at _
+    names_sep = "_"                          # Separate at _
   )
 ```
 
@@ -816,29 +820,29 @@ broom::tidy(aov_result_x)
 ```
 
 ```{r mdiff}
-filtered_data <- long_data %>%
-  filter(!is.na(Ethnicity))
-ggplot(filtered_data, aes(x = MDifference)) +
-  geom_histogram() +
-  facet_grid(Ethnicity ~ Season) +
-  theme_minimal() +
-  labs(
-    title = "Difference in Forehead and Inner Arm Melanin Index by Ethnicity and Season",
-    x = "Difference in Forehead MI and Inner Arm MI",
-    y = "Count",
-  )
-
-filtered_data <- long_data %>%
-  filter(!is.na(Ethnicity))
-ggplot(filtered_data, aes(x = Ethnicity, y = MDifference)) +
-  geom_boxplot() +
-  facet_grid(.~Season) +
-  theme_minimal() +
-  labs(
-    title = "Difference in Forehead and Inner Arm Melanin Index by Ethnicity and Season",
-    x = "Difference in Forehead MI and Inner Arm MI",
-    y = "Count"
-  )
+# filtered_data <- long_data %>%
+#   filter(!is.na(Ethnicity))
+# ggplot(filtered_data, aes(x = MDifference)) +
+#   geom_histogram() +
+#   facet_grid(Ethnicity ~ Season) +
+#   theme_minimal() +
+#   labs(
+#     title = "Difference in Forehead and Inner Arm Melanin Index by Ethnicity and Season",
+#     x = "Difference in Forehead MI and Inner Arm MI",
+#     y = "Count",
+#   )
+# 
+# filtered_data <- long_data %>%
+#   filter(!is.na(Ethnicity))
+# ggplot(filtered_data, aes(x = Ethnicity, y = MDifference)) +
+#   geom_boxplot() +
+#   facet_grid(.~Season) +
+#   theme_minimal() +
+#   labs(
+#     title = "Difference in Forehead and Inner Arm Melanin Index by Ethnicity and Season",
+#     x = "Difference in Forehead MI and Inner Arm MI",
+#     y = "Count"
+#   )
 ```
 
 
@@ -952,13 +956,6 @@ ggplot(winter_data, aes(x = Ethnicity, y = MedianForeheadG, fill = Ethnicity)) +
   labs(title = "Winter G")
 ```
 
-
-
-
-
-```{r justttest}
-
-```
 
 
 
