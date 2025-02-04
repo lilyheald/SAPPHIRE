@@ -25,6 +25,7 @@ library(rstatix)
 library(readr)
 library(lme4) 
 library(ggplot2)
+library(workflowr)
 ```
 
 ```{r read}
@@ -41,34 +42,39 @@ sun_expos_6Weeks <- sun_expos[sun_expos$collection_period == '6Weeks', ]
 # part 0: cleaning
 
 ```{r join_seasonal}
-summer_data <- left_join(data_summer, sun_expos_summer, 
-                     by = c("ParticipantCentreID" = "participant_centre_id"))
-
-winter_data <- left_join(data_winter, sun_expos_winter, 
-                     by = c("ParticipantCentreID" = "participant_centre_id"))
-
-six_week_data <- left_join(data_6weeks, sun_expos_6Weeks, 
-                     by = c("ParticipantCentreID" = "participant_centre_id"))
+# summer_data <- left_join(data_summer, sun_expos_summer, 
+#                      by = c("ParticipantCentreID" = "participant_centre_id"))
+# 
+# winter_data <- left_join(data_winter, sun_expos_winter, 
+#                      by = c("ParticipantCentreID" = "participant_centre_id"))
+# 
+# six_week_data <- left_join(data_6weeks, sun_expos_6Weeks, 
+#                      by = c("ParticipantCentreID" = "participant_centre_id"))
 ```
 
 ```{r cleaning_seasonal}
-summer_data = subset(summer_data, select = -c(Supplements, Medications, 
-                                              EthnicitySpecifyOther, SmokingComments,
-                                              x9if_apply_sunscreen_spf_used))
-winter_data = subset(winter_data, select = -c(Supplements, Medications, 
-                                              EthnicitySpecifyOther, SmokingComments, 
-                                              ContinuedInStudy, IfNotContinuedInStudyReason,
-                                              x9if_apply_sunscreen_spf_used))
-six_week_data = subset(six_week_data, select = -c(Supplements, Medications, 
-                                              EthnicitySpecifyOther, SmokingComments, 
-                                              ContinuedInStudy, IfNotContinuedInStudyReason,
-                                              x9if_apply_sunscreen_spf_used))
-six_week_data = six_week_data[,!grepl("IfNoReasonForExclusion:",names(six_week_data))]
-winter_data = winter_data[,!grepl("IfNoReasonForExclusion:",names(winter_data))]
-summer_data = summer_data[,!grepl("IfNoReasonForExclusion:",names(summer_data))]
-six_week_data = six_week_data[,!grepl("Req Num",names(six_week_data))]
-winter_data = winter_data[,!grepl("Req Num",names(winter_data))]
-summer_data = summer_data[,!grepl("Req Num",names(summer_data))]
+# summer_data = subset(summer_data, select = -c(Supplements, Medications, 
+#                                               EthnicitySpecifyOther, SmokingComments,
+#                                               x9if_apply_sunscreen_spf_used))
+# winter_data = subset(winter_data, select = -c(Supplements, Medications, 
+#                                               EthnicitySpecifyOther, SmokingComments, 
+#                                               ContinuedInStudy, IfNotContinuedInStudyReason,
+#                                               x9if_apply_sunscreen_spf_used))
+# six_week_data = subset(six_week_data, select = -c(Supplements, Medications, 
+#                                               EthnicitySpecifyOther, SmokingComments, 
+#                                               ContinuedInStudy, IfNotContinuedInStudyReason,
+#                                               x9if_apply_sunscreen_spf_used))
+# six_week_data = six_week_data[,!grepl("IfNoReasonForExclusion:",names(six_week_data))]
+# winter_data = winter_data[,!grepl("IfNoReasonForExclusion:",names(winter_data))]
+# summer_data = summer_data[,!grepl("IfNoReasonForExclusion:",names(summer_data))]
+# six_week_data = six_week_data[,!grepl("Req Num",names(six_week_data))]
+# winter_data = winter_data[,!grepl("Req Num",names(winter_data))]
+# summer_data = summer_data[,!grepl("Req Num",names(summer_data))]
+six_week_data <- data_6weeks
+summer_data <- data_summer
+winter_data <- data_winter
+
+
 ```
 
 ```{r median_refl}
@@ -315,9 +321,30 @@ PCAs to run:
 ## wideform
 
 ```{r newjoin}
+summer_data$Ethnicity <- as.factor (summer_data$Ethnicity) 
+names(summer_data) <- gsub("\\\\", "", names(summer_data))
+names(summer_data) <- gsub("\\*", "", names(summer_data))
+#Xhosa is value 2
+winter_data$Ethnicity <- as.factor (winter_data$Ethnicity) 
+names(winter_data) <- gsub("\\\\", "", names(winter_data))
+names(winter_data) <- gsub("\\*", "", names(winter_data))
+
+
 summer_winter <- left_join(summer_data, winter_data, 
                      by = "ParticipantCentreID", 
-                     suffix = c("-summer", "-winter"))
+                     suffix = c("_summer", "_winter"))
+
+clean_sw <- summer_winter %>%
+  select(
+    contains("MedianForehead"), 
+    contains("InnerArm"), 
+    contains("ParticipantCentreID"), 
+    contains("Ethnicity"), 
+    contains("Difference")
+  )
+
+write.csv(clean_sw, "~/sapphire/data/summer_winter.csv", row.names = F)
+head(clean_sw)
 ```
 
 ```{r summer_winterpca}
@@ -346,6 +373,7 @@ reflectance_ws <- reflectance_ws %>%
 reflectance_ws <- reflectance_ws %>%
   select(-"Ethnicity-winter")
 names(reflectance_ws)[names(reflectance_ws) == 'Ethnicity-summer'] <- 'Ethnicity'
+
 
 
 ggplot(reflectance_ws, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
@@ -813,27 +841,124 @@ ggplot(filtered_data, aes(x = Ethnicity, y = MDifference)) +
   )
 ```
 
-```{r tanning}
 
-newlong$Ethnicity <- as.factor(newlong$Ethnicity)
-model_ethnicity <- lmer(PC1 ~ VitDResult * Ethnicity + Season + (1 | ParticipantCentreID), data = newlong)
 
-summary(model_ethnicity)
+```{r t-tests}
+summer_data$Ethnicity <- as.factor (summer_data$Ethnicity) 
+names(summer_data) <- gsub("\\\\", "", names(summer_data))
+names(summer_data) <- gsub("\\*", "", names(summer_data))
+#Xhosa is value 2
+winter_data$Ethnicity <- as.factor (winter_data$Ethnicity) 
+names(winter_data) <- gsub("\\\\", "", names(winter_data))
+names(winter_data) <- gsub("\\*", "", names(winter_data))
+# cielab colorspaces different between groups
+lstarresult <- t.test(MedianForeheadL ~ Ethnicity, data = summer_data)
+lstarp_value <- lstarresult$p.value
+ggplot(summer_data, aes(x = Ethnicity, y = MedianForeheadL, fill = Ethnicity)) +
+  geom_boxplot() +
+  annotate("text", x = 1.5, y = max(summer_data$MedianForeheadL), 
+           label = paste("p =", signif(lstarp_value, digits = 3)), 
+           size = 5) +
+  labs(title = "summer L star")
 
-# jitter by ethnicity
-ggplot(newlong, aes(x = VitDResult, y = PC1, color = Season)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  facet_wrap(~ Ethnicity) +
-  labs(title = "Relationship between VitDResult and Skin Pigmentation by Ethnicity",
-       x = "Vitamin D Level",
-       y = "Skin Pigmentation")
+astarresult <- t.test(MedianForeheada ~ Ethnicity, data = summer_data)
+astarp_value <- astarresult$p.value
+ggplot(summer_data, aes(x = Ethnicity, y = MedianForeheada, fill = Ethnicity)) +
+  geom_boxplot() +
+  annotate("text", x = 1.5, y = max(summer_data$MedianForeheada), 
+           label = paste("p =", signif(astarp_value, digits = 3)), 
+           size = 5) +
+  labs(title = "summer a star")
 
+bstarresult <- t.test(MedianForeheadb ~ Ethnicity, data = summer_data)
+bstarp_value <- bstarresult$p.value
+ggplot(summer_data, aes(x = Ethnicity, y = MedianForeheadb, fill = Ethnicity)) +
+  geom_boxplot() +
+  annotate("text", x = 1.5, y = max(summer_data$MedianForeheadb), 
+           label = paste("p =", signif(bstarp_value, digits = 3)), 
+           size = 5) +
+  labs(title = "summer b star")
+```
+winter versus summer t test across all colors
+
+
+
+```{r metest}
+# ME colorspaces different between groups
+Mresult <- t.test(MedianForeheadM ~ Ethnicity, data = summer_data)
+Mp_value <- Mresult$p.value
+ggplot(summer_data, aes(x = Ethnicity, y = MedianForeheadM, fill = Ethnicity)) +
+  geom_boxplot() +
+  annotate("text", x = 1.5, y = max(summer_data$MedianForeheadM), 
+           label = paste("p =", signif(Mp_value, digits = 3)), 
+           size = 5) +
+  labs(title = "Summer Melanin")
+
+Eresult <- t.test(MedianForeheadE ~ Ethnicity, data = summer_data)
+Ep_value <- Eresult$p.value
+ggplot(summer_data, aes(x = Ethnicity, y = MedianForeheadE, fill = Ethnicity)) +
+  geom_boxplot() +
+  annotate("text", x = 1.5, y = max(summer_data$MedianForeheadE), 
+           label = paste("p =", signif(Ep_value, digits = 3)), 
+           size = 5) +
+  labs(title = "Summer Erythema")
+
+Mresult <- t.test(MedianForeheadM ~ Ethnicity, data = winter_data)
+Mp_value <- Mresult$p.value
+ggplot(winter_data, aes(x = Ethnicity, y = MedianForeheadM, fill = Ethnicity)) +
+  geom_boxplot() +
+  annotate("text", x = 1.5, y = max(winter_data$MedianForeheadM), 
+           label = paste("p =", signif(Mp_value, digits = 3)), 
+           size = 5) +
+  labs(title = "Winter Melanin")
+
+Eresult <- t.test(MedianForeheadE ~ Ethnicity, data = winter_data)
+Ep_value <- Eresult$p.value
+ggplot(winter_data, aes(x = Ethnicity, y = MedianForeheadE, fill = Ethnicity)) +
+  geom_boxplot() +
+  annotate("text", x = 1.5, y = max(winter_data$MedianForeheadE), 
+           label = paste("p =", signif(Ep_value, digits = 3)), 
+           size = 5) +
+  labs(title = "Winter Erythema")
+```
+
+```{r rgbtest}
+# RGB colorspaces different between groups
+Rresult <- t.test(MedianForeheadR ~ Ethnicity, data = winter_data)
+Rp_value <- Rresult$p.value
+ggplot(winter_data, aes(x = Ethnicity, y = MedianForeheadR, fill = Ethnicity)) +
+  geom_boxplot() +
+  annotate("text", x = 1.5, y = max(winter_data$MedianForeheadR), 
+           label = paste("p =", signif(Rp_value, digits = 3)), 
+           size = 5) +
+  labs(title = "Winter R")
+
+winterB <- t.test(MedianForeheadB ~ Ethnicity, data = winter_data)
+winterBp <- winterB$p.value
+ggplot(winter_data, aes(x = Ethnicity, y = MedianForeheadB, fill = Ethnicity)) +
+  geom_boxplot() +
+  annotate("text", x = 1.5, y = max(winter_data$MedianForeheadB), 
+           label = paste("p =", signif(winterBp, digits = 3)), 
+           size = 5) +
+  labs(title = "Winter B")
+
+winterG <- t.test(MedianForeheadG ~ Ethnicity, data = winter_data)
+winterGp <- winterG$p.value
+ggplot(winter_data, aes(x = Ethnicity, y = MedianForeheadG, fill = Ethnicity)) +
+  geom_boxplot() +
+  annotate("text", x = 1.5, y = max(winter_data$MedianForeheadG), 
+           label = paste("p =", signif(winterGp, digits = 3)), 
+           size = 5) +
+  labs(title = "Winter G")
 ```
 
 
 
 
+
+```{r justttest}
+
+```
 
 
 
