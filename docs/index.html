@@ -13,7 +13,7 @@
 
 <title>Home</title>
 
-<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -261,6 +261,12 @@ $(document).ready(function () {
 <li>
   <a href="license.html">License</a>
 </li>
+<li>
+  <a href="pca.html">PCA</a>
+</li>
+<li>
+  <a href="statsplot.html">statsplot</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -281,7 +287,7 @@ $(document).ready(function () {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -292,8 +298,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -302,16 +308,16 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-10-07
+<strong>Last updated:</strong> 2025-02-04
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 1
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>SAPPHIRE/</code> <span
+<strong>Knit directory:</strong> <code>sapphire/</code> <span
 class="glyphicon glyphicon-question-sign" aria-hidden="true"
 title="This is the local directory in which the code in this file was executed.">
 </span>
@@ -331,36 +337,33 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree596dc6e95bd6a738f84c4e2a373c37d980ac9d5btargetblank596dc6ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtree5636f2f4567034d1e851b72a93d1fa85f1c0f9c4targetblank5636f2fa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/596dc6e95bd6a738f84c4e2a373c37d980ac9d5b" target="_blank">596dc6e</a>
+<a href="https://github.com/lilyheald/SAPPHIRE/tree/5636f2f4567034d1e851b72a93d1fa85f1c0f9c4" target="_blank">5636f2f</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree596dc6e95bd6a738f84c4e2a373c37d980ac9d5btargetblank596dc6ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtree5636f2f4567034d1e851b72a93d1fa85f1c0f9c4targetblank5636f2fa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -370,7 +373,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/596dc6e95bd6a738f84c4e2a373c37d980ac9d5b" target="_blank">596dc6e</a>.
+<a href="https://github.com/lilyheald/SAPPHIRE/tree/5636f2f4567034d1e851b72a93d1fa85f1c0f9c4" target="_blank">5636f2f</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -386,14 +389,20 @@ were generated:
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
-    Ignored:    .Rapp.history
+    Ignored:    .RData
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/.DS_Store
-    Ignored:    data/.DS_Store
+    Ignored:    analysis/.RData
+    Ignored:    analysis/.Rhistory
 
-Unstaged changes:
-    Modified:   analysis/index.Rmd
+Untracked files:
+    Untracked:  .lock_gPLINK
+    Untracked:  .metafile_gPLINK
+    Untracked:  SAfrADMIX/
+    Untracked:  analysis/genotype.R
+    Untracked:  analysis/lilyanalysis.Rmd
+    Untracked:  data/dist_pops.csv
+    Untracked:  data/summer_winter.csv
 
 </code></pre>
 <p>
@@ -442,7 +451,58 @@ Message
 Rmd
 </td>
 <td>
-<a href="https://github.com/lasisilab/SAPPHIRE/blob/488d51321ec31c2c5f199cb0cf5e6f1cfdd64fee/analysis/index.Rmd" target="_blank">488d513</a>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/5636f2f4567034d1e851b72a93d1fa85f1c0f9c4/analysis/index.Rmd" target="_blank">5636f2f</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+<td>
+wflow_git_commit("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/bcfeb369ba85aa9447e36dda202f5f16c5d414b9/analysis/index.Rmd" target="_blank">bcfeb36</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+Added link to analyses on index
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/bcfeb369ba85aa9447e36dda202f5f16c5d414b9/docs/index.html" target="_blank">bcfeb36</a>
+</td>
+<td>
+calliquire
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+Added link to analyses on index
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/488d51321ec31c2c5f199cb0cf5e6f1cfdd64fee/analysis/index.Rmd" target="_blank">488d513</a>
 </td>
 <td>
 calliquire
@@ -459,7 +519,7 @@ changed link to new composite data cleaning html
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/488d51321ec31c2c5f199cb0cf5e6f1cfdd64fee/docs/index.html" target="_blank">488d513</a>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/488d51321ec31c2c5f199cb0cf5e6f1cfdd64fee/docs/index.html" target="_blank">488d513</a>
 </td>
 <td>
 calliquire
@@ -476,7 +536,7 @@ changed link to new composite data cleaning html
 Rmd
 </td>
 <td>
-<a href="https://github.com/lasisilab/SAPPHIRE/blob/369bbe7efca129c10b82e159c62303a3924a7fa2/analysis/index.Rmd" target="_blank">369bbe7</a>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/369bbe7efca129c10b82e159c62303a3924a7fa2/analysis/index.Rmd" target="_blank">369bbe7</a>
 </td>
 <td>
 calliquire
@@ -493,7 +553,7 @@ added data cleaning 3 link
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/369bbe7efca129c10b82e159c62303a3924a7fa2/docs/index.html" target="_blank">369bbe7</a>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/369bbe7efca129c10b82e159c62303a3924a7fa2/docs/index.html" target="_blank">369bbe7</a>
 </td>
 <td>
 calliquire
@@ -510,7 +570,7 @@ added data cleaning 3 link
 Rmd
 </td>
 <td>
-<a href="https://github.com/lasisilab/SAPPHIRE/blob/cfcc9bce938d15791cb653db0faf7a2abee8aeb7/analysis/index.Rmd" target="_blank">cfcc9bc</a>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/cfcc9bce938d15791cb653db0faf7a2abee8aeb7/analysis/index.Rmd" target="_blank">cfcc9bc</a>
 </td>
 <td>
 calliquire
@@ -527,7 +587,7 @@ made links to data cleaning 1 and 2 on index
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/cfcc9bce938d15791cb653db0faf7a2abee8aeb7/docs/index.html" target="_blank">cfcc9bc</a>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/cfcc9bce938d15791cb653db0faf7a2abee8aeb7/docs/index.html" target="_blank">cfcc9bc</a>
 </td>
 <td>
 calliquire
@@ -544,7 +604,7 @@ made links to data cleaning 1 and 2 on index
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/c851756ebd708ee7852d214f775aab390abc0525/docs/index.html" target="_blank">c851756</a>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/c851756ebd708ee7852d214f775aab390abc0525/docs/index.html" target="_blank">c851756</a>
 </td>
 <td>
 calliquire
@@ -561,7 +621,7 @@ Build site.
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/a168a4790aaa5406d6ae61deb50ba3af4a81e2a3/docs/index.html" target="_blank">a168a47</a>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/a168a4790aaa5406d6ae61deb50ba3af4a81e2a3/docs/index.html" target="_blank">a168a47</a>
 </td>
 <td>
 calliquire
@@ -578,7 +638,7 @@ Build site.
 Rmd
 </td>
 <td>
-<a href="https://github.com/lasisilab/SAPPHIRE/blob/2aaf90ca38892463c3d33107f2dc5d55e09bd9b3/analysis/index.Rmd" target="_blank">2aaf90c</a>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/2aaf90ca38892463c3d33107f2dc5d55e09bd9b3/analysis/index.Rmd" target="_blank">2aaf90c</a>
 </td>
 <td>
 calliquire
@@ -595,7 +655,7 @@ Publish the initial files for SAPPHIRE
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/4940015f03f41251cc7310e1f91dcd52b977c6bb/docs/index.html" target="_blank">4940015</a>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/4940015f03f41251cc7310e1f91dcd52b977c6bb/docs/index.html" target="_blank">4940015</a>
 </td>
 <td>
 calliquire
@@ -612,7 +672,7 @@ Build site.
 Rmd
 </td>
 <td>
-<a href="https://github.com/lasisilab/SAPPHIRE/blob/c1fb194111a2191b7ccb52a8ad11faa35736836c/analysis/index.Rmd" target="_blank">c1fb194</a>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/c1fb194111a2191b7ccb52a8ad11faa35736836c/analysis/index.Rmd" target="_blank">c1fb194</a>
 </td>
 <td>
 calliquire
@@ -629,7 +689,7 @@ Publish the initial files for SAPPHIRE
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/7636af49293c4b9033f4172a7c98023bec915723/docs/index.html" target="_blank">7636af4</a>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/7636af49293c4b9033f4172a7c98023bec915723/docs/index.html" target="_blank">7636af4</a>
 </td>
 <td>
 calliquire
@@ -646,7 +706,7 @@ Build site.
 Rmd
 </td>
 <td>
-<a href="https://github.com/lasisilab/SAPPHIRE/blob/d1d306c7332edf97eceb9c05f0f85cfa4d39b7ca/analysis/index.Rmd" target="_blank">d1d306c</a>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d1d306c7332edf97eceb9c05f0f85cfa4d39b7ca/analysis/index.Rmd" target="_blank">d1d306c</a>
 </td>
 <td>
 calliquire
@@ -663,7 +723,7 @@ wflow_publish("analysis/index.Rmd")
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/7a0a8fe5f811f3763ed1b397a87b66affb4032f1/docs/index.html" target="_blank">7a0a8fe</a>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/7a0a8fe5f811f3763ed1b397a87b66affb4032f1/docs/index.html" target="_blank">7a0a8fe</a>
 </td>
 <td>
 calliquire
@@ -680,7 +740,7 @@ calliquire
 Rmd
 </td>
 <td>
-<a href="https://github.com/lasisilab/SAPPHIRE/blob/e85eb6bbe15b331393d6fed7556970904906aa1d/analysis/index.Rmd" target="_blank">e85eb6b</a>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/e85eb6bbe15b331393d6fed7556970904906aa1d/analysis/index.Rmd" target="_blank">e85eb6b</a>
 </td>
 <td>
 calliquire
@@ -708,6 +768,9 @@ Start workflowr project.
 the data-cleaning steps.</p>
 <p>Click on this <a href="data_modeling_1.html">link</a> to see the
 Linear Mixed Effects Model fit to the cleaned dataset.</p>
+<p>Click on this <a href="pca.html">link</a> to see the PCAs</p>
+<p>Click on this <a href="statsplot.html">link</a> to see the statsplot
+figures</p>
 </div>
 </div>
 </div>

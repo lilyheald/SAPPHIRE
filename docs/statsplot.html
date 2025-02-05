@@ -339,6 +339,12 @@ div.tocify {
 <li>
   <a href="license.html">License</a>
 </li>
+<li>
+  <a href="pca.html">PCA</a>
+</li>
+<li>
+  <a href="statsplot.html">statsplot</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -384,9 +390,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 5
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 2
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>sapphire/</code> <span
@@ -409,21 +415,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -564,15 +567,15 @@ SAfrADMIX/long.csv
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtreedf82f90b8591da32b72a3e371ba0eedded4b40b2targetblankdf82f90a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtree5636f2f4567034d1e851b72a93d1fa85f1c0f9c4targetblank5636f2fa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lilyheald/SAPPHIRE/tree/df82f90b8591da32b72a3e371ba0eedded4b40b2" target="_blank">df82f90</a>
+<a href="https://github.com/lilyheald/SAPPHIRE/tree/5636f2f4567034d1e851b72a93d1fa85f1c0f9c4" target="_blank">5636f2f</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtreedf82f90b8591da32b72a3e371ba0eedded4b40b2targetblankdf82f90a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtree5636f2f4567034d1e851b72a93d1fa85f1c0f9c4targetblank5636f2fa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -582,7 +585,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lilyheald/SAPPHIRE/tree/df82f90b8591da32b72a3e371ba0eedded4b40b2" target="_blank">df82f90</a>.
+<a href="https://github.com/lilyheald/SAPPHIRE/tree/5636f2f4567034d1e851b72a93d1fa85f1c0f9c4" target="_blank">5636f2f</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -603,7 +606,6 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    analysis/.RData
     Ignored:    analysis/.Rhistory
-    Ignored:    analysis/figure/
 
 Untracked files:
     Untracked:  .lock_gPLINK
@@ -613,14 +615,6 @@ Untracked files:
     Untracked:  analysis/lilyanalysis.Rmd
     Untracked:  data/dist_pops.csv
     Untracked:  data/summer_winter.csv
-
-Unstaged changes:
-    Deleted:    analysis/data_cleaning.Rmd
-    Deleted:    analysis/data_cleaning_composite.Rmd
-    Deleted:    analysis/data_modeling_1.Rmd
-    Modified:   analysis/lilyanalysis2.Rmd
-    Modified:   analysis/pca.Rmd
-    Modified:   analysis/statsplot.Rmd
 
 </code></pre>
 <p>
@@ -665,6 +659,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/analysis/statsplot.Rmd" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+<td>
+wflow
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/d9fb6da2d6d059b9574759423954f625c4010284/docs/statsplot.html" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+<td>
+wflow
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -726,6 +754,43 @@ write.csv(long_data, &quot;~/sapphire/SAfrADMIX/long.csv&quot;, row.names = F)</
   palette = &quot;GrandBudapest1&quot;
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-1">
+Past versions of unnamed-chunk-1-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-1-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggwithinstats(
   data = long_data,
   x = Season,
@@ -739,6 +804,43 @@ write.csv(long_data, &quot;~/sapphire/SAfrADMIX/long.csv&quot;, row.names = F)</
   palette = &quot;GrandBudapest1&quot;
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-2-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="goal-winter-versus-summer-t-test-across-all-colors"
 class="section level3">
 <h3>Goal: winter versus summer t test across all colors</h3>
@@ -806,6 +908,43 @@ combine_plots(
   width = 12 
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-3-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-3-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>library(ggstatsplot)
 
 ggwithinstats(
@@ -823,6 +962,43 @@ ggwithinstats(
   palette   = &quot;uniform_startrek&quot;
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-4-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p1 &lt;- ggwithinstats(
   data = long_data,
   x = Season,
@@ -939,6 +1115,43 @@ combine_plots(
   )
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-5-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-5-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>grouped_ggwithinstats(
   ## arguments relevant for ggwithinstats
   data = long_data,
@@ -961,6 +1174,43 @@ combine_plots(
   plotgrid.args = list(ncol = 1)
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-6-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>c1 &lt;- grouped_ggwithinstats(
   ## arguments relevant for ggwithinstats
   data = long_data,
@@ -1095,6 +1345,43 @@ combine_plots(
     theme = ggplot2::theme(plot.title = element_text(size = 30)))
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-7-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>r1 &lt;- grouped_ggwithinstats(
   ## arguments relevant for ggwithinstats
   data = long_data,
@@ -1229,6 +1516,43 @@ combine_plots(
     theme = ggplot2::theme(plot.title = element_text(size = 30)))
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-8-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>m1 &lt;- grouped_ggwithinstats(
   ## arguments relevant for ggwithinstats
   data = long_data,
@@ -1316,6 +1640,43 @@ combine_plots(
     title = &quot;Effect of season on ME color metrics across ethnicity&quot;)
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-9-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p1 &lt;- ggwithinstats(
   data = long_data,
   x = Season,
@@ -1380,6 +1741,43 @@ combine_plots(
   width = 12 
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-10-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-10-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>e1 &lt;- ggwithinstats(
   data = summer_winter,
   x = Ethnicity_summer,
@@ -1486,6 +1884,43 @@ combine_plots(
   width = 12 
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-11-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-11-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>e1 &lt;- ggwithinstats(
   data = summer_winter,
   x = Ethnicity_winter,
@@ -1592,6 +2027,43 @@ combine_plots(
   width = 12 
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-12-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-12-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>e1 &lt;- ggwithinstats(
   data = summer_winter,
   x = Ethnicity_summer,
@@ -1698,6 +2170,43 @@ combine_plots(
   width = 12 
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-13-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-13-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>e1 &lt;- ggwithinstats(
   data = summer_winter,
   x = Ethnicity_winter,
@@ -1804,6 +2313,43 @@ combine_plots(
   width = 12 
 )</code></pre>
 <p><img src="figure/statsplot.Rmd/unnamed-chunk-14-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/unnamed-chunk-14-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="linear-mixed-effects-model" class="section level2">
 <h2>linear mixed effects model</h2>
@@ -2055,6 +2601,43 @@ combine_plots(
 )</code></pre>
 <pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
 <p><img src="figure/statsplot.Rmd/effects-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-effects-1">
+Past versions of effects-1.png
+</button>
+</p>
+<div id="fig-effects-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/effects-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>erythema1 &lt;- stats::lm(formula = Value ~ Ethnicity + Season, data = erythema)
 combine_plots(
   plotlist = list(
@@ -2071,6 +2654,43 @@ combine_plots(
 )</code></pre>
 <pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
 <p><img src="figure/statsplot.Rmd/effects-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-effects-2">
+Past versions of effects-2.png
+</button>
+</p>
+<div id="fig-effects-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/statsplot.Rmd/effects-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
