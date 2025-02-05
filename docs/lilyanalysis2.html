@@ -1,0 +1,5117 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>PCA</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SAPPHIRE</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+<li>
+  <a href="pca.html">PCA</a>
+</li>
+<li>
+  <a href="statsplot.html">statsplot</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">PCA</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-02-04
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>sapphire/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240923code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240923)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240923code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240923)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongabsolute">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>File paths:</strong> absolute </a>
+</p>
+</div>
+<div id="strongFilepathsstrongabsolute" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Using absolute paths to the files within your workflowr project makes it
+difficult for you and others to run your code on a different machine.
+Change the absolute path(s) below to the suggested relative path(s) to
+make your code more reproducible.
+</p>
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th style="text-align:left;">
+absolute
+</th>
+<th style="text-align:left;">
+relative
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+~/sapphire/data/serum_vit_D_study_with_lab_results.xlsx
+</td>
+<td style="text-align:left;">
+data/serum_vit_D_study_with_lab_results.xlsx
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+~/sapphire/data/sun_expos_data/sun_expos_long.csv
+</td>
+<td style="text-align:left;">
+data/sun_expos_data/sun_expos_long.csv
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+~/sapphire/SAfrADMIX/SAfrADMIX.ped
+</td>
+<td style="text-align:left;">
+SAfrADMIX/SAfrADMIX.ped
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+~/sapphire/SAfrADMIX/SAfrADMIX.map
+</td>
+<td style="text-align:left;">
+SAfrADMIX/SAfrADMIX.map
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtree9e197c379cc14a411b3996d671f4bf53ab307b29targetblank9e197c3a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/lilyheald/SAPPHIRE/tree/9e197c379cc14a411b3996d671f4bf53ab307b29" target="_blank">9e197c3</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtree9e197c379cc14a411b3996d671f4bf53ab307b29targetblank9e197c3a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/lilyheald/SAPPHIRE/tree/9e197c379cc14a411b3996d671f4bf53ab307b29" target="_blank">9e197c3</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .RData
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.RData
+    Ignored:    analysis/.Rhistory
+
+Untracked files:
+    Untracked:  .lock_gPLINK
+    Untracked:  .metafile_gPLINK
+    Untracked:  SAfrADMIX/
+    Untracked:  analysis/genotype.R
+    Untracked:  analysis/lilyanalysis.Rmd
+    Untracked:  data/dist_pops.csv
+    Untracked:  data/summer_winter.csv
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/lilyanalysis2.Rmd</code>) and
+HTML (<code>docs/lilyanalysis2.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/analysis/lilyanalysis2.Rmd" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+<td>
+wflow
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/d9fb6da2d6d059b9574759423954f625c4010284/docs/lilyanalysis2.html" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+<td>
+wflow
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/a4de898e78c06cf39b1eae0a6e27071c4cbdc82d/analysis/lilyanalysis2.Rmd" target="_blank">a4de898</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+<td>
+create lilyanalysis2.Rmd
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<pre class="r"><code>file_path &lt;- &quot;~/sapphire/data/serum_vit_D_study_with_lab_results.xlsx&quot; 
+data_summer &lt;- read_excel(file_path, sheet = &quot;ScreeningDataCollectionSummer&quot;)
+data_winter &lt;- read_excel(file_path, sheet = &quot;ScreeningDataCollectionWinter&quot;)
+data_6weeks &lt;- read_excel(file_path, sheet = &quot;ScreeningDataCollection6Weeks&quot;)
+sun_expos &lt;- read.csv(&quot;~/sapphire/data/sun_expos_data/sun_expos_long.csv&quot;)
+sun_expos_summer &lt;- sun_expos[sun_expos$collection_period == &#39;Summer&#39;, ]
+sun_expos_winter &lt;- sun_expos[sun_expos$collection_period == &#39;Winter&#39;, ]
+sun_expos_6Weeks &lt;- sun_expos[sun_expos$collection_period == &#39;6Weeks&#39;, ]
+SAfrADMIX &lt;- read.table(&quot;~/sapphire/SAfrADMIX/SAfrADMIX.ped&quot;)
+SAfrADMIXm &lt;- read.table(&quot;~/sapphire/SAfrADMIX/SAfrADMIX.map&quot;)</code></pre>
+<div id="part-0-cleaning" class="section level1">
+<h1>part 0: cleaning</h1>
+<pre class="r"><code>summer_data &lt;- left_join(data_summer, sun_expos_summer, 
+                     by = c(&quot;ParticipantCentreID&quot; = &quot;participant_centre_id&quot;))
+
+winter_data &lt;- left_join(data_winter, sun_expos_winter, 
+                     by = c(&quot;ParticipantCentreID&quot; = &quot;participant_centre_id&quot;))
+
+six_week_data &lt;- left_join(data_6weeks, sun_expos_6Weeks, 
+                     by = c(&quot;ParticipantCentreID&quot; = &quot;participant_centre_id&quot;))</code></pre>
+<pre class="r"><code>summer_data = subset(summer_data, select = -c(Supplements, Medications, 
+                                              EthnicitySpecifyOther, SmokingComments,
+                                              x9if_apply_sunscreen_spf_used))
+winter_data = subset(winter_data, select = -c(Supplements, Medications, 
+                                              EthnicitySpecifyOther, SmokingComments, 
+                                              ContinuedInStudy, IfNotContinuedInStudyReason,
+                                              x9if_apply_sunscreen_spf_used))
+six_week_data = subset(six_week_data, select = -c(Supplements, Medications, 
+                                              EthnicitySpecifyOther, SmokingComments, 
+                                              ContinuedInStudy, IfNotContinuedInStudyReason,
+                                              x9if_apply_sunscreen_spf_used))
+six_week_data = six_week_data[,!grepl(&quot;IfNoReasonForExclusion:&quot;,names(six_week_data))]
+winter_data = winter_data[,!grepl(&quot;IfNoReasonForExclusion:&quot;,names(winter_data))]
+summer_data = summer_data[,!grepl(&quot;IfNoReasonForExclusion:&quot;,names(summer_data))]
+six_week_data = six_week_data[,!grepl(&quot;Req Num&quot;,names(six_week_data))]
+winter_data = winter_data[,!grepl(&quot;Req Num&quot;,names(winter_data))]
+summer_data = summer_data[,!grepl(&quot;Req Num&quot;,names(summer_data))]</code></pre>
+<pre class="r"><code># taking the median of three measurements
+sites &lt;- c(&quot;Forehead&quot;, &quot;RightUpperInnerArm&quot;, &quot;LeftUpperInnerArm&quot;)
+metrics &lt;- c(&quot;E&quot;, &quot;M&quot;, &quot;R&quot;, &quot;G&quot;, &quot;B&quot;, &quot;L\\*&quot;, &quot;a\\*&quot;, &quot;b\\*&quot;)
+seasons &lt;- c(&quot;six_week_data&quot;, &quot;summer_data&quot;, &quot;winter_data&quot;)
+
+for(site in sites) {
+  for(metric in metrics) {
+    six_week_data &lt;- six_week_data %&gt;%
+      rowwise() %&gt;%
+      mutate(!!paste0(&quot;Median&quot;, site, metric) := median(c_across(matches(paste0(&quot;SkinReflectance&quot;, site, metric, &quot;[123]&quot;))), na.rm = TRUE)) %&gt;%
+      ungroup()
+  }
+}
+
+for(site in sites) {
+  for(metric in metrics) {
+    summer_data &lt;- summer_data %&gt;%
+      rowwise() %&gt;%
+      mutate(!!paste0(&quot;Median&quot;, site, metric) := median(c_across(matches(paste0(&quot;SkinReflectance&quot;, site, metric, &quot;[123]&quot;))), na.rm = TRUE)) %&gt;%
+      ungroup()
+  }
+}
+
+for(site in sites) {
+  for(metric in metrics) {
+    winter_data &lt;- winter_data %&gt;%
+      rowwise() %&gt;%
+      mutate(!!paste0(&quot;Median&quot;, site, metric) := median(c_across(matches(paste0(&quot;SkinReflectance&quot;, site, metric, &quot;[123]&quot;))), na.rm = TRUE)) %&gt;%
+      ungroup()
+  }
+}
+
+winter_data &lt;- winter_data %&gt;%
+  select(-matches(&quot;.*[EMRGBL\\*a\\*b\\*]\\d$&quot;))
+
+summer_data &lt;- summer_data %&gt;%
+  select(-matches(&quot;.*[EMRGBL\\*a\\*b\\*]\\d$&quot;))
+
+six_week_data &lt;- six_week_data %&gt;%
+  select(-matches(&quot;.*[EMRGBL\\*a\\*b\\*]\\d$&quot;))</code></pre>
+<pre class="r"><code>ethnicity &lt;- function(EthnicityAfricanBlack, EthnicityColoured, EthnicityWhite, 
+                      EthnicityIndianAsian) {
+  case_when(
+    EthnicityAfricanBlack == TRUE &amp; 
+      EthnicityColoured == FALSE &amp; 
+      EthnicityWhite == FALSE &amp; 
+      EthnicityIndianAsian == FALSE ~ &quot;Xhosa&quot;,
+    EthnicityAfricanBlack == FALSE &amp; 
+      EthnicityColoured == TRUE &amp; 
+      EthnicityWhite == FALSE &amp; 
+      EthnicityIndianAsian == FALSE ~ &quot;Cape_colored&quot;,
+    TRUE ~ NA_character_
+  )
+}
+
+summer_data &lt;- summer_data %&gt;%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+summer_data = subset(summer_data, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian))
+
+winter_data &lt;- winter_data %&gt;%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+winter_data = subset(winter_data, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian))
+
+six_week_data &lt;- six_week_data %&gt;%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+six_week_data = subset(six_week_data, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian))</code></pre>
+<pre class="r"><code># mean left and right inner arm
+for (metric in metrics) {
+  summer_data &lt;- summer_data %&gt;%
+    mutate(!!paste0(&quot;MedianInnerArm&quot;, metric) := rowMeans(
+      select(., starts_with(paste0(&quot;MedianLeftInnerArm&quot;, metric)),
+                 starts_with(paste0(&quot;MedianRightUpperInnerArm&quot;, metric))),
+      na.rm = TRUE
+    ))
+}
+
+for (metric in metrics) {
+  winter_data &lt;- winter_data %&gt;%
+    mutate(!!paste0(&quot;MedianInnerArm&quot;, metric) := rowMeans(
+      select(., starts_with(paste0(&quot;MedianLeftInnerArm&quot;, metric)),
+                 starts_with(paste0(&quot;MedianRightUpperInnerArm&quot;, metric))),
+      na.rm = TRUE
+    ))
+}
+
+for (metric in metrics) {
+  six_week_data &lt;- six_week_data %&gt;%
+    mutate(!!paste0(&quot;MedianInnerArm&quot;, metric) := rowMeans(
+      select(., starts_with(paste0(&quot;MedianLeftInnerArm&quot;, metric)),
+                 starts_with(paste0(&quot;MedianRightUpperInnerArm&quot;, metric))),
+      na.rm = TRUE
+    ))
+}
+
+winter_data &lt;- winter_data %&gt;%
+  select(-matches(&quot;Left|Right&quot;))
+
+summer_data &lt;- summer_data %&gt;%
+  select(-matches(&quot;Left|Right&quot;))
+
+six_week_data &lt;- six_week_data %&gt;%
+  select(-matches(&quot;Left|Right&quot;))</code></pre>
+<pre class="r"><code>for (metric in metrics) {
+  six_week_data &lt;- six_week_data %&gt;%
+    mutate(!!paste0(metric, &quot;Difference&quot;) :=
+             .[[paste0(&quot;MedianForehead&quot;, metric)]] -
+             .[[paste0(&quot;MedianInnerArm&quot;, metric)]])
+}
+
+for (metric in metrics) {
+  summer_data &lt;- summer_data %&gt;%
+    mutate(!!paste0(metric, &quot;Difference&quot;) :=
+             .[[paste0(&quot;MedianForehead&quot;, metric)]] -
+             .[[paste0(&quot;MedianInnerArm&quot;, metric)]])
+}
+
+for (metric in metrics) {
+  winter_data &lt;- winter_data %&gt;%
+    mutate(!!paste0(metric, &quot;Difference&quot;) :=
+             .[[paste0(&quot;MedianForehead&quot;, metric)]] -
+             .[[paste0(&quot;MedianInnerArm&quot;, metric)]])
+}</code></pre>
+<pre class="r"><code>ggplot(six_week_data, aes(x = VitDResult, y = MedianForeheadM, color = Ethnicity)) +
+  geom_jitter() +
+  theme(legend.position = &quot;right&quot;)</code></pre>
+<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/dist_initial-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dist_initial-1">
+Past versions of dist_initial-1.png
+</button>
+</p>
+<div id="fig-dist_initial-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/dist_initial-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ggplot(six_week_data, aes(x = Ethnicity, y = MedianForeheadM, color = Ethnicity, fill = Ethnicity)) + 
+  geom_violin()</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/dist_initial-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dist_initial-2">
+Past versions of dist_initial-2.png
+</button>
+</p>
+<div id="fig-dist_initial-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/dist_initial-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ggplot(summer_data, aes(x = VitDResult, y = MedianForeheadM, color = Ethnicity)) +
+  geom_jitter() +
+  theme(legend.position = &quot;right&quot;)</code></pre>
+<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/dist_initial-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dist_initial-3">
+Past versions of dist_initial-3.png
+</button>
+</p>
+<div id="fig-dist_initial-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/dist_initial-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ggplot(summer_data, aes(x = Ethnicity, y = MedianForeheadM, color = Ethnicity, fill = Ethnicity)) + 
+  geom_boxplot()</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/dist_initial-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dist_initial-4">
+Past versions of dist_initial-4.png
+</button>
+</p>
+<div id="fig-dist_initial-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/dist_initial-4.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code># there are still outliers even when taking the median
+sites &lt;- c(&quot;Forehead&quot;, &quot;InnerArm&quot;)
+for(site in sites) {
+  for(metric in metrics) {
+    column_name &lt;- paste0(&quot;Median&quot;, site, metric)
+    iqr &lt;- IQR(winter_data[[column_name]], na.rm = TRUE)
+    Q &lt;- quantile(winter_data[[column_name]], probs = c(0.25, 0.75), na.rm = TRUE)
+    up &lt;- Q[2] + 1.5 * iqr
+    low &lt;- Q[1] - 1.5 * iqr
+    winter_data &lt;- winter_data %&gt;%
+      filter(!!sym(column_name) &gt; low &amp; !!sym(column_name) &lt; up)
+  }
+}
+
+for(site in sites) {
+  for(metric in metrics) {
+    column_name &lt;- paste0(&quot;Median&quot;, site, metric)
+    iqr &lt;- IQR(summer_data[[column_name]], na.rm = TRUE)
+    Q &lt;- quantile(summer_data[[column_name]], probs = c(0.25, 0.75), na.rm = TRUE)
+    up &lt;- Q[2] + 1.5 * iqr
+    low &lt;- Q[1] - 1.5 * iqr
+    summer_data &lt;- summer_data %&gt;%
+      filter(!!sym(column_name) &gt; low &amp; !!sym(column_name) &lt; up)
+  }
+}
+
+for(site in sites) {
+  for(metric in metrics) {
+    column_name &lt;- paste0(&quot;Median&quot;, site, metric)
+    iqr &lt;- IQR(winter_data[[column_name]], na.rm = TRUE)
+    Q &lt;- quantile(winter_data[[column_name]], probs = c(0.25, 0.75), na.rm = TRUE)
+    up &lt;- Q[2] + 1.5 * iqr
+    low &lt;- Q[1] - 1.5 * iqr
+    six_week_data &lt;- six_week_data %&gt;%
+      filter(!!sym(column_name) &gt; low &amp; !!sym(column_name) &lt; up)
+  }
+}</code></pre>
+<pre class="r"><code>ggplot(six_week_data, aes(x = VitDResult, y = MedianForeheadM, color = Ethnicity)) +
+  geom_jitter() +
+  theme(legend.position = &quot;right&quot;)</code></pre>
+<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/dist_trimmed-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dist_trimmed-1">
+Past versions of dist_trimmed-1.png
+</button>
+</p>
+<div id="fig-dist_trimmed-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/dist_trimmed-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ggplot(six_week_data, aes(x = Ethnicity, y = MedianForeheadM, color = Ethnicity, fill = Ethnicity)) + 
+  geom_violin()</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/dist_trimmed-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dist_trimmed-2">
+Past versions of dist_trimmed-2.png
+</button>
+</p>
+<div id="fig-dist_trimmed-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/dist_trimmed-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ggplot(summer_data, aes(x = VitDResult, y = MedianForeheadM, color = Ethnicity)) +
+  geom_jitter() +
+  theme(legend.position = &quot;right&quot;)</code></pre>
+<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/dist_trimmed-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dist_trimmed-3">
+Past versions of dist_trimmed-3.png
+</button>
+</p>
+<div id="fig-dist_trimmed-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/dist_trimmed-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ggplot(summer_data, aes(x = Ethnicity, y = MedianForeheadM, color = Ethnicity, fill = Ethnicity)) + 
+  geom_boxplot()</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/dist_trimmed-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dist_trimmed-4">
+Past versions of dist_trimmed-4.png
+</button>
+</p>
+<div id="fig-dist_trimmed-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/dist_trimmed-4.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>six_week_rename &lt;- six_week_data %&gt;%
+    rename_with(~ paste0(., &quot;-6weeks&quot;), -ParticipantCentreID)
+
+joinone &lt;- left_join(summer_data, winter_data, 
+                     by = &quot;ParticipantCentreID&quot;, 
+                     suffix = c(&quot;-summer&quot;, &quot;-winter&quot;))
+
+joined_data &lt;- left_join(joinone, six_week_rename, 
+                         by = &quot;ParticipantCentreID&quot;)
+
+head(joined_data)</code></pre>
+<pre><code># A tibble: 6 × 256
+  ParticipantCentreID `InterviewerName-summer` `TodayDate-summer` 
+  &lt;chr&gt;               &lt;chr&gt;                    &lt;dttm&gt;             
+1 VDKH001             Betty                    2013-02-11 00:00:00
+2 VDKH002             Betty                    2013-02-11 00:00:00
+3 VDKH003             Betty                    2013-02-11 00:00:00
+4 VDKH004             Betty                    2013-02-12 00:00:00
+5 VDKH005             Betty                    2013-02-12 00:00:00
+6 VDKH006             Betty                    2013-02-12 00:00:00
+# ℹ 253 more variables: `AgeYears-summer` &lt;dbl&gt;, `DateOfBirth-summer` &lt;dttm&gt;,
+#   `Gender-summer` &lt;dbl&gt;, `EthnicityOther-summer` &lt;lgl&gt;,
+#   `Ethnicity-summer` &lt;chr&gt;, `RefuseToAnswer-summer` &lt;lgl&gt;,
+#   `AvgWeight-summer` &lt;dbl&gt;, `AvgHeight-summer` &lt;dbl&gt;, `BMI-summer` &lt;dbl&gt;,
+#   `SoreThroatYes-summer` &lt;lgl&gt;, `SoreThroatNo-summer` &lt;lgl&gt;,
+#   `RunnyNoseYes-summer` &lt;lgl&gt;, `RunnyNoseNo-summer` &lt;lgl&gt;,
+#   `CoughYes-summer` &lt;lgl&gt;, `CoughNo-summer` &lt;lgl&gt;, `FeverYes-summer` &lt;lgl&gt;, …</code></pre>
+<pre class="r"><code>#join into pheno_dat
+six_week_rename &lt;- six_week_data %&gt;%
+    rename_with(~ paste0(., &quot;-6weeks&quot;), -ParticipantCentreID)
+
+phenojoinone &lt;- left_join(summer_data, winter_data, 
+                     by = &quot;ParticipantCentreID&quot;, 
+                     suffix = c(&quot;-summer&quot;, &quot;-winter&quot;))
+
+pheno_dat &lt;- left_join(phenojoinone, six_week_rename, 
+                         by = &quot;ParticipantCentreID&quot;)
+
+# create tanning columns
+pheno_dat &lt;- pheno_dat %&gt;%
+  mutate(tanning = coalesce(`MDifference-summer` - `MDifference-winter`, 0),
+         foreheadtanning = coalesce(`MedianForeheadM-summer` - `MedianForeheadM-winter`, 0))
+
+#change ParticipantCentreID to IID
+pheno_dat$ParticipantCentreID &lt;- gsub(&quot;([A-Z]{4})0([0-9]{2})&quot;, &quot;\\1\\2&quot;, pheno_dat$ParticipantCentreID)
+names(pheno_dat)[names(pheno_dat) == &quot;ParticipantCentreID&quot;] &lt;- &quot;IID&quot;
+pheno_dat$IID &lt;- gsub(&quot;VDKH([0-9]+)&quot;, &quot;VDKHS\\1&quot;, pheno_dat$IID)
+
+#subset by phenotype data
+pheno_dat &lt;- pheno_dat %&gt;%
+  select(matches(&quot;MedianForehead|InnerArm|Difference|tanning|VitD|IID&quot;))
+
+#Create FID
+pheno_dat &lt;- pheno_dat %&gt;%
+  mutate(FID = case_when(
+    grepl(&quot;^VDTG&quot;, IID) ~ gsub(&quot;^VDTG&quot;, &quot;CM&quot;, IID),
+    grepl(&quot;^VDKHS&quot;, IID) ~ gsub(&quot;^VDKHS&quot;, &quot;XH&quot;, IID),
+    TRUE ~ IID))
+
+# move FID to first column to match format
+pheno_dat &lt;- pheno_dat %&gt;%
+  select(&quot;FID&quot;, everything()) 
+tanning_data &lt;- pheno_dat %&gt;%
+  select(c(&quot;FID&quot;, &quot;IID&quot;, &quot;foreheadtanning&quot;))</code></pre>
+</div>
+<div id="part-1-pcas" class="section level1">
+<h1>part 1: PCAs</h1>
+<p>PCAs to run: - run wideform pca - run pigmentation subset pca for
+each season - run RGB subset for each season - run ME subset for each
+season - run CIElab subset for each season</p>
+<div id="wideform" class="section level2">
+<h2>wideform</h2>
+<pre class="r"><code>summer_winter &lt;- left_join(summer_data, winter_data, 
+                     by = &quot;ParticipantCentreID&quot;, 
+                     suffix = c(&quot;-summer&quot;, &quot;-winter&quot;))</code></pre>
+<pre class="r"><code>summer_winter_clean &lt;- na.omit(summer_winter)
+reflectance_metrics_ws &lt;- summer_winter_clean %&gt;%
+  select(matches(&quot;MedianForehead|InnerArm&quot;))
+reflectance_metrics_ws</code></pre>
+<pre><code># A tibble: 62 × 32
+   `MedianForeheadE-summer` `MedianForeheadM-summer` `MedianForeheadR-summer`
+                      &lt;dbl&gt;                    &lt;dbl&gt;                    &lt;dbl&gt;
+ 1                     18.6                     70.6                       50
+ 2                     17.4                     74.7                       45
+ 3                     14.3                     69.6                       51
+ 4                     19.7                     63.0                       57
+ 5                     15.3                     82.1                       38
+ 6                     23.8                     69.0                       51
+ 7                     18.9                     59.3                       66
+ 8                     18.6                     64.6                       59
+ 9                     18.3                     79.8                       39
+10                     15.5                     75.0                       44
+# ℹ 52 more rows
+# ℹ 29 more variables: `MedianForeheadG-summer` &lt;dbl&gt;,
+#   `MedianForeheadB-summer` &lt;dbl&gt;, `MedianForeheadL\\*-summer` &lt;dbl&gt;,
+#   `MedianForeheada\\*-summer` &lt;dbl&gt;, `MedianForeheadb\\*-summer` &lt;dbl&gt;,
+#   `MedianInnerArmE-summer` &lt;dbl&gt;, `MedianInnerArmM-summer` &lt;dbl&gt;,
+#   `MedianInnerArmR-summer` &lt;dbl&gt;, `MedianInnerArmG-summer` &lt;dbl&gt;,
+#   `MedianInnerArmB-summer` &lt;dbl&gt;, `MedianInnerArmL\\*-summer` &lt;dbl&gt;, …</code></pre>
+<pre class="r"><code>reflectance3 &lt;- scale(reflectance_metrics_ws)
+reflectancepcaws &lt;- prcomp(reflectance3)
+summary(reflectancepcaws)</code></pre>
+<pre><code>Importance of components:
+                          PC1     PC2     PC3     PC4     PC5     PC6     PC7
+Standard deviation     4.8708 1.76349 1.30313 0.98821 0.75880 0.72092 0.68732
+Proportion of Variance 0.7414 0.09718 0.05307 0.03052 0.01799 0.01624 0.01476
+Cumulative Proportion  0.7414 0.83857 0.89163 0.92215 0.94014 0.95639 0.97115
+                           PC8     PC9    PC10    PC11    PC12    PC13    PC14
+Standard deviation     0.53700 0.44642 0.39456 0.27647 0.21339 0.18908 0.16793
+Proportion of Variance 0.00901 0.00623 0.00486 0.00239 0.00142 0.00112 0.00088
+Cumulative Proportion  0.98016 0.98639 0.99125 0.99364 0.99506 0.99618 0.99706
+                          PC15    PC16    PC17    PC18    PC19    PC20    PC21
+Standard deviation     0.15503 0.13513 0.11606 0.09057 0.08605 0.07618 0.06043
+Proportion of Variance 0.00075 0.00057 0.00042 0.00026 0.00023 0.00018 0.00011
+Cumulative Proportion  0.99781 0.99838 0.99881 0.99906 0.99929 0.99947 0.99959
+                         PC22    PC23    PC24    PC25    PC26    PC27    PC28
+Standard deviation     0.0575 0.04986 0.04625 0.03954 0.03070 0.02852 0.02518
+Proportion of Variance 0.0001 0.00008 0.00007 0.00005 0.00003 0.00003 0.00002
+Cumulative Proportion  0.9997 0.99977 0.99984 0.99989 0.99991 0.99994 0.99996
+                          PC29    PC30    PC31     PC32
+Standard deviation     0.02232 0.01997 0.01714 0.009283
+Proportion of Variance 0.00002 0.00001 0.00001 0.000000
+Cumulative Proportion  0.99998 0.99999 1.00000 1.000000</code></pre>
+<pre class="r"><code>reflectancepcaws$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(reflectancepcaws, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summer_winterpca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summer_winterpca-1">
+Past versions of summer_winterpca-1.png
+</button>
+</p>
+<div id="fig-summer_winterpca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summer_winterpca-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(reflectancepcaws, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summer_winterpca-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summer_winterpca-2">
+Past versions of summer_winterpca-2.png
+</button>
+</p>
+<div id="fig-summer_winterpca-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summer_winterpca-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(reflectancepcaws, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summer_winterpca-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summer_winterpca-3">
+Past versions of summer_winterpca-3.png
+</button>
+</p>
+<div id="fig-summer_winterpca-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summer_winterpca-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>wscomps &lt;- as.data.frame(reflectancepcaws$x)
+reflectance_ws &lt;- cbind(summer_winter_clean,wscomps[,c(1,2)])
+reflectance_ws &lt;- reflectance_ws %&gt;%
+  select(-matches(&quot;SkinReflectance&quot;))
+reflectance_ws &lt;- reflectance_ws %&gt;%
+  select(-&quot;Ethnicity-winter&quot;)
+names(reflectance_ws)[names(reflectance_ws) == &#39;Ethnicity-summer&#39;] &lt;- &#39;Ethnicity&#39;
+
+
+ggplot(reflectance_ws, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Wide Pigmentation PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/wspcavis-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-wspcavis-1">
+Past versions of wspcavis-1.png
+</button>
+</p>
+<div id="fig-wspcavis-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/wspcavis-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(reflectancepcaws, choice = &quot;var&quot;, axes = 1, top = 20)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/wspcavis-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-wspcavis-2">
+Past versions of wspcavis-2.png
+</button>
+</p>
+<div id="fig-wspcavis-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/wspcavis-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(reflectancepcaws, choice = &quot;var&quot;, axes = 2, top = 20)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/wspcavis-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-wspcavis-3">
+Past versions of wspcavis-3.png
+</button>
+</p>
+<div id="fig-wspcavis-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/wspcavis-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="pigmentation-subset" class="section level2">
+<h2>pigmentation subset</h2>
+<pre class="r"><code>summer_refl_metrics &lt;- summer_data %&gt;%
+  select(matches(&quot;InnerArm|MedianForehead&quot;))
+summer_refl_metrics &lt;- na.omit(summer_refl_metrics)
+
+winter_refl_metrics &lt;- winter_data %&gt;%
+  select(matches(&quot;InnerArm|MedianForehead&quot;))
+winter_refl_metrics &lt;- na.omit(winter_refl_metrics)
+
+six_refl_metrics &lt;- six_week_data %&gt;%
+  select(matches(&quot;InnerArm|MedianForehead&quot;))
+six_refl_metrics &lt;- na.omit(six_refl_metrics)</code></pre>
+<pre class="r"><code>six_refl &lt;- scale(six_refl_metrics)
+six_refl_pca &lt;- prcomp(six_refl)
+summary(six_refl_pca)</code></pre>
+<pre><code>Importance of components:
+                          PC1    PC2     PC3     PC4     PC5     PC6     PC7
+Standard deviation     3.2964 1.5335 1.08843 0.95116 0.51710 0.41484 0.35240
+Proportion of Variance 0.6792 0.1470 0.07404 0.05654 0.01671 0.01076 0.00776
+Cumulative Proportion  0.6792 0.8261 0.90017 0.95672 0.97343 0.98419 0.99195
+                           PC8     PC9    PC10    PC11    PC12    PC13    PC14
+Standard deviation     0.22910 0.18667 0.12819 0.09787 0.08233 0.06270 0.04608
+Proportion of Variance 0.00328 0.00218 0.00103 0.00060 0.00042 0.00025 0.00013
+Cumulative Proportion  0.99523 0.99741 0.99843 0.99903 0.99945 0.99970 0.99983
+                          PC15    PC16
+Standard deviation     0.04018 0.03245
+Proportion of Variance 0.00010 0.00007
+Cumulative Proportion  0.99993 1.00000</code></pre>
+<pre class="r"><code>six_refl_pca$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(six_refl_pca, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixpigpca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixpigpca-1">
+Past versions of sixpigpca-1.png
+</button>
+</p>
+<div id="fig-sixpigpca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixpigpca-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(six_refl_pca, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixpigpca-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixpigpca-2">
+Past versions of sixpigpca-2.png
+</button>
+</p>
+<div id="fig-sixpigpca-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixpigpca-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(six_refl_pca, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixpigpca-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixpigpca-3">
+Past versions of sixpigpca-3.png
+</button>
+</p>
+<div id="fig-sixpigpca-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixpigpca-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>six_pigm_comps &lt;- as.data.frame(six_refl_pca$x)
+six_pigment &lt;- cbind(six_week_data,six_pigm_comps[,c(1,2)])
+
+ggplot(six_pigment, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Six Week Pigmentation PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixpigcomps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixpigcomps-1">
+Past versions of sixpigcomps-1.png
+</button>
+</p>
+<div id="fig-sixpigcomps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixpigcomps-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(six_refl_pca, choice = &quot;var&quot;, axes = 1, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixpigcomps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixpigcomps-2">
+Past versions of sixpigcomps-2.png
+</button>
+</p>
+<div id="fig-sixpigcomps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixpigcomps-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(six_refl_pca, choice = &quot;var&quot;, axes = 2, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixpigcomps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixpigcomps-3">
+Past versions of sixpigcomps-3.png
+</button>
+</p>
+<div id="fig-sixpigcomps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixpigcomps-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>summer_refl &lt;- scale(summer_refl_metrics)
+summer_refl_pca &lt;- prcomp(summer_refl)
+summary(summer_refl_pca)</code></pre>
+<pre><code>Importance of components:
+                          PC1    PC2     PC3     PC4     PC5     PC6     PC7
+Standard deviation     3.4440 1.2656 1.16829 0.77092 0.57471 0.34227 0.21398
+Proportion of Variance 0.7413 0.1001 0.08531 0.03714 0.02064 0.00732 0.00286
+Cumulative Proportion  0.7413 0.8414 0.92673 0.96387 0.98451 0.99184 0.99470
+                           PC8     PC9    PC10    PC11    PC12    PC13    PC14
+Standard deviation     0.17570 0.13639 0.10998 0.09641 0.08085 0.06305 0.04166
+Proportion of Variance 0.00193 0.00116 0.00076 0.00058 0.00041 0.00025 0.00011
+Cumulative Proportion  0.99663 0.99779 0.99855 0.99913 0.99954 0.99978 0.99989
+                          PC15    PC16
+Standard deviation     0.03153 0.02710
+Proportion of Variance 0.00006 0.00005
+Cumulative Proportion  0.99995 1.00000</code></pre>
+<pre class="r"><code>summer_refl_pca$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(summer_refl_pca, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerpigpca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerpigpca-1">
+Past versions of summerpigpca-1.png
+</button>
+</p>
+<div id="fig-summerpigpca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerpigpca-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(summer_refl_pca, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerpigpca-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerpigpca-2">
+Past versions of summerpigpca-2.png
+</button>
+</p>
+<div id="fig-summerpigpca-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerpigpca-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(summer_refl_pca, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerpigpca-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerpigpca-3">
+Past versions of summerpigpca-3.png
+</button>
+</p>
+<div id="fig-summerpigpca-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerpigpca-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>summer_pigm_comps &lt;- as.data.frame(summer_refl_pca$x)
+summer_pigment &lt;- cbind(summer_data,summer_pigm_comps[,c(1,2)])
+
+ggplot(summer_pigment, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Summer Pigmentation PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerpigcomps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerpigcomps-1">
+Past versions of summerpigcomps-1.png
+</button>
+</p>
+<div id="fig-summerpigcomps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerpigcomps-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(summer_refl_pca, choice = &quot;var&quot;, axes = 1, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerpigcomps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerpigcomps-2">
+Past versions of summerpigcomps-2.png
+</button>
+</p>
+<div id="fig-summerpigcomps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerpigcomps-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(summer_refl_pca, choice = &quot;var&quot;, axes = 2, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerpigcomps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerpigcomps-3">
+Past versions of summerpigcomps-3.png
+</button>
+</p>
+<div id="fig-summerpigcomps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerpigcomps-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>winter_refl &lt;- scale(winter_refl_metrics)
+winter_refl_pca &lt;- prcomp(winter_refl)
+summary(winter_refl_pca)</code></pre>
+<pre><code>Importance of components:
+                          PC1    PC2     PC3     PC4     PC5     PC6     PC7
+Standard deviation     3.5551 1.3839 0.80737 0.64068 0.48775 0.26632 0.15397
+Proportion of Variance 0.7899 0.1197 0.04074 0.02565 0.01487 0.00443 0.00148
+Cumulative Proportion  0.7899 0.9096 0.95038 0.97603 0.99090 0.99534 0.99682
+                           PC8     PC9    PC10    PC11    PC12    PC13    PC14
+Standard deviation     0.14316 0.12764 0.07986 0.06160 0.03646 0.03546 0.02830
+Proportion of Variance 0.00128 0.00102 0.00040 0.00024 0.00008 0.00008 0.00005
+Cumulative Proportion  0.99810 0.99912 0.99952 0.99975 0.99984 0.99991 0.99996
+                          PC15    PC16
+Standard deviation     0.01758 0.01615
+Proportion of Variance 0.00002 0.00002
+Cumulative Proportion  0.99998 1.00000</code></pre>
+<pre class="r"><code>winter_refl_pca$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(winter_refl_pca, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterpigpca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterpigpca-1">
+Past versions of winterpigpca-1.png
+</button>
+</p>
+<div id="fig-winterpigpca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterpigpca-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(winter_refl_pca, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterpigpca-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterpigpca-2">
+Past versions of winterpigpca-2.png
+</button>
+</p>
+<div id="fig-winterpigpca-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterpigpca-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(winter_refl_pca, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterpigpca-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterpigpca-3">
+Past versions of winterpigpca-3.png
+</button>
+</p>
+<div id="fig-winterpigpca-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterpigpca-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>winter_pigm_comps &lt;- as.data.frame(winter_refl_pca$x)
+winter_pigment &lt;- cbind(winter_data,winter_pigm_comps[,c(1,2)])
+
+ggplot(winter_pigment, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Winter Pigmentation PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterpigcomps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterpigcomps-1">
+Past versions of winterpigcomps-1.png
+</button>
+</p>
+<div id="fig-winterpigcomps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterpigcomps-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(winter_refl_pca, choice = &quot;var&quot;, axes = 1, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterpigcomps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterpigcomps-2">
+Past versions of winterpigcomps-2.png
+</button>
+</p>
+<div id="fig-winterpigcomps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterpigcomps-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(winter_refl_pca, choice = &quot;var&quot;, axes = 2, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterpigcomps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterpigcomps-3">
+Past versions of winterpigcomps-3.png
+</button>
+</p>
+<div id="fig-winterpigcomps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterpigcomps-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="rgb-subset" class="section level2">
+<h2>RGB subset</h2>
+<pre class="r"><code>summer_winter_clean &lt;- na.omit(summer_winter)
+reflectance_rgb_ws &lt;- summer_winter_clean %&gt;%
+  select(matches(&quot;MedianForeheadR|MedianForeheadG|MedianForeheadB|InnerArmR|InnerArmG|InnerArmB&quot;, ignore.case = FALSE))
+
+reflectance4 &lt;- scale(reflectance_rgb_ws)
+reflectancergbws &lt;- prcomp(reflectance4)
+summary(reflectancergbws)</code></pre>
+<pre><code>Importance of components:
+                          PC1    PC2     PC3    PC4     PC5     PC6     PC7
+Standard deviation     3.2234 0.9250 0.64032 0.4749 0.23334 0.17127 0.11920
+Proportion of Variance 0.8658 0.0713 0.03417 0.0188 0.00454 0.00244 0.00118
+Cumulative Proportion  0.8658 0.9371 0.97131 0.9901 0.99464 0.99709 0.99827
+                           PC8     PC9    PC10    PC11    PC12
+Standard deviation     0.08932 0.07877 0.06799 0.03813 0.02223
+Proportion of Variance 0.00066 0.00052 0.00039 0.00012 0.00004
+Cumulative Proportion  0.99894 0.99945 0.99984 0.99996 1.00000</code></pre>
+<pre class="r"><code>reflectancergbws$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(reflectancergbws, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/seasonalrgb-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-seasonalrgb-1">
+Past versions of seasonalrgb-1.png
+</button>
+</p>
+<div id="fig-seasonalrgb-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/seasonalrgb-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(reflectancergbws, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/seasonalrgb-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-seasonalrgb-2">
+Past versions of seasonalrgb-2.png
+</button>
+</p>
+<div id="fig-seasonalrgb-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/seasonalrgb-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(reflectancergbws, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/seasonalrgb-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-seasonalrgb-3">
+Past versions of seasonalrgb-3.png
+</button>
+</p>
+<div id="fig-seasonalrgb-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/seasonalrgb-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>wsrgbcomps &lt;- as.data.frame(reflectancergbws$x)
+rgb_ws_bind &lt;- cbind(summer_winter_clean,wsrgbcomps[,c(1,2)])
+rgb_ws_bind &lt;- rgb_ws_bind %&gt;%
+  select(-matches(&quot;SkinReflectance&quot;))
+rgb_ws_bind &lt;- rgb_ws_bind %&gt;%
+  select(-&quot;Ethnicity-winter&quot;)
+names(rgb_ws_bind)[names(rgb_ws_bind) == &#39;Ethnicity-summer&#39;] &lt;- &#39;Ethnicity&#39;
+
+
+ggplot(rgb_ws_bind, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Wide Pigmentation PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/wsrgbvis-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-wsrgbvis-1">
+Past versions of wsrgbvis-1.png
+</button>
+</p>
+<div id="fig-wsrgbvis-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/wsrgbvis-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(reflectancergbws, choice = &quot;var&quot;, axes = 1, top = 20)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/wsrgbvis-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-wsrgbvis-2">
+Past versions of wsrgbvis-2.png
+</button>
+</p>
+<div id="fig-wsrgbvis-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/wsrgbvis-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(reflectancergbws, choice = &quot;var&quot;, axes = 2, top = 20)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/wsrgbvis-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-wsrgbvis-3">
+Past versions of wsrgbvis-3.png
+</button>
+</p>
+<div id="fig-wsrgbvis-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/wsrgbvis-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>summer_rgb &lt;- summer_data %&gt;%
+  select(matches(&quot;ForeheadR|ForeheadG|ForeheadB|InnerArmR|InnerArmG|InnerArmB&quot;, ignore.case = FALSE))
+summer_rgb &lt;- na.omit(summer_rgb)
+
+winter_rgb &lt;- winter_data %&gt;%
+  select(matches(&quot;ForeheadR|ForeheadG|ForeheadB|InnerArmR|InnerArmG|InnerArmB&quot;, ignore.case = FALSE))
+winter_rgb &lt;- na.omit(winter_rgb)
+
+six_rgb &lt;- six_week_data %&gt;%
+  select(matches(&quot;ForeheadR|ForeheadG|ForeheadB|InnerArmR|InnerArmG|InnerArmB&quot;, ignore.case = FALSE))
+six_rgb &lt;- na.omit(six_rgb)</code></pre>
+<pre class="r"><code>winter_rgb_scale &lt;- scale(winter_rgb)
+winter_rgb_pca &lt;- prcomp(winter_rgb_scale)
+summary(winter_rgb_pca)</code></pre>
+<pre><code>Importance of components:
+                          PC1     PC2     PC3     PC4     PC5     PC6
+Standard deviation     2.3720 0.58112 0.15130 0.08075 0.07684 0.01941
+Proportion of Variance 0.9378 0.05628 0.00382 0.00109 0.00098 0.00006
+Cumulative Proportion  0.9378 0.99405 0.99787 0.99895 0.99994 1.00000</code></pre>
+<pre class="r"><code>winter_rgb_pca$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(winter_rgb_pca, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterrgbpca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterrgbpca-1">
+Past versions of winterrgbpca-1.png
+</button>
+</p>
+<div id="fig-winterrgbpca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterrgbpca-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(winter_rgb_pca, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterrgbpca-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterrgbpca-2">
+Past versions of winterrgbpca-2.png
+</button>
+</p>
+<div id="fig-winterrgbpca-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterrgbpca-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(winter_rgb_pca, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterrgbpca-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterrgbpca-3">
+Past versions of winterrgbpca-3.png
+</button>
+</p>
+<div id="fig-winterrgbpca-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterrgbpca-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>winter_rgb_comps &lt;- as.data.frame(winter_rgb_pca$x)
+winter_rgb_new &lt;- cbind(winter_data,winter_rgb_comps[,c(1,2)])
+
+ggplot(winter_rgb_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Winter RGB PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterrgbcomps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterrgbcomps-1">
+Past versions of winterrgbcomps-1.png
+</button>
+</p>
+<div id="fig-winterrgbcomps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterrgbcomps-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(winter_rgb_pca, choice = &quot;var&quot;, axes = 1, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterrgbcomps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterrgbcomps-2">
+Past versions of winterrgbcomps-2.png
+</button>
+</p>
+<div id="fig-winterrgbcomps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterrgbcomps-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(winter_rgb_pca, choice = &quot;var&quot;, axes = 2, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterrgbcomps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterrgbcomps-3">
+Past versions of winterrgbcomps-3.png
+</button>
+</p>
+<div id="fig-winterrgbcomps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterrgbcomps-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>summer_rgb_scale &lt;- scale(summer_rgb)
+summer_rgb_pca &lt;- prcomp(summer_rgb_scale)
+summary(summer_rgb_pca)</code></pre>
+<pre><code>Importance of components:
+                         PC1    PC2     PC3     PC4    PC5     PC6
+Standard deviation     2.286 0.8242 0.23805 0.15859 0.1067 0.04116
+Proportion of Variance 0.871 0.1132 0.00944 0.00419 0.0019 0.00028
+Cumulative Proportion  0.871 0.9842 0.99363 0.99782 0.9997 1.00000</code></pre>
+<pre class="r"><code>summer_rgb_pca$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(summer_rgb_pca, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summergbpca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summergbpca-1">
+Past versions of summergbpca-1.png
+</button>
+</p>
+<div id="fig-summergbpca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summergbpca-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(summer_rgb_pca, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summergbpca-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summergbpca-2">
+Past versions of summergbpca-2.png
+</button>
+</p>
+<div id="fig-summergbpca-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summergbpca-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(summer_rgb_pca, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summergbpca-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summergbpca-3">
+Past versions of summergbpca-3.png
+</button>
+</p>
+<div id="fig-summergbpca-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summergbpca-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>summer_rgb_comps &lt;- as.data.frame(summer_rgb_pca$x)
+summer_rgb_new &lt;- cbind(summer_data,summer_rgb_comps[,c(1,2)])
+
+ggplot(summer_rgb_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Summer RGB PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerrgbcomps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerrgbcomps-1">
+Past versions of summerrgbcomps-1.png
+</button>
+</p>
+<div id="fig-summerrgbcomps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerrgbcomps-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(summer_rgb_pca, choice = &quot;var&quot;, axes = 1, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerrgbcomps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerrgbcomps-2">
+Past versions of summerrgbcomps-2.png
+</button>
+</p>
+<div id="fig-summerrgbcomps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerrgbcomps-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(summer_rgb_pca, choice = &quot;var&quot;, axes = 2, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerrgbcomps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerrgbcomps-3">
+Past versions of summerrgbcomps-3.png
+</button>
+</p>
+<div id="fig-summerrgbcomps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerrgbcomps-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>six_rgb_scale &lt;- scale(six_rgb)
+six_rgb_pca &lt;- prcomp(six_rgb_scale)
+summary(six_rgb_pca)</code></pre>
+<pre><code>Importance of components:
+                          PC1    PC2     PC3     PC4     PC5     PC6
+Standard deviation     2.2119 1.0170 0.17400 0.14471 0.13214 0.06648
+Proportion of Variance 0.8154 0.1724 0.00505 0.00349 0.00291 0.00074
+Cumulative Proportion  0.8154 0.9878 0.99286 0.99635 0.99926 1.00000</code></pre>
+<pre class="r"><code>six_rgb_pca$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(six_rgb_pca, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixrgbpca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixrgbpca-1">
+Past versions of sixrgbpca-1.png
+</button>
+</p>
+<div id="fig-sixrgbpca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixrgbpca-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(six_rgb_pca, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixrgbpca-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixrgbpca-2">
+Past versions of sixrgbpca-2.png
+</button>
+</p>
+<div id="fig-sixrgbpca-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixrgbpca-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(six_rgb_pca, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixrgbpca-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixrgbpca-3">
+Past versions of sixrgbpca-3.png
+</button>
+</p>
+<div id="fig-sixrgbpca-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixrgbpca-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>six_rgb_comps &lt;- as.data.frame(six_rgb_pca$x)
+six_rgb_new &lt;- cbind(six_week_data,six_rgb_comps[,c(1,2)])
+
+ggplot(six_rgb_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Six Week RGB PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixgbcomps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixgbcomps-1">
+Past versions of sixgbcomps-1.png
+</button>
+</p>
+<div id="fig-sixgbcomps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixgbcomps-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(six_rgb_pca, choice = &quot;var&quot;, axes = 1, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixgbcomps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixgbcomps-2">
+Past versions of sixgbcomps-2.png
+</button>
+</p>
+<div id="fig-sixgbcomps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixgbcomps-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(six_rgb_pca, choice = &quot;var&quot;, axes = 2, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixgbcomps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixgbcomps-3">
+Past versions of sixgbcomps-3.png
+</button>
+</p>
+<div id="fig-sixgbcomps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixgbcomps-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="cielab-subset" class="section level2">
+<h2>CIElab subset</h2>
+<pre class="r"><code>summer_winter_clean &lt;- na.omit(summer_winter)
+reflectance_cie_ws &lt;- summer_winter_clean %&gt;%
+  select(matches(&quot;ForeheadL|Foreheada|Foreheadb|InnerArmL|InnerArma|InnerArmb&quot;, ignore.case = FALSE))
+
+reflectance5 &lt;- scale(reflectance_cie_ws)
+reflectanceciews &lt;- prcomp(reflectance5)
+summary(reflectanceciews)</code></pre>
+<pre><code>Importance of components:
+                          PC1    PC2    PC3     PC4     PC5     PC6     PC7
+Standard deviation     2.9442 1.2216 0.6971 0.64830 0.56414 0.45873 0.38123
+Proportion of Variance 0.7223 0.1244 0.0405 0.03502 0.02652 0.01754 0.01211
+Cumulative Proportion  0.7223 0.8467 0.8872 0.92222 0.94874 0.96628 0.97839
+                           PC8     PC9   PC10    PC11    PC12
+Standard deviation     0.29699 0.24598 0.2298 0.17889 0.16070
+Proportion of Variance 0.00735 0.00504 0.0044 0.00267 0.00215
+Cumulative Proportion  0.98574 0.99078 0.9952 0.99785 1.00000</code></pre>
+<pre class="r"><code>reflectanceciews$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(reflectanceciews, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/seasonalcie-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-seasonalcie-1">
+Past versions of seasonalcie-1.png
+</button>
+</p>
+<div id="fig-seasonalcie-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/seasonalcie-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(reflectanceciews, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/seasonalcie-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-seasonalcie-2">
+Past versions of seasonalcie-2.png
+</button>
+</p>
+<div id="fig-seasonalcie-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/seasonalcie-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(reflectanceciews, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/seasonalcie-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-seasonalcie-3">
+Past versions of seasonalcie-3.png
+</button>
+</p>
+<div id="fig-seasonalcie-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/seasonalcie-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>wsciecomps &lt;- as.data.frame(reflectanceciews$x)
+cie_ws_bind &lt;- cbind(summer_winter_clean,wsciecomps[,c(1,2)])
+cie_ws_bind &lt;- rgb_ws_bind %&gt;%
+  select(-matches(&quot;SkinReflectance&quot;))
+
+ggplot(cie_ws_bind, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Wide Pigmentation PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/wscievis-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-wscievis-1">
+Past versions of wscievis-1.png
+</button>
+</p>
+<div id="fig-wscievis-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/wscievis-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(reflectanceciews, choice = &quot;var&quot;, axes = 1, top = 20)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/wscievis-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-wscievis-2">
+Past versions of wscievis-2.png
+</button>
+</p>
+<div id="fig-wscievis-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/wscievis-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(reflectanceciews, choice = &quot;var&quot;, axes = 2, top = 20)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/wscievis-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-wscievis-3">
+Past versions of wscievis-3.png
+</button>
+</p>
+<div id="fig-wscievis-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/wscievis-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>summer_cie &lt;- summer_data %&gt;%
+  select(matches(&quot;ForeheadL|Foreheada|Foreheadb|InnerArmL|InnerArma|InnerArmb&quot;, ignore.case = FALSE))
+summer_cie &lt;- na.omit(summer_cie)
+
+winter_cie &lt;- winter_data %&gt;%
+  select(matches(&quot;ForeheadL|Foreheada|Foreheadb|InnerArmL|InnerArma|InnerArmb&quot;, ignore.case = FALSE))
+winter_cie &lt;- na.omit(winter_cie)
+
+six_cie &lt;- six_week_data %&gt;%
+  select(matches(&quot;ForeheadL|Foreheada|Foreheadb|InnerArmL|InnerArma|InnerArmb&quot;, ignore.case = FALSE))
+six_cie &lt;- na.omit(six_cie)</code></pre>
+<pre class="r"><code>winter_cie_scale &lt;- scale(winter_cie)
+winter_cie_pca &lt;- prcomp(winter_cie_scale)
+summary(winter_cie_pca)</code></pre>
+<pre><code>Importance of components:
+                          PC1    PC2    PC3     PC4    PC5     PC6
+Standard deviation     2.1257 0.9808 0.5304 0.36540 0.2486 0.20736
+Proportion of Variance 0.7531 0.1603 0.0469 0.02225 0.0103 0.00717
+Cumulative Proportion  0.7531 0.9134 0.9603 0.98253 0.9928 1.00000</code></pre>
+<pre class="r"><code>winter_cie_pca$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(winter_cie_pca, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterciepca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterciepca-1">
+Past versions of winterciepca-1.png
+</button>
+</p>
+<div id="fig-winterciepca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterciepca-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(winter_cie_pca, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterciepca-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterciepca-2">
+Past versions of winterciepca-2.png
+</button>
+</p>
+<div id="fig-winterciepca-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterciepca-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(winter_cie_pca, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterciepca-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterciepca-3">
+Past versions of winterciepca-3.png
+</button>
+</p>
+<div id="fig-winterciepca-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterciepca-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>winter_cie_comps &lt;- as.data.frame(winter_cie_pca$x)
+winter_cie_new &lt;- cbind(winter_data,winter_cie_comps[,c(1,2)])
+
+ggplot(winter_cie_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Winter CIELAB PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterciecomps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterciecomps-1">
+Past versions of winterciecomps-1.png
+</button>
+</p>
+<div id="fig-winterciecomps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterciecomps-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(winter_cie_pca, choice = &quot;var&quot;, axes = 1, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterciecomps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterciecomps-2">
+Past versions of winterciecomps-2.png
+</button>
+</p>
+<div id="fig-winterciecomps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterciecomps-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(winter_cie_pca, choice = &quot;var&quot;, axes = 2, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/winterciecomps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-winterciecomps-3">
+Past versions of winterciecomps-3.png
+</button>
+</p>
+<div id="fig-winterciecomps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/winterciecomps-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>summer_cie_scale &lt;- scale(summer_cie)
+summer_cie_pca &lt;- prcomp(summer_cie_scale)
+summary(summer_cie_pca)</code></pre>
+<pre><code>Importance of components:
+                          PC1    PC2     PC3     PC4     PC5     PC6
+Standard deviation     2.0841 0.9045 0.60937 0.53086 0.35079 0.24908
+Proportion of Variance 0.7239 0.1364 0.06189 0.04697 0.02051 0.01034
+Cumulative Proportion  0.7239 0.8603 0.92218 0.96915 0.98966 1.00000</code></pre>
+<pre class="r"><code>summer_cie_pca$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(summer_cie_pca, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerciepca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerciepca-1">
+Past versions of summerciepca-1.png
+</button>
+</p>
+<div id="fig-summerciepca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerciepca-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(summer_cie_pca, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerciepca-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerciepca-2">
+Past versions of summerciepca-2.png
+</button>
+</p>
+<div id="fig-summerciepca-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerciepca-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(summer_cie_pca, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerciepca-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerciepca-3">
+Past versions of summerciepca-3.png
+</button>
+</p>
+<div id="fig-summerciepca-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerciepca-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>summer_cie_comps &lt;- as.data.frame(summer_cie_pca$x)
+summer_cie_new &lt;- cbind(summer_data,summer_cie_comps[,c(1,2)])
+
+ggplot(summer_cie_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Summer CIELAB PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerciecomps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerciecomps-1">
+Past versions of summerciecomps-1.png
+</button>
+</p>
+<div id="fig-summerciecomps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerciecomps-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(summer_cie_pca, choice = &quot;var&quot;, axes = 1, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerciecomps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerciecomps-2">
+Past versions of summerciecomps-2.png
+</button>
+</p>
+<div id="fig-summerciecomps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerciecomps-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(summer_cie_pca, choice = &quot;var&quot;, axes = 2, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/summerciecomps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summerciecomps-3">
+Past versions of summerciecomps-3.png
+</button>
+</p>
+<div id="fig-summerciecomps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/summerciecomps-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>six_cie_scale &lt;- scale(six_cie)
+six_cie_pca &lt;- prcomp(six_cie_scale)
+summary(six_cie_pca)</code></pre>
+<pre><code>Importance of components:
+                         PC1    PC2     PC3     PC4     PC5     PC6
+Standard deviation     2.029 1.0710 0.59501 0.50452 0.26435 0.24181
+Proportion of Variance 0.686 0.1912 0.05901 0.04242 0.01165 0.00975
+Cumulative Proportion  0.686 0.8772 0.93618 0.97861 0.99025 1.00000</code></pre>
+<pre class="r"><code>six_cie_pca$loadings[, 1:2]</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>fviz_eig(six_cie_pca, addlabels = TRUE)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixciepca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixciepca-1">
+Past versions of sixciepca-1.png
+</button>
+</p>
+<div id="fig-sixciepca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixciepca-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_pca_var(six_cie_pca, col.var = &quot;black&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixciepca-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixciepca-2">
+Past versions of sixciepca-2.png
+</button>
+</p>
+<div id="fig-sixciepca-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixciepca-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_cos2(six_cie_pca, choice = &quot;var&quot;, axes = 1:2)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixciepca-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixciepca-3">
+Past versions of sixciepca-3.png
+</button>
+</p>
+<div id="fig-sixciepca-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixciepca-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>six_cie_comps &lt;- as.data.frame(six_cie_pca$x)
+six_cie_new &lt;- cbind(six_week_data,six_cie_comps[,c(1,2)])
+
+ggplot(six_rgb_new, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = &quot;polygon&quot;, col= &quot;black&quot;, alpha =0.5)+
+  geom_point(shape=21, col=&quot;black&quot;) +
+  labs(title = &quot;Six Week CIELAB PCA&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixciecomps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixciecomps-1">
+Past versions of sixciecomps-1.png
+</button>
+</p>
+<div id="fig-sixciecomps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixciecomps-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(six_cie_pca, choice = &quot;var&quot;, axes = 1, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixciecomps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixciecomps-2">
+Past versions of sixciecomps-2.png
+</button>
+</p>
+<div id="fig-sixciecomps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixciecomps-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>fviz_contrib(six_cie_pca, choice = &quot;var&quot;, axes = 2, top = 10)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/sixciecomps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sixciecomps-3">
+Past versions of sixciecomps-3.png
+</button>
+</p>
+<div id="fig-sixciecomps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/sixciecomps-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="part-2-visualizations" class="section level1">
+<h1>part 2: visualizations</h1>
+<pre class="r"><code>long_data &lt;- joined_data %&gt;%
+  pivot_longer(
+    cols = -ParticipantCentreID,  
+    names_to = c(&quot;.value&quot;, &quot;Season&quot;),        # Split column names into two parts
+    names_sep = &quot;-&quot;                          # Separate at _
+  )</code></pre>
+<pre class="r"><code>ggplot(long_data, aes(x = MedianForeheadM, fill = Ethnicity)) +
+  geom_histogram(alpha = 0.5, position = &quot;identity&quot;) </code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre><code>Warning: Removed 78 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/histogram-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-histogram-1">
+Past versions of histogram-1.png
+</button>
+</p>
+<div id="fig-histogram-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/histogram-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>cape_colored &lt;- long_data[long_data$Ethnicity == &quot;Cape_colored&quot;,]
+ggplot(cape_colored, aes(x = MedianForeheadM, fill = ..x..)) +
+  geom_histogram() +
+  scale_fill_gradient(low=&quot;#D2B48C&quot;, high=&quot;#1B0000&quot;) + 
+  theme_minimal() +
+  labs(
+    title = &quot;Distribution of Forehead Melanin Index by Ethnicity ~ Cape_colored&quot;,
+    x = &quot;Forehead Melanin Index&quot;,
+    y = &quot;Count&quot;
+  )</code></pre>
+<pre><code>Warning: The dot-dot notation (`..x..`) was deprecated in ggplot2 3.4.0.
+ℹ Please use `after_stat(x)` instead.
+This warning is displayed once every 8 hours.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre><code>Warning: Removed 78 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/histogram-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-histogram-2">
+Past versions of histogram-2.png
+</button>
+</p>
+<div id="fig-histogram-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/histogram-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>xhosa &lt;- long_data[long_data$Ethnicity == &quot;Xhosa&quot;,]
+ggplot(xhosa, aes(x = MedianForeheadM, fill = ..x..)) +
+  geom_histogram() +
+  scale_fill_gradient(low=&quot;#D2B48C&quot;, high=&quot;#1B0000&quot;) + 
+  theme_minimal() +
+  labs(
+    title = &quot;Distribution of Forehead Melanin Index by Ethnicity ~ Xhosa&quot;,
+    x = &quot;Forehead Melanin Index&quot;,
+    y = &quot;Count&quot;
+  )</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre><code>Warning: Removed 78 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/histogram-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-histogram-3">
+Past versions of histogram-3.png
+</button>
+</p>
+<div id="fig-histogram-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/histogram-3.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>filtered_data &lt;- long_data %&gt;%
+  filter(!is.na(Ethnicity))
+ggplot(filtered_data, aes(x = MedianForeheadM, fill = ..x..)) +
+  geom_histogram() +
+  facet_grid(Ethnicity ~ .) +
+  scale_fill_gradient(
+    low = &quot;#D2B48C&quot;, # Light tan
+    high = &quot;#1B0000&quot; # Dark brown
+  ) +
+  theme_minimal() +
+  labs(
+    title = &quot;Distribution of Forehead Melanin Index by Ethnicity&quot;,
+    x = &quot;Forehead Melanin Index&quot;,
+    y = &quot;Count&quot;,
+    fill = &quot;Melanin Index&quot;
+  )</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/histogram-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-histogram-4">
+Past versions of histogram-4.png
+</button>
+</p>
+<div id="fig-histogram-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/histogram-4.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>filtered_data &lt;- long_data %&gt;%
+  filter(!is.na(Ethnicity))
+ggplot(filtered_data, aes(x = MedianForeheadM, fill = ..x..)) +
+  geom_histogram() +
+  facet_grid(Ethnicity ~ Season) +
+  scale_fill_gradient(
+    low = &quot;#D2B48C&quot;, # Light tan
+    high = &quot;#1B0000&quot; # Dark brown
+  ) +
+  theme_minimal() +
+  labs(
+    title = &quot;Distribution of Forehead Melanin Index by Ethnicity&quot;,
+    x = &quot;Forehead Melanin Index&quot;,
+    y = &quot;Count&quot;,
+    fill = &quot;Melanin Index&quot;
+  )</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/histogram-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-histogram-5">
+Past versions of histogram-5.png
+</button>
+</p>
+<div id="fig-histogram-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/histogram-5.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>xhosa &lt;- xhosa %&gt;%
+  filter(!is.na(Ethnicity)) %&gt;%
+  filter(!is.na(Season))
+xhosa %&gt;%
+  group_by(Season) %&gt;%
+  shapiro_test(MedianInnerArmM)</code></pre>
+<pre><code># A tibble: 3 × 4
+  Season variable        statistic     p
+  &lt;chr&gt;  &lt;chr&gt;               &lt;dbl&gt; &lt;dbl&gt;
+1 6weeks MedianInnerArmM     0.952 0.237
+2 summer MedianInnerArmM     0.984 0.762
+3 winter MedianInnerArmM     0.967 0.453</code></pre>
+<pre class="r"><code># xhosa is normally distributed in each season (p&gt;0.05)
+
+cape_colored &lt;- cape_colored %&gt;%
+  filter(!is.na(Ethnicity)) %&gt;%
+  filter(!is.na(Season))
+cape_colored %&gt;%
+  group_by(Season) %&gt;%
+  shapiro_test(MedianInnerArmM)</code></pre>
+<pre><code># A tibble: 2 × 4
+  Season variable        statistic      p
+  &lt;chr&gt;  &lt;chr&gt;               &lt;dbl&gt;  &lt;dbl&gt;
+1 summer MedianInnerArmM     0.946 0.0733
+2 winter MedianInnerArmM     0.942 0.0771</code></pre>
+<pre class="r"><code># cape_colored is not normally distributed in each season (p&lt;0.05)
+
+ggqqplot(cape_colored, &quot;MedianInnerArmM&quot;, facet.by = &quot;Season&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/constitutive_hypothesis-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-constitutive_hypothesis-1">
+Past versions of constitutive_hypothesis-1.png
+</button>
+</p>
+<div id="fig-constitutive_hypothesis-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/constitutive_hypothesis-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ggqqplot(xhosa, &quot;MedianInnerArmM&quot;, facet.by = &quot;Season&quot;)</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/constitutive_hypothesis-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-constitutive_hypothesis-2">
+Past versions of constitutive_hypothesis-2.png
+</button>
+</p>
+<div id="fig-constitutive_hypothesis-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/constitutive_hypothesis-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>aov_result_x &lt;- aov(MedianInnerArmM ~ Season, data = xhosa)
+
+broom::tidy(aov_result_x)</code></pre>
+<pre><code># A tibble: 2 × 6
+  term         df  sumsq meansq statistic p.value
+  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1 Season        2   33.5   16.7     0.397   0.673
+2 Residuals   101 4254.    42.1    NA      NA    </code></pre>
+<pre class="r"><code>filtered_data &lt;- long_data %&gt;%
+  filter(!is.na(Ethnicity))
+ggplot(filtered_data, aes(x = MDifference)) +
+  geom_histogram() +
+  facet_grid(Ethnicity ~ Season) +
+  theme_minimal() +
+  labs(
+    title = &quot;Difference in Forehead and Inner Arm Melanin Index by Ethnicity and Season&quot;,
+    x = &quot;Difference in Forehead MI and Inner Arm MI&quot;,
+    y = &quot;Count&quot;,
+  )</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/mdiff-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mdiff-1">
+Past versions of mdiff-1.png
+</button>
+</p>
+<div id="fig-mdiff-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/mdiff-1.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>filtered_data &lt;- long_data %&gt;%
+  filter(!is.na(Ethnicity))
+ggplot(filtered_data, aes(x = Ethnicity, y = MDifference)) +
+  geom_boxplot() +
+  facet_grid(.~Season) +
+  theme_minimal() +
+  labs(
+    title = &quot;Difference in Forehead and Inner Arm Melanin Index by Ethnicity and Season&quot;,
+    x = &quot;Difference in Forehead MI and Inner Arm MI&quot;,
+    y = &quot;Count&quot;
+  )</code></pre>
+<p><img src="figure/lilyanalysis2.Rmd/mdiff-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mdiff-2">
+Past versions of mdiff-2.png
+</button>
+</p>
+<div id="fig-mdiff-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/d9fb6da2d6d059b9574759423954f625c4010284/docs/figure/lilyanalysis2.Rmd/mdiff-2.png" target="_blank">d9fb6da</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-02-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.2 (2024-10-31)
+Platform: aarch64-apple-darwin20
+Running under: macOS Monterey 12.5.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Detroit
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] lme4_1.1-36        Matrix_1.7-1       rstatix_0.7.2      ggpubr_0.6.0      
+ [5] ggfortify_0.4.17   wesanderson_0.3.7  missMDA_1.19       FactoMineR_2.11   
+ [9] factoextra_1.0.7   ggcorrplot_0.1.4.1 corrr_0.4.4        readxl_1.4.3      
+[13] lubridate_1.9.4    forcats_1.0.0      stringr_1.5.1      purrr_1.0.2       
+[17] tibble_3.2.1       ggplot2_3.5.1      tidyverse_2.0.0    tidyr_1.3.1       
+[21] dplyr_1.1.4        readr_2.1.5        workflowr_1.7.1   
+
+loaded via a namespace (and not attached):
+  [1] Rdpack_2.6.2         gridExtra_2.3        sandwich_3.1-1      
+  [4] rlang_1.1.4          magrittr_2.0.3       git2r_0.35.0        
+  [7] multcomp_1.4-28      compiler_4.4.2       getPass_0.2-4       
+ [10] callr_3.7.6          vctrs_0.6.5          crayon_1.5.3        
+ [13] pkgconfig_2.0.3      shape_1.4.6.1        fastmap_1.2.0       
+ [16] backports_1.5.0      labeling_0.4.3       utf8_1.2.4          
+ [19] promises_1.3.2       rmarkdown_2.29       tzdb_0.4.0          
+ [22] nloptr_2.1.1         ps_1.8.1             xfun_0.50           
+ [25] glmnet_4.1-8         jomo_2.7-6           cachem_1.1.0        
+ [28] jsonlite_1.8.9       flashClust_1.01-2    later_1.4.1         
+ [31] pan_1.9              broom_1.0.7          parallel_4.4.2      
+ [34] cluster_2.1.8        R6_2.5.1             bslib_0.8.0         
+ [37] stringi_1.8.4        car_3.1-3            rpart_4.1.24        
+ [40] boot_1.3-31          jquerylib_0.1.4      cellranger_1.1.0    
+ [43] estimability_1.5.1   Rcpp_1.0.14          iterators_1.0.14    
+ [46] knitr_1.49           zoo_1.8-12           nnet_7.3-20         
+ [49] httpuv_1.6.15        splines_4.4.2        timechange_0.3.0    
+ [52] tidyselect_1.2.1     abind_1.4-8          rstudioapi_0.17.1   
+ [55] yaml_2.3.10          doParallel_1.0.17    codetools_0.2-20    
+ [58] processx_3.8.5       lattice_0.22-6       withr_3.0.2         
+ [61] coda_0.19-4.1        evaluate_1.0.3       survival_3.8-3      
+ [64] pillar_1.10.1        carData_3.0-5        mice_3.17.0         
+ [67] whisker_0.4.1        DT_0.33              foreach_1.5.2       
+ [70] reformulas_0.4.0     generics_0.1.3       rprojroot_2.0.4     
+ [73] hms_1.1.3            munsell_0.5.1        scales_1.3.0        
+ [76] minqa_1.2.8          xtable_1.8-4         leaps_3.2           
+ [79] glue_1.8.0           emmeans_1.10.6       scatterplot3d_0.3-44
+ [82] tools_4.4.2          ggsignif_0.6.4       fs_1.6.5            
+ [85] mvtnorm_1.3-3        grid_4.4.2           rbibutils_2.3       
+ [88] colorspace_2.1-1     nlme_3.1-166         Formula_1.2-5       
+ [91] cli_3.6.3            gtable_0.3.6         sass_0.4.9          
+ [94] digest_0.6.37        ggrepel_0.9.6        TH.data_1.1-3       
+ [97] farver_2.1.2         htmlwidgets_1.6.4    htmltools_0.5.8.1   
+[100] lifecycle_1.0.4      httr_1.4.7           multcompView_0.1-10 
+[103] mitml_0.4-5          MASS_7.3-64         </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

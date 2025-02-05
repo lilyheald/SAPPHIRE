@@ -1,0 +1,1315 @@
+---
+title: "statsplot"
+output: html_document
+---
+
+```{r load, include=FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(readxl)
+library('corrr')
+library(ggcorrplot)
+library(factoextra)
+library("FactoMineR")
+library(missMDA)
+library(wesanderson)
+library("ggfortify")
+library(ggcorrplot)
+library(tidyverse)
+library(ggpubr)
+library(rstatix)
+library(readr)
+library(lme4) 
+library(ggplot2)
+library(ggstatsplot)
+```
+
+```{r read}
+file_path <- "~/sapphire/data/serum_vit_D_study_with_lab_results.xlsx" 
+data_summer <- read_excel(file_path, sheet = "ScreeningDataCollectionSummer")
+data_winter <- read_excel(file_path, sheet = "ScreeningDataCollectionWinter")
+data_6weeks <- read_excel(file_path, sheet = "ScreeningDataCollection6Weeks")
+sun_expos <- read.csv("~/sapphire/data/sun_expos_data/sun_expos_long.csv")
+sun_expos_summer <- sun_expos[sun_expos$collection_period == 'Summer', ]
+sun_expos_winter <- sun_expos[sun_expos$collection_period == 'Winter', ]
+sun_expos_6Weeks <- sun_expos[sun_expos$collection_period == '6Weeks', ]
+summer_winter <- read.csv("~/sapphire/data/summer_winter.csv")
+```
+
+```{r longer}
+long_data <- summer_winter %>%
+  pivot_longer(
+    cols = -ParticipantCentreID,  
+    names_to = c(".value", "Season"),  # Extract variable name and season
+    names_sep = "_"                    # Separate at "_"
+  )
+
+numpairs <- long_data %>%
+  filter(!is.na(MedianForeheadM)) %>%
+  group_by(ParticipantCentreID) %>%
+  filter(all(c('summer', 'winter') %in% Season)) %>%
+  summarise(count = n_distinct(ParticipantCentreID))
+
+write.csv(long_data, "~/sapphire/SAfrADMIX/long.csv", row.names = F)
+```
+
+
+```{r}
+ggbetweenstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  xlab ="Season",
+  ylab = "Forehead Melanin Index",
+  violin.args = list(width = 0),
+  type = "p",
+  conf.level = 0.99,
+  title = "Parametric test",
+  package = "wesanderson",
+  palette = "GrandBudapest1"
+)
+```
+```{r}
+ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  xlab ="Season",
+  ylab = "Forehead Melanin Index",
+  type = "np",
+  conf.level = 0.99,
+  title = "Parametric test",
+  package = "wesanderson",
+  palette = "GrandBudapest1"
+)
+```
+
+### Goal: winter versus summer t test across all colors
+```{r fig.width= 10}
+# p1 <- ggwithinstats(
+#   data = long_data,
+#   x = Season,
+#   y = MedianForeheadM,
+#   type = "p",
+#   effsize.type = "d",
+#   conf.level = 0.99,
+#   title = "Parametric test",
+#   package = "ggsci",
+#   palette = "nrc_npg"
+# )
+
+## Mann-Whitney U test (nonparametric test)
+p2 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  xlab = "Season",
+  ylab = "MedianForeheadM
+  ",
+  type = "np",
+  conf.level = 0.99,
+  title = "Non-parametric Test",
+  package = "ggsci",
+  palette = "uniform_startrek"
+)
+
+## robust t-test
+p3 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  xlab = "Season",
+  ylab = "MedianForeheadM",
+  type = "r",
+  conf.level = 0.99,
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+## Bayes Factor for parametric t-test
+# p4 <- ggwithinstats(
+#   data = long_data,
+#   x = Season,
+#   y = MedianForeheadM,
+#   xlab = "Season",
+#   ylab = "MedianForeheadM",
+#   type = "bayes",
+#   title = "Bayesian Test",
+#   package = "ggsci",
+#   palette = "nrc_npg"
+# )
+
+# combining the individual plots into a single plot
+combine_plots(
+  plotlist = list(p2, p3),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    title = "Effect of season on color metrics"),
+  height = 10,  # Increase the height (adjust as needed)
+  width = 12 
+)
+
+```
+
+```{r}
+library(ggstatsplot)
+
+ggwithinstats(
+  data   = long_data,
+  x      = Season,
+  y      = MedianForeheadM,
+  paired = TRUE,                     # must be TRUE for repeated measures
+  id     = "ParticipantCentreID",    # ID column to match pairs
+  type   = "parametric",             # paired t-test
+  conf.level = 0.99,
+  title     = "Paired t-test",
+  xlab      = "Season",
+  ylab      = "MedianForeheadM",
+  package   = "ggsci",
+  palette   = "uniform_startrek"
+)
+
+```
+
+```{r fig.width= 20}
+p1 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  xlab = "Season",
+  ylab = "MedianForeheadM",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2", 
+  centrality.label.args = list(size  = 5)
+)
+
+p2 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadE,
+  xlab = "Season",
+  ylab = "MedianForeheadE",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2",
+  centrality.label.args = list(size  = 5)
+)
+
+p3 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadL,
+  xlab = "Season",
+  ylab = "MedianForeheadL",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2",
+  centrality.label.args = list(size  = 5)
+)
+
+p4 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheada,
+  xlab = "Season",
+  ylab = "MedianForeheada",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2", 
+  centrality.label.args = list(size  = 5)
+)
+
+p5 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadb,
+  xlab = "Season",
+  ylab = "MedianForeheadb",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2",
+  centrality.label.args = list(size  = 5)
+)
+
+p6 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadR,
+  xlab = "Season",
+  ylab = "MedianForeheadR",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2",
+  centrality.label.args = list(size  = 5)
+)
+
+p7 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadG,
+  xlab = "Season",
+  ylab = "MedianForeheadG",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2",
+  centrality.label.args = list(size  = 5)
+)
+
+p8 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadB,
+  xlab = "Season",
+  ylab = "MedianForeheadB",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2",
+  centrality.label.args = list(size  = 5)
+)
+
+# combining the individual plots into a single plot
+combine_plots(
+  plotlist = list(p1, p2, p3, p4, p5, p6, p7, p8),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    title = "Effect of season on color metrics",
+    theme = ggplot2::theme(
+      plot.title = element_text(size = 20)
+    )
+  )
+)
+
+```
+
+
+
+```{r fig.height = 6}
+
+grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "MedianForeheadM",
+  type = "robust", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  centrality.label.args = list(size  = 10),
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "MedianForeheadM across Ethnicity",
+                         theme = ggplot2::theme(plot.title = element_text(size = 40))),
+  plotgrid.args = list(ncol = 1)
+)
+
+```
+
+
+
+```{r fig.height = 15}
+
+c1 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = MedianForeheadL,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "MedianForeheadL",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "MedianForeheadL across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+c2 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = MedianForeheada,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "MedianForeheada",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "MedianForeheada across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+c3 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = MedianForeheadb,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "MedianForeheadb",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "MedianForeheadb across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+c4 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = InnerArmL,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "InnerArmL",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "InnerArmL across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+c5 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = InnerArma,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "InnerArma",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "InnerArma across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+c6 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = InnerArmb,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "InnerArmb",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "InnerArmb across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+combine_plots(
+  plotlist = list(c1, c2, c3, c4, c5, c6),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    title = "Effect of season on CIElab color metrics across ethnicity", 
+    theme = ggplot2::theme(plot.title = element_text(size = 30)))
+)
+
+```
+
+
+
+
+
+```{r fig.height = 15}
+
+r1 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = MedianForeheadR,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "MedianForeheadR",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "MedianForeheadR across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+r2 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = MedianForeheadG,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "MedianForeheadG",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "MedianForeheadG across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+r3 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = MedianForeheadB,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "MedianForeheadB",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "MedianForeheadB across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+r4 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = InnerArmR,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "InnerArmR",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "InnerArmR across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+r5 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = InnerArmG,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "InnerArmG",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "InnerArmG across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+r6 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = InnerArmB,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "InnerArmB",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "InnerArmB across Ethnicity"),
+  plotgrid.args = list(ncol = 1),
+  ggplot.component = list(theme(text = element_text(size = 15)))
+)
+
+combine_plots(
+  plotlist = list(r1, r2, r3, r4, r5, r6),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    title = "Effect of season on RGB color metrics across ethnicity", 
+    theme = ggplot2::theme(plot.title = element_text(size = 30)))
+)
+
+```
+
+
+
+
+
+
+
+
+```{r fig.height = 15}
+
+m1 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = MedianForeheadE,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "MedianForeheadE",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "MedianForeheadE across Ethnicity"),
+  plotgrid.args = list(ncol = 1)
+)
+
+m3 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = InnerArmE,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "InnerArmE",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "InnerArmE across Ethnicity"),
+  plotgrid.args = list(ncol = 1)
+)
+
+m2 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "MedianForheadM",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "MedianForheadM across Ethnicity"),
+  plotgrid.args = list(ncol = 1)
+)
+
+m4 <- grouped_ggwithinstats(
+  ## arguments relevant for ggwithinstats
+  data = long_data,
+  x = Season,
+  y = InnerArmM,
+  grouping.var = Ethnicity,
+  xlab = "Season",
+  ylab = "InnerArmM",
+  type = "nonparametric", ## type of test
+  pairwise.display = "all", ## display only all pairwise comparisons
+  p.adjust.method = "BH", ## adjust p-values for multiple tests using this method
+  # ggtheme = ggthemes::theme_tufte(),
+  package = "ggsci",
+  palette = "default_jco",
+  digits = 3,
+  ## arguments relevant for combine_plots
+  annotation.args = list(title = "InnerArmM across Ethnicity"),
+  plotgrid.args = list(ncol = 1)
+)
+
+combine_plots(
+  plotlist = list(m1, m2, m3, m4),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    title = "Effect of season on ME color metrics across ethnicity")
+)
+
+```
+
+
+```{r fig.width= 15}
+p1 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  type = "p",
+  effsize.type = "d",
+  conf.level = 0.99,
+  title = "Parametric test",
+  package = "ggsci",
+  palette = "nrc_npg"
+)
+
+## Mann-Whitney U test (nonparametric test)
+p2 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  xlab = "Season",
+  ylab = "MedianForeheadM
+  ",
+  type = "np",
+  conf.level = 0.99,
+  title = "Non-parametric Test",
+  package = "ggsci",
+  palette = "uniform_startrek"
+)
+
+## robust t-test
+p3 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  xlab = "Season",
+  ylab = "MedianForeheadM",
+  type = "r",
+  conf.level = 0.99,
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+## Bayes Factor for parametric t-test
+p4 <- ggwithinstats(
+  data = long_data,
+  x = Season,
+  y = MedianForeheadM,
+  xlab = "Season",
+  ylab = "MedianForeheadM",
+  type = "bayes",
+  title = "Bayesian Test",
+  package = "ggsci",
+  palette = "nrc_npg"
+)
+
+# combining the individual plots into a single plot
+combine_plots(
+  plotlist = list(p1, p2, p3, p4),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    title = "Effect of season on color metrics"),
+  height = 10,  # Increase the height (adjust as needed)
+  width = 12 
+)
+
+```
+
+```{r fig.width= 15}
+e1 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = MedianForeheadM_summer,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadM",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e2 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = MedianForeheadE_summer,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadE",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e3 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = MedianForeheadL_summer,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadL",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e4 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = MedianForeheada_summer,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheada",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e5 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = MedianForeheadb_summer,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadb",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e6 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = MedianForeheadR_summer,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadR",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e7 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = MedianForeheadG_summer,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadG",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e8 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = MedianForeheadB_summer,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadB",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+# combining the individual plots into a single plot
+combine_plots(
+  plotlist = list(e1, e2, e3, e4, e5, e6, e7, e8),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    title = "Effect of ethnicity on color metrics in summer forehead measurements"),
+  height = 10,  # Increase the height (adjust as needed)
+  width = 12 
+)
+
+```
+
+
+
+
+```{r fig.width= 15}
+e1 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = MedianForeheadM_winter,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadM",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e2 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = MedianForeheadE_winter,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadE",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e3 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = MedianForeheadL_winter,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadL",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e4 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = MedianForeheada_winter,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheada",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e5 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = MedianForeheadb_winter,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadb",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e6 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = MedianForeheadR_winter,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadR",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e7 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = MedianForeheadG_winter,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadG",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e8 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = MedianForeheadB_winter,
+  xlab = "Ethnicity",
+  ylab = "MedianForeheadB",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+# combining the individual plots into a single plot
+combine_plots(
+  plotlist = list(e1, e2, e3, e4, e5, e6, e7, e8),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    title = "Effect of ethnicity on color metrics in winter forehead measurements"),
+  height = 10,  # Increase the height (adjust as needed)
+  width = 12 
+)
+
+```
+
+```{r fig.width= 15}
+e1 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = InnerArmM_summer,
+  xlab = "Ethnicity",
+  ylab = "InnerArmM",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e2 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = InnerArmE_summer,
+  xlab = "Ethnicity",
+  ylab = "InnerArmE",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e3 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = InnerArmL_summer,
+  xlab = "Ethnicity",
+  ylab = "InnerArmL",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e4 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = InnerArma_summer,
+  xlab = "Ethnicity",
+  ylab = "InnerArma",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e5 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = InnerArmb_summer,
+  xlab = "Ethnicity",
+  ylab = "InnerArmb",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e6 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = InnerArmR_summer,
+  xlab = "Ethnicity",
+  ylab = "InnerArmR",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e7 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = InnerArmG_summer,
+  xlab = "Ethnicity",
+  ylab = "InnerArmG",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e8 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_summer,
+  y = InnerArmB_summer,
+  xlab = "Ethnicity",
+  ylab = "InnerArmB",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+# combining the individual plots into a single plot
+combine_plots(
+  plotlist = list(e1, e2, e3, e4, e5, e6, e7, e8),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    title = "Effect of ethnicity on color metrics in summer inner arm measurements"),
+  height = 10,  # Increase the height (adjust as needed)
+  width = 12 
+)
+
+```
+
+
+```{r fig.width= 15}
+e1 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = InnerArmM_winter,
+  xlab = "Ethnicity",
+  ylab = "InnerArmM",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e2 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = InnerArmE_winter,
+  xlab = "Ethnicity",
+  ylab = "InnerArmE",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e3 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = InnerArmL_winter,
+  xlab = "Ethnicity",
+  ylab = "InnerArmL",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e4 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = InnerArma_winter,
+  xlab = "Ethnicity",
+  ylab = "InnerArma",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e5 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = InnerArmb_winter,
+  xlab = "Ethnicity",
+  ylab = "InnerArmb",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e6 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = InnerArmR_winter,
+  xlab = "Ethnicity",
+  ylab = "InnerArmR",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e7 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = InnerArmG_winter,
+  xlab = "Ethnicity",
+  ylab = "InnerArmG",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+e8 <- ggwithinstats(
+  data = summer_winter,
+  x = Ethnicity_winter,
+  y = InnerArmB_winter,
+  xlab = "Ethnicity",
+  ylab = "InnerArmB",
+  type = "r",
+  title = "Robust Test",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+# combining the individual plots into a single plot
+combine_plots(
+  plotlist = list(e1, e2, e3, e4, e5, e6, e7, e8),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    title = "Effect of ethnicity on color metrics in winter inner arm measurements"),
+  height = 10,  # Increase the height (adjust as needed)
+  width = 12 
+)
+
+```
+
+## linear mixed effects model
+
+fixed effects: we expect will have an effect on the response variable
+
+random effects: trying to control
+- season
+
+Y_{ijk} = \beta_0 + \beta_1 \text{(season)} + (1|\text{individual}) + \epsilon_{ijk}
+```{r}
+messyjoin <- left_join(data_summer, data_winter, 
+                     by = "ParticipantCentreID", 
+                     suffix = c("_summer", "_winter"))
+messyjoin <- messyjoin %>%
+  select(matches("SkinReflectance|ParticipantCentreID|VitD"))
+names(messyjoin) <- gsub("\\\\", "", names(messyjoin))
+names(messyjoin) <- gsub("\\*", "", names(messyjoin))
+
+
+df_long <- messyjoin %>%
+  pivot_longer(
+    cols = -ParticipantCentreID,  
+    names_to = c("Site", "Metric", "Replicate", "Season"),
+    names_pattern = "SkinReflectance(.*)([EMRGBLab])(\\d+)_(.*)",  
+    values_to = "Value"
+  )
+
+df_long <- df_long %>%
+  mutate(Ethnicity = case_when(
+    grepl("^VDTG", ParticipantCentreID) ~ "CM",
+    grepl("^VDKH", ParticipantCentreID) ~ "XH",
+    TRUE ~ NA))
+```
+
+```{r}
+df_long$Season <- as.factor (df_long$Season) 
+df_long$Ethnicity <- as.factor (df_long$Ethnicity)
+head(df_long)
+melanin <- df_long[df_long$Metric == "M",]
+erythema <- df_long[df_long$Metric == "E",]
+library(lme4)
+
+melanin.mixed.lmer <- lmer(Value ~ Ethnicity + Season + (1|ParticipantCentreID/Site) + (1|Replicate), data = melanin)
+melanin.reduced.lmer <- lmer(Value ~ 1 + (1|Season) + (1|ParticipantCentreID/Site) + (1|Replicate), data = melanin)
+a1 <- anova(melanin.reduced.lmer, melanin.mixed.lmer)
+
+erythema.mixed.lmer <- lmer(Value ~ Ethnicity + Season + (1|ParticipantCentreID/Site) + (1|Replicate), data = erythema)
+erythema.reduced.lmer <- lmer(Value ~ 1 + (1|Season) + (1|ParticipantCentreID/Site) + (1|Replicate), data = erythema)
+a2 <- anova(erythema.reduced.lmer, erythema.mixed.lmer)
+
+
+a1_new <- data.frame(a1)
+a2_new <- data.frame(a2) 
+
+anova_results <- data.frame(cbind(c("Ethnicity", "Residuals", "Ethnicity", "Residuals"), 
+                                  rbind(a1_new, a2_new))) 
+colnames(anova_results) <- c("","npar","AIC","BIC","logLik","deviance","Chisq","Df","Pr(>Chisq)" )
+row.names(anova_results) <- NULL
+
+library(kableExtra)
+anova_results %>% kable("html", digits=2) %>% 
+  kable_styling(bootstrap_options = "striped", full_width = F) %>% 
+  pack_rows(., "Melanin", 1, 2) %>% # groups rows with label
+  pack_rows(., "Erythema", 3, 4) # groups rows with label
+```
+
+
+
+```{r effects}
+
+melanin1 <- stats::lm(formula = Value ~ Ethnicity + Season, data = melanin)
+combine_plots(
+  plotlist = list(
+    ggcoefstats(melanin1) +
+      ggplot2::labs(x = parse(text = "'regression coefficient' ~italic(beta)")),
+    ggcoefstats(melanin.mixed.lmer) +
+      ggplot2::labs(
+        x = parse(text = "'regression coefficient' ~italic(beta)"),
+        y = "fixed effects"
+      )
+  ),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(title = "Relationship between MI value and ethnicity")
+)
+
+
+erythema1 <- stats::lm(formula = Value ~ Ethnicity + Season, data = erythema)
+combine_plots(
+  plotlist = list(
+    ggcoefstats(erythema1) +
+      ggplot2::labs(x = parse(text = "'regression coefficient' ~italic(beta)")),
+    ggcoefstats(erythema.mixed.lmer) +
+      ggplot2::labs(
+        x = parse(text = "'regression coefficient' ~italic(beta)"),
+        y = "fixed effects"
+      )
+  ),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(title = "Relationship between EI value and ethnicity")
+)
+```
+
+
+
+
