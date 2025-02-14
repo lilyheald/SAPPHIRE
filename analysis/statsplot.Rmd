@@ -45,14 +45,8 @@ long_data <- summer_winter %>%
     names_to = c(".value", "Season"),  # Extract variable name and season
     names_sep = "_"                    # Separate at "_"
   )
-
-numpairs <- long_data %>%
-  filter(!is.na(MedianForeheadM)) %>%
-  group_by(ParticipantCentreID) %>%
-  filter(all(c('summer', 'winter') %in% Season)) %>%
-  summarise(count = n_distinct(ParticipantCentreID))
-
-write.csv(long_data, "~/sapphire/SAfrADMIX/long.csv", row.names = F)
+long_data$Ethnicity[long_data$Ethnicity == 'Cape_colored'] <- 'Cape_mixed'
+long_data
 ```
 
 
@@ -323,7 +317,7 @@ grouped_ggwithinstats(
 
 
 
-```{r fig.height = 15}
+```{r fig.height = 6}
 
 c1 <- grouped_ggwithinstats(
   ## arguments relevant for ggwithinstats
@@ -343,7 +337,7 @@ c1 <- grouped_ggwithinstats(
   ## arguments relevant for combine_plots
   annotation.args = list(title = "MedianForeheadL across Ethnicity"),
   plotgrid.args = list(ncol = 1),
-  ggplot.component = list(theme(text = element_text(size = 15)))
+  centrality.label.args = list(size  = 6)
 )
 
 c2 <- grouped_ggwithinstats(
@@ -364,7 +358,7 @@ c2 <- grouped_ggwithinstats(
   ## arguments relevant for combine_plots
   annotation.args = list(title = "MedianForeheada across Ethnicity"),
   plotgrid.args = list(ncol = 1),
-  ggplot.component = list(theme(text = element_text(size = 15)))
+  centrality.label.args = list(size  = 6)
 )
 
 c3 <- grouped_ggwithinstats(
@@ -385,7 +379,7 @@ c3 <- grouped_ggwithinstats(
   ## arguments relevant for combine_plots
   annotation.args = list(title = "MedianForeheadb across Ethnicity"),
   plotgrid.args = list(ncol = 1),
-  ggplot.component = list(theme(text = element_text(size = 15)))
+  centrality.label.args = list(size  = 6)
 )
 
 c4 <- grouped_ggwithinstats(
@@ -406,7 +400,7 @@ c4 <- grouped_ggwithinstats(
   ## arguments relevant for combine_plots
   annotation.args = list(title = "InnerArmL across Ethnicity"),
   plotgrid.args = list(ncol = 1),
-  ggplot.component = list(theme(text = element_text(size = 15)))
+  centrality.label.args = list(size  = 6)
 )
 
 c5 <- grouped_ggwithinstats(
@@ -427,7 +421,7 @@ c5 <- grouped_ggwithinstats(
   ## arguments relevant for combine_plots
   annotation.args = list(title = "InnerArma across Ethnicity"),
   plotgrid.args = list(ncol = 1),
-  ggplot.component = list(theme(text = element_text(size = 15)))
+  centrality.label.args = list(size  = 6)
 )
 
 c6 <- grouped_ggwithinstats(
@@ -448,21 +442,23 @@ c6 <- grouped_ggwithinstats(
   ## arguments relevant for combine_plots
   annotation.args = list(title = "InnerArmb across Ethnicity"),
   plotgrid.args = list(ncol = 1),
-  ggplot.component = list(theme(text = element_text(size = 15)))
+  centrality.label.args = list(size  = 6)
 )
 
 combine_plots(
   plotlist = list(c1, c2, c3, c4, c5, c6),
   plotgrid.args = list(nrow = 2),
-  annotation.args = list(
-    title = "Effect of season on CIElab color metrics across ethnicity", 
-    theme = ggplot2::theme(plot.title = element_text(size = 30)))
+  annotation.args = list(title = "Effect of season on CIElab metrics across ethnicity",
+                theme = ggplot2::theme(plot.title = element_text(size = 10)))
 )
 
+combine_plots(
+  plotlist = list(c1, c2, c4, c6),
+  plotgrid.args = list(nrow = 1),
+  annotation.args = list(title = "Significant effects of season on CIElab metrics across ethnicity",
+                theme = ggplot2::theme(plot.title = element_text(size = 15)))
+)
 ```
-
-
-
 
 
 ```{r fig.height = 15}
@@ -607,10 +603,7 @@ combine_plots(
 
 
 
-
-
-
-```{r fig.height = 15}
+```{r fig.height = 10}
 
 m1 <- grouped_ggwithinstats(
   ## arguments relevant for ggwithinstats
@@ -696,7 +689,8 @@ combine_plots(
   plotlist = list(m1, m2, m3, m4),
   plotgrid.args = list(nrow = 2),
   annotation.args = list(
-    title = "Effect of season on ME color metrics across ethnicity")
+    title = "Effect of season on ME color metrics across ethnicity",
+    theme = ggplot2::theme(plot.title = element_text(size = 15)))
 )
 
 ```
@@ -777,7 +771,6 @@ e1 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "MedianForeheadM",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -789,7 +782,6 @@ e2 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "MedianForeheadE",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -801,7 +793,6 @@ e3 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "MedianForeheadL",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -813,7 +804,6 @@ e4 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "MedianForeheada",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -825,7 +815,6 @@ e5 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "MedianForeheadb",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -837,7 +826,6 @@ e6 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "MedianForeheadR",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -849,7 +837,6 @@ e7 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "MedianForeheadG",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -861,7 +848,6 @@ e8 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "MedianForeheadB",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -1108,7 +1094,6 @@ e1 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "InnerArmM",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -1120,7 +1105,6 @@ e2 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "InnerArmE",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -1132,7 +1116,6 @@ e3 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "InnerArmL",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -1144,7 +1127,6 @@ e4 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "InnerArma",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -1156,7 +1138,6 @@ e5 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "InnerArmb",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -1168,7 +1149,6 @@ e6 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "InnerArmR",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -1180,7 +1160,6 @@ e7 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "InnerArmG",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -1192,7 +1171,6 @@ e8 <- ggwithinstats(
   xlab = "Ethnicity",
   ylab = "InnerArmB",
   type = "r",
-  title = "Robust Test",
   package = "wesanderson",
   palette = "Royal2"
 )
@@ -1311,5 +1289,101 @@ combine_plots(
 ```
 
 
+```{r fig.width = 10}
+cm <- long_data[long_data$Ethnicity == "Cape_mixed",]
+cm1 <- ggwithinstats(
+  data = xh,
+  x = Season,
+  y = InnerArmM,
+  xlab = "Ethnicity",
+  ylab = "Inner Arm E",
+  type = "r",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+cm2 <- ggwithinstats(
+  data = xh,
+  x = Season,
+  y = InnerArmE,
+  xlab = "Ethnicity",
+  ylab = "Inner Arm E",
+  type = "r",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+cm3 <- ggwithinstats(
+  data = xh,
+  x = Season,
+  y = InnerArmR,
+  xlab = "Ethnicity",
+  ylab = "Inner Arm R",
+  type = "r",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+cm4 <- ggwithinstats(
+  data = xh,
+  x = Season,
+  y = InnerArmG,
+  xlab = "Ethnicity",
+  ylab = "Inner Arm G",
+  type = "r",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+cm5 <- ggwithinstats(
+  data = xh,
+  x = Season,
+  y = InnerArmB,
+  xlab = "Ethnicity",
+  ylab = "Inner Arm B",
+  type = "r",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+cm6 <- ggwithinstats(
+  data = xh,
+  x = Season,
+  y = InnerArmL,
+  xlab = "Ethnicity",
+  ylab = "Inner Arm L*",
+  type = "r",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+cm7 <- ggwithinstats(
+  data = xh,
+  x = Season,
+  y = InnerArma,
+  xlab = "Ethnicity",
+  ylab = "Inner Arm a*",
+  type = "r",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+cm8 <- ggwithinstats(
+  data = xh,
+  x = Season,
+  y = InnerArmb,
+  xlab = "Ethnicity",
+  ylab = "Inner Arm b*",
+  type = "r",
+  package = "wesanderson",
+  palette = "Royal2"
+)
+
+combine_plots(
+  plotlist = list(cm1, cm2, cm3, cm4, cm5, cm6, cm7, cm8),
+  plotgrid.args = list(nrow = 4),
+  annotation.args = list(
+    title = "Effect of season on xh color metrics",
+    theme = ggplot2::theme(plot.title = element_text(size = 15)))
+)
+```
 
 
+```{r cm}
+xh <- long_data[long_data$Ethnicity == "Xhosa",]
+```

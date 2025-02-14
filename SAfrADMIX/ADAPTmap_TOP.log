@@ -1,0 +1,26 @@
+PLINK v1.9.0-b.7.7 64-bit (22 Oct 2024)
+Options in effect:
+  --allow-no-sex
+  --bfile SAfrADMIX
+  --no-pheno
+  --nonfounders
+  --out ADAPTmap_TOP
+  --recode
+
+Hostname: MacBook-Pro-1076.local
+Working directory: /Users/lilyheald/sapphire/SAfrADMIX
+Start time: Tue Feb 11 14:33:08 2025
+
+Random number seed: 1739302388
+8192 MB RAM detected; reserving 4096 MB for main workspace.
+3980 variants loaded from .bim file.
+94 people (45 males, 49 females) loaded from .fam.
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 94 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.993534.
+3980 variants and 94 people pass filters and QC.
+Note: No phenotypes present.
+--recode ped to ADAPTmap_TOP.ped + ADAPTmap_TOP.map ... done.
+
+End time: Tue Feb 11 14:33:08 2025

@@ -1,0 +1,30 @@
+﻿Name,Literature inbox,Chr,SNP,Base,SNP_Phenotype,Pigmentation_Phenotype,Notes
+ASIP,"Bonilla et al., 2005 (https://www.notion.so/Bonilla-et-al-2005-13da9aee31348153a14cd2a3f473e7f3?pvs=21)",20,rs6058017,A/G,darker skin,,
+IRF4,"Nan et al., 2009 (https://www.notion.so/Nan-et-al-2009-155a9aee313481e4a070f6067665d0e4?pvs=21)",6,rs12203592,C/T,,Tanning response,
+IRF4,"Sturm & Duffy, 2012 (https://www.notion.so/Sturm-Duffy-2012-126a9aee313481e9a1b5c9b1653622c8?pvs=21)",6,rs12203592,C/T,"hair color, eye color, skin tanning response to sunlight","Functionally regulates pigment variation regulation, cooperates with MITF to regulate expression of TYR","check on actual effect "
+KITLG,"Sturm & Duffy, 2012 (https://www.notion.so/Sturm-Duffy-2012-126a9aee313481e9a1b5c9b1653622c8?pvs=21)",12,rs12821256,T/C,blonde hair,Hyperpigmented and hypopigmented skin patches,European populations
+OCA2,"Duffy et al., 2007 (https://www.notion.so/Duffy-et-al-2007-126a9aee313481399c54daba231eb4ae?pvs=21)",15,rs11855019,T/C,"eye color ","Hypopigmentation of skin, hair, irides",
+OCA2,"Duffy et al., 2007 (https://www.notion.so/Duffy-et-al-2007-126a9aee313481399c54daba231eb4ae?pvs=21)",15,rs6497268,G/T,"eye color ","Hypopigmentation of skin, hair, irides",
+OCA2,"Duffy et al., 2007 (https://www.notion.so/Duffy-et-al-2007-126a9aee313481399c54daba231eb4ae?pvs=21)",15,"rs7495174 ",T/C,"eye color ","Hypopigmentation of skin, hair, irides",
+OCA2,"Sturm & Duffy, 2012 (https://www.notion.so/Sturm-Duffy-2012-126a9aee313481e9a1b5c9b1653622c8?pvs=21)",15,rs74653330,G/A,light eye color,"Hypopigmentation of skin, hair, irides",Ala481Thr europeans
+OCA2,"Sturm & Duffy, 2012 (https://www.notion.so/Sturm-Duffy-2012-126a9aee313481e9a1b5c9b1653622c8?pvs=21)",15,rs1800414,G,light skin color,"Hypopigmentation of skin, hair, irides",615 arg
+OCA2,"Sturm & Duffy, 2012 (https://www.notion.so/Sturm-Duffy-2012-126a9aee313481e9a1b5c9b1653622c8?pvs=21)",15,rs1800414,A/G,albinism,"Hypopigmentation of skin, hair, irides",
+OCA2,"Sturm & Duffy, 2012 (https://www.notion.so/Sturm-Duffy-2012-126a9aee313481e9a1b5c9b1653622c8?pvs=21)",15,rs12913832,C,blue eyes,"Hypopigmentation of skin, hair, irides",
+SLC45A2,,5,rs250417,C,"Black hair, Dark brown eyes, dark skin","Hypopigmented skin, hair, irides",
+SLC45A2,,5,rs250417,G,"Blond hair, blue eyes, light skin","Hypopigmented skin, hair, irides",
+SLC45A2,,5,rs40132,C,"black hair, dark brown eyes, intermediate skin","Hypopigmented skin, hair, irides",
+SLC45A2,,5,rs16891982,G,"Black hair, Dark brown eyes, dark skin","Hypopigmented skin, hair, irides",
+SLC45A2,,5,rs40132,T,"blond hair, blue+green eyes, light skin","Hypopigmented skin, hair, irides",
+SLC45A2,"Sturm & Duffy, 2012 (https://www.notion.so/Sturm-Duffy-2012-126a9aee313481e9a1b5c9b1653622c8?pvs=21)",5,rs16891982,C,"Blond hair, blue eyes, light skin, freckles","Hypopigmented skin, hair, irides",
+SLC45A2,,5,rs35394,G,black hair,"Hypopigmented skin, hair, irides",
+SLC45A2,,5,rs2287949,A,"Black hair, Dark brown eyes, dark skin","Hypopigmented skin, hair, irides",
+SLC45A2,,5,rs35394,A,Light skin,"Hypopigmented skin, hair, irides",
+SLC45A2,,5,rs2287949,G,"Blond hair, Blue + green eyes, Light skin","Hypopigmented skin, hair, irides",
+SLC45A2,,5,rs26722,A,"Black hair ","Hypopigmented skin, hair, irides",
+SLC45A2,"Sturm & Duffy, 2012 (https://www.notion.so/Sturm-Duffy-2012-126a9aee313481e9a1b5c9b1653622c8?pvs=21)",5,rs26722,G,Brown eyes,"Hypopigmented skin, hair, irides",
+SLC45A2,"Baxter et al., 2019 (https://www.notion.so/Baxter-et-al-2019-13ca9aee3134814bbf86f4c2419be800?pvs=21)",5,rs181832,C,"Black hair, Dark brown eyes, dark skin","Hypopigmented skin, hair, irides",
+SLC45A2,"Baxter et al., 2019 (https://www.notion.so/Baxter-et-al-2019-13ca9aee3134814bbf86f4c2419be800?pvs=21)",5,rs181832,T,"Blond hair, Blue + green eyes, Light skin","Hypopigmented skin, hair, irides",SLC45A2 is also MTAP
+TYR,"Sturm & Duffy, 2012 (https://www.notion.so/Sturm-Duffy-2012-126a9aee313481e9a1b5c9b1653622c8?pvs=21)",11,rs1042602,A,192Tyr light skin,"Absence of skin, hair, and iris pigmentation",south asian population
+TYR,"Baxter et al., 2019 (https://www.notion.so/Baxter-et-al-2019-13ca9aee3134814bbf86f4c2419be800?pvs=21)",11,"Arg402Gln, Phe374Leu",,,"Absence of skin, hair, and iris pigmentation",
+TYRP1,"Sturm & Duffy, 2012 (https://www.notion.so/Sturm-Duffy-2012-126a9aee313481e9a1b5c9b1653622c8?pvs=21)",9,rs1408799,A,blue eyes,"Hypopigmented skin, hair, and irides, in some dark-skinned individuals, bright copper-red coloration of skin and hair and dilution of iris pigmentation",
+TYRP1,"Baxter et al., 2019 (https://www.notion.so/Baxter-et-al-2019-13ca9aee3134814bbf86f4c2419be800?pvs=21)",9,"rs1408799, SLC45A2 -1721 C>G",,,"Hypopigmented skin, hair, and irides, in some dark-skinned individuals, bright copper-red coloration of skin and hair and dilution of iris pigmentation",

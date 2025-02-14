@@ -1,0 +1,376 @@
+---
+title: "lilyanalysis"
+output: html_document
+---
+
+```{r load, include = FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(readxl)
+library('corrr')
+library(ggcorrplot)
+library(factoextra)
+library("FactoMineR")
+library(missMDA)
+library(wesanderson)
+library("ggfortify")
+library(ggcorrplot)
+```
+
+```{r read}
+file_path <- "~/sapphire/data/serum_vit_D_study_with_lab_results.xlsx" 
+data_summer <- read_excel(file_path, sheet = "ScreeningDataCollectionSummer")
+data_winter <- read_excel(file_path, sheet = "ScreeningDataCollectionWinter")
+data_6weeks <- read_excel(file_path, sheet = "ScreeningDataCollection6Weeks")
+sun_expos <- read.csv("~/sapphire/data/sun_expos_data/sun_expos_long.csv")
+sun_expos_summer <- sun_expos[sun_expos$collection_period == 'Summer', ]
+sun_expos_winter <- sun_expos[sun_expos$collection_period == 'Winter', ]
+sun_expos_6Weeks <- sun_expos[sun_expos$collection_period == '6Weeks', ]
+```
+
+# part 0: seasonal data cleaning
+
+```{r join_seasonal}
+summer_data <- left_join(data_summer, sun_expos_summer, 
+                     by = c("ParticipantCentreID" = "participant_centre_id"))
+
+winter_data <- left_join(data_winter, sun_expos_winter, 
+                     by = c("ParticipantCentreID" = "participant_centre_id"))
+
+six_week_data <- left_join(data_6weeks, sun_expos_6Weeks, 
+                     by = c("ParticipantCentreID" = "participant_centre_id"))
+```
+
+```{r cleaning_seasonal}
+# just subsetting some things I know I don't need 
+#this ethnicity col was all NA so I'm making my own
+summer_data = subset(summer_data, select = -c(Supplements, Medications, 
+                                              EthnicitySpecifyOther, SmokingComments,
+                                              x9if_apply_sunscreen_spf_used))
+winter_data = subset(winter_data, select = -c(Supplements, Medications, 
+                                              EthnicitySpecifyOther, SmokingComments, 
+                                              ContinuedInStudy, IfNotContinuedInStudyReason,
+                                              x9if_apply_sunscreen_spf_used))
+six_week_data = subset(six_week_data, select = -c(Supplements, Medications, 
+                                              EthnicitySpecifyOther, SmokingComments, 
+                                              ContinuedInStudy, IfNotContinuedInStudyReason,
+                                              x9if_apply_sunscreen_spf_used))
+six_week_data = six_week_data[,!grepl("IfNoReasonForExclusion:",names(six_week_data))]
+winter_data = winter_data[,!grepl("IfNoReasonForExclusion:",names(winter_data))]
+summer_data = summer_data[,!grepl("IfNoReasonForExclusion:",names(summer_data))]
+six_week_data = six_week_data[,!grepl("Req Num",names(six_week_data))]
+winter_data = winter_data[,!grepl("Req Num",names(winter_data))]
+summer_data = summer_data[,!grepl("Req Num",names(summer_data))]
+```
+
+```{r ethnicity_init}
+
+ethnicity <- function(EthnicityAfricanBlack, EthnicityColoured, EthnicityWhite, 
+                      EthnicityIndianAsian) {
+  case_when(
+    EthnicityAfricanBlack == TRUE & 
+      EthnicityColoured == FALSE & 
+      EthnicityWhite == FALSE & 
+      EthnicityIndianAsian == FALSE ~ "Xhosa",
+    EthnicityAfricanBlack == FALSE & 
+      EthnicityColoured == TRUE & 
+      EthnicityWhite == FALSE & 
+      EthnicityIndianAsian == FALSE ~ "Cape_colored",
+    TRUE ~ NA_character_
+  )
+}
+
+summer_data <- summer_data %>%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+summer_data = subset(summer_data, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian))
+
+winter_data <- winter_data %>%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+winter_data = subset(winter_data, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian))
+
+six_week_data <- six_week_data %>%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+six_week_data = subset(six_week_data, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian))
+```
+
+```{r reflectance_metrics}
+# regex that I hopefully don't have to use?
+# site = sub("SkinReflectance(.*?)[EMRGBL\\*ab\\*]+\\d", "\\1", Variable)
+# metric = sub(".*?([EMRGBL\\*ab\\*]+)\\d", "\\1", Variable)
+
+sites <- c("Forehead", "RightUpperInnerArm", "LeftUpperInnerArm")
+metrics <- c("E", "M", "R", "G", "B", "L\\*", "a\\*", "b\\*")
+
+for (site in sites) {
+  for (metric in metrics) {
+    six_week_data <- six_week_data %>%
+      mutate(
+        !!paste0("SkinReflectance", site, metric, "_Avg") := rowMeans(
+          select(., matches(paste0("SkinReflectance", site, metric, "[123]"))),
+          na.rm = TRUE
+        )
+      )
+  }
+}
+
+for (site in sites) {
+  for (metric in metrics) {
+    winter_data <- winter_data %>%
+      mutate(
+        !!paste0("SkinReflectance", site, metric, "_Avg") := rowMeans(
+          select(., matches(paste0("SkinReflectance", site, metric, "[123]"))),
+          na.rm = TRUE
+        )
+      )
+  }
+}
+
+for (site in sites) {
+  for (metric in metrics) {
+    summer_data <- summer_data %>%
+      mutate(
+        !!paste0("SkinReflectance", site, metric, "_Avg") := rowMeans(
+          select(., matches(paste0("SkinReflectance", site, metric, "[123]"))),
+          na.rm = TRUE
+        )
+      )
+  }
+}
+
+# now remove columns that end in metric[123] (the not averaged measurements)
+winter_data <- winter_data %>%
+  select(-matches(".*[EMRGBL\\*a\\*b\\*]\\d$"))
+
+summer_data <- summer_data %>%
+  select(-matches(".*[EMRGBL\\*a\\*b\\*]\\d$"))
+
+six_week_data <- six_week_data %>%
+  select(-matches(".*[EMRGBL\\*a\\*b\\*]\\d$"))
+```
+
+# part 1: joining
+
+First step is to pivot data to get all numeric data together.
+
+```{r joining}
+six_week_rename <- six_week_data %>%
+    rename_with(~ paste0(., "-6weeks"), -ParticipantCentreID)
+
+joinone <- left_join(summer_data, winter_data, 
+                     by = "ParticipantCentreID", 
+                     suffix = c("-summer", "-winter"))
+
+joined_data <- left_join(joinone, six_week_rename, 
+                         by = "ParticipantCentreID")
+
+head(joined_data)
+```
+
+```{r pivot_longer}
+long_data <- joined_data %>%
+  pivot_longer(
+    cols = -ParticipantCentreID,  
+    names_to = c(".value", "Season"),        # Split column names into two parts
+    names_sep = "-"                          # Separate at _
+  )
+```
+
+Now we have a wide and long dataset that combines the data across summer, winter, and 6 week.
+
+# part 0.5: initial visualization
+
+```{r initial_visuals}
+ggplot(long_data, aes(VitDResult, SkinReflectanceForeheadM_Avg, col = Ethnicity, fill = Ethnicity)) + 
+  geom_point(aes(shape = Season), size = 3) 
+```
+
+# part 1: seasonal PCA
+
+```{r summer}
+omittedsummer <- na.omit(summer_data)
+summer <- select_if(omittedsummer, is.numeric)
+summer <- subset(summer, select = -Gender)
+summer <- scale(summer)
+summerpca <- prcomp(summer)
+summary(summerpca)
+summerpca$loadings[, 1:2]
+
+fviz_eig(summerpca, addlabels = TRUE)
+
+fviz_pca_var(summerpca, col.var = "black")
+
+fviz_cos2(summerpca, choice = "var", axes = 1:2)
+```
+
+From all of the contributions we know that dimension 1, which accounts for 67.5% of the variance in the summer data, is made up of all of the measures of pigmentation. This is pretty consistent across all of the PCAs. 
+
+```{r winter}
+omittedwinter <- na.omit(winter_data)
+winter <- select_if(omittedwinter, is.numeric)
+winter <- subset(winter, select = -Gender)
+winter <- scale(winter)
+winterpca <- prcomp(winter)
+summary(winterpca)
+winterpca$loadings[, 1:2]
+
+fviz_eig(winterpca, addlabels = TRUE)
+
+fviz_pca_var(winterpca, col.var = "black")
+
+fviz_cos2(winterpca, choice = "var", axes = 1:2)
+```
+
+```{r sixweek}
+omittedsixweek <- na.omit(six_week_data)
+sixweek <- select_if(omittedsixweek, is.numeric)
+sixweek <- subset(sixweek, select = -Gender)
+sixweek <- scale(sixweek)
+sixweekpca <- prcomp(sixweek)
+summary(sixweekpca)
+sixweekpca$loadings[, 1:2]
+
+fviz_eig(sixweekpca, addlabels = TRUE)
+
+fviz_pca_var(sixweekpca, col.var = "black")
+
+fviz_cos2(sixweekpca, choice = "var", axes = 1:2)
+```
+
+```{r summervisual}
+summercomps <- as.data.frame(summerpca$x)
+newsummer <- cbind(omittedsummer,summercomps[,c(1,2)])
+head(omittedsummer)
+ggplot(newsummer, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Summer PCA")
+
+fviz_contrib(summerpca, choice = "var", axes = 1, top = 20)
+fviz_contrib(summerpca, choice = "var", axes = 2, top = 20)
+```
+
+```{r wintervisual}
+wintercomps <- as.data.frame(winterpca$x)
+newwinter <- cbind(omittedwinter,wintercomps[,c(1,2)])
+ggplot(newwinter, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") + 
+  labs(title = "Winter PCA")
+
+fviz_contrib(winterpca, choice = "var", axes = 1, top = 20)
+fviz_contrib(winterpca, choice = "var", axes = 2, top = 20)
+```
+
+```{r sixweekvisual}
+sixweekcomps <- as.data.frame(sixweekpca$x)
+newsixweek <- cbind(omittedsixweek,sixweekcomps[,c(1,2)])
+ggplot(newsixweek, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") + 
+  labs(title = "Six Week PCA")
+
+fviz_contrib(sixweekpca, choice = "var", axes = 1, top = 20)
+fviz_contrib(sixweekpca, choice = "var", axes = 2, top = 20)
+```
+
+```{r vitdgradient}
+ggplot(newsummer, aes(x=PC1, y=PC2, col = VitDResult, fill = VitDResult)) +
+  geom_point(aes(shape = Ethnicity), size = 3, stroke = 1, col = "black") + 
+  scale_fill_gradient(low="blue", high="red") + 
+  labs(title = "Summer PCA") +
+  theme_minimal() +
+  scale_shape_manual(values = c(21, 22)) 
+
+ggplot(newwinter, aes(x=PC1, y=PC2, col = VitDResult, fill = VitDResult)) +
+  geom_point(aes(shape = Ethnicity), size = 3, stroke = 1, col = "black") + 
+  scale_fill_gradient(low="blue", high="red") + 
+  labs(title = "Summer PCA") +
+  theme_minimal() +
+  scale_shape_manual(values = c(21, 22)) 
+
+ggplot(newsixweek, aes(x=PC1, y=PC2, col = VitDResult, fill = VitDResult)) +
+  geom_point(aes(shape = Ethnicity), size = 3, stroke = 1, col = "black") + 
+  scale_fill_gradient(low="blue", high="red") + 
+  labs(title = "Summer PCA") +
+  theme_minimal() +
+  scale_shape_manual(values = c(21, 22)) 
+```
+
+
+# part 2: long data PCA
+
+```{r long_pca}
+omittedlong <- na.omit(long_data)
+long <- select_if(omittedlong, is.numeric)
+long <- subset(long, select = -Gender)
+long <- scale(long)
+longpca <- prcomp(long)
+summary(longpca)
+longpca$loadings[, 1:2]
+
+fviz_eig(longpca, addlabels = TRUE)
+
+fviz_pca_var(longpca, col.var = "black")
+
+fviz_cos2(longpca, choice = "var", axes = 1:2)
+```
+
+```{r summervis}
+longcomps <- as.data.frame(longpca$x)
+newlong <- cbind(omittedlong,longcomps[,c(1,2)])
+head(omittedlong)
+ggplot(newlong, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Summer PCA")
+
+fviz_contrib(longpca, choice = "var", axes = 1, top = 20)
+fviz_contrib(longpca, choice = "var", axes = 2, top = 20)
+```
+
+```{r longgradient}
+pal <- wes_palette("Zissou1", 10, type = "continuous")
+ggplot(newlong, aes(x=PC1, y=PC2, col = VitDResult, fill = VitDResult)) +
+  geom_point(aes(shape = Ethnicity), size = 3, stroke = 1, col = "black") + 
+  scale_fill_gradientn(colors = pal) +
+  labs(title = "Long PCA") +
+  theme_minimal() +
+  scale_shape_manual(values = c(21, 22)) 
+```
+
+```{r widepca}
+omittedwide <- na.omit(joined_data)
+wide <- select_if(omittedwide, is.numeric)
+wide_standard <- scale(wide)
+widepca <- prcomp(wide_standard, center = T, scale. = T)
+summary(widepca)
+widepca$rotation
+widepca_scores <- widepca$x
+
+widecomps <- as.data.frame(widepca$x)
+newwide <- cbind(omittedwide,widecomps[,c(1,2)])
+head(omittedwide)
+ggplot(newwide, aes(x=PC1, y=PC2, col = 'Ethnicity-summer', fill = 'Ethnicity-summer')) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Wide PCA")
+```
+
+
+
+
+
+
+
+

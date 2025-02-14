@@ -1,0 +1,752 @@
+---
+title: "color_metrics"
+output: html_document
+---
+
+```{r load, include=FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(readxl)
+library('corrr')
+library(ggcorrplot)
+library(factoextra)
+library("FactoMineR")
+library(missMDA)
+library(wesanderson)
+library("ggfortify")
+library(ggcorrplot)
+library(tidyverse)
+library(ggpubr)
+library(rstatix)
+library(readr)
+library(lme4) 
+library(ggplot2)
+library(ggstatsplot)
+```
+
+# reading
+
+```{r read}
+file_path <- "~/sapphire/data/serum_vit_D_study_with_lab_results.xlsx" 
+data_summer <- read_excel(file_path, sheet = "ScreeningDataCollectionSummer")
+data_winter <- read_excel(file_path, sheet = "ScreeningDataCollectionWinter")
+data_6weeks <- read_excel(file_path, sheet = "ScreeningDataCollection6Weeks")
+sun_expos <- read.csv("~/sapphire/data/sun_expos_data/sun_expos_long.csv")
+sun_expos_summer <- sun_expos[sun_expos$collection_period == 'Summer', ]
+sun_expos_winter <- sun_expos[sun_expos$collection_period == 'Winter', ]
+sun_expos_6Weeks <- sun_expos[sun_expos$collection_period == '6Weeks', ]
+summer_winter <- read.csv("~/sapphire/data/summer_winter.csv")
+food_freq_long <- read_csv("~/sapphire/data/food_freq_data/food_freq_long.csv")
+```
+
+# Color metrics
+
+Due to the extensive genetic and phenotypic diversity present in South Africa, our dataset is a unique opportunity to study constitutive and facultative skin pigmentation. It has been assumed that inner arm pigmentation is an accurate representation of constitutive pigmentation, whereas forehead pigmentation represents facultative skin pigmentation. This assumption has not been tested in diverse populations.
+
+## Part 1: addressing triplicates
+
+For each reflectance metric, for each individual, for each season, measurements were taken three times. What is the variability between these triplicates?
+
+```{r part1}
+sites <- c("Forehead", "RightUpperInnerArm", "LeftUpperInnerArm")
+metrics <- c("E", "M", "R", "G", "B", "L\\*", "a\\*", "b\\*")
+
+for(site in sites) {
+  for(metric in metrics) {
+    triplicate_dist_summer <- data_summer %>%
+      rowwise() %>%
+      mutate(!!paste0("Mean", site, metric) := mean(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE),
+             !!paste0("Median", site, metric) := median(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE),
+             !!paste0("SD", site, metric) := sd(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE)) %>%
+      ungroup()
+  }
+}
+
+for(site in sites) {
+  for(metric in metrics) {
+    triplicate_dist_winter <- data_winter %>%
+      rowwise() %>%
+      mutate(!!paste0("Mean", site, metric) := mean(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE),
+             !!paste0("Median", site, metric) := median(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE),
+             !!paste0("SD", site, metric) := sd(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE)) %>%
+      ungroup()
+  }
+}
+
+for(site in sites) {
+  for(metric in metrics) {
+    triplicate_dist_6weeks <- data_6weeks %>%
+      rowwise() %>%
+      mutate(!!paste0("Mean", site, metric) := mean(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE),
+             !!paste0("Median", site, metric) := median(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE),
+             !!paste0("SD", site, metric) := sd(c_across(matches(paste0("SkinReflectance", site, metric, "[123]"))), na.rm = TRUE)) %>%
+      ungroup()
+  }
+}
+```
+
+```{r part1view}
+sites <- c("Forehead", "RightUpperInnerArm", "LeftUpperInnerArm")
+metrics <- c("E", "M", "R", "G", "B", "L*", "a*", "b*")
+
+site_pattern <- paste(sites, collapse = "|")
+metric_pattern <- paste(metrics, collapse = "|")
+
+names(data_6weeks) <- gsub("\\\\", "", names(data_6weeks))
+names(data_6weeks) <- gsub("\\*", "", names(data_6weeks))
+
+names(data_summer) <- gsub("\\\\", "", names(data_summer))
+names(data_summer) <- gsub("\\*", "", names(data_summer))
+
+names(data_winter) <- gsub("\\\\", "", names(data_winter))
+names(data_winter) <- gsub("\\*", "", names(data_winter))
+
+six_week_rename <- data_6weeks %>%
+    rename_with(~ paste0(., "_6weeks"), -ParticipantCentreID)
+
+joinone <- left_join(data_summer, data_winter, 
+                     by = "ParticipantCentreID", 
+                     suffix = c("_summer", "_winter"))
+
+wide_data <- left_join(joinone, six_week_rename, 
+                         by = "ParticipantCentreID")
+
+wide_filter<-wide_data%>%
+  select(matches("ParticipantCentreID|SkinReflectance"))
+
+filter6 <- data_6weeks %>%
+  select(matches("ParticipantCentreID|SkinReflectance"))
+
+long6 <- filter6 %>%
+  pivot_longer(
+    cols = -ParticipantCentreID,  
+    names_to = c("Site", "Metric", "Triplicate"),
+    names_pattern = "SkinReflectance(.*)([EMRGBLab])([123])",  
+    values_to = "Value"
+  )
+
+longseason <- wide_filter %>%
+  pivot_longer(
+    cols = -ParticipantCentreID,  
+    names_to = c("Site", "Metric", "Triplicate", "Season"),
+    names_pattern = "SkinReflectance(.*)([EMRGBLab])([123])(_.*)",  
+    values_to = "Value"
+  )
+
+longseason <- na.omit(longseason)
+
+longseason_sd <- longseason %>%
+  group_by(ParticipantCentreID, Site, Metric, Season) %>%
+  summarise(sd_value = sd(Value, na.rm = TRUE), .groups = 'drop')
+
+ggplot(longseason_sd, aes(x = ParticipantCentreID, y = sd_value, color = Metric)) +
+  geom_point() +  # Use points to show the standard deviation for each participant
+  labs(
+    title = "SD of triplicates for participant, metric",
+    x = "Participant",
+    y = "Standard deviation"
+  ) +
+  theme_minimal()+
+  theme(
+    axis.text.x = element_blank(),  
+    axis.ticks.x = element_blank() 
+  )
+
+longseason_rg <- longseason %>%
+  group_by(ParticipantCentreID, Site, Metric, Season) %>%
+  summarise(
+    range = max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE),  # Subtract the min from the max
+    .groups = 'drop'
+  )
+
+ggplot(longseason_rg, aes(x = ParticipantCentreID, y = range, color = Metric)) +
+  geom_point() +  # Use points to show the standard deviation for each participant
+  labs(
+    title = "Range of triplicates for participant, metric",
+    x = "Participant",
+    y = "Range"
+  ) +
+  theme_classic() +
+  scale_color_manual(values = c("R" = "red", "G" = "green", "B" = "blue", "L" = "#fffdd0", "a" = "orange", "b" = "#4fb9af", "M" = "#4a2c2a", "E" = "pink")) +
+  theme(
+    axis.text.x = element_blank(),  
+    axis.ticks.x = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+    
+```
+
+We can see that there is a large amount of variance even within each individual for each of the three metrics. Because of this, we should take the median of the three measurements and trim outliers (150+ range)
+
+## Part 2: intersite variability
+
+How much variability do we see within an individual's forehead and inner arm measurements across time? 
+
+First we need to clean our data by taking the median of the three measures.
+
+```{r clean}
+longseason_clean <- longseason %>%
+  group_by(ParticipantCentreID, Site, Metric, Season) %>%
+  summarize(
+    Value = median(Value, na.rm = TRUE),  # Subtract the min from the max
+    .groups = 'drop'
+  )
+longseason_clean$Season[longseason_clean$Season == '_summer'] <- 'Summer'
+longseason_clean$Season[longseason_clean$Season == '_winter'] <- 'Winter'
+longseason_clean$Season[longseason_clean$Season == '_6weeks'] <- '6Weeks'
+
+longseason_clean$Season = factor(longseason_clean$Season, levels = c("Summer", "Winter", "6Weeks"))
+```
+
+### Intraindividual, intersite variability (CIElab)
+
+```{r part2q1}
+# subtract the maximum of the three measurements from the minimum of the three measurements
+# meaning forehead, rightupperinnerarm, leftupperinnerarm
+longseason_intersite_var <- longseason_clean %>%
+  group_by(ParticipantCentreID, Metric, Site, Season) %>%
+  filter(Site %in% c("Forehead", "RightUpperInnerArm", "LeftUpperInnerArm")) %>%
+  spread(key = Site, value = Value) %>%
+  mutate(
+    intersite_var = `Forehead` - pmin(`RightUpperInnerArm`, `LeftUpperInnerArm`, na.rm = TRUE)
+  ) %>%
+  select(ParticipantCentreID, Metric, Season, intersite_var) %>%
+  ungroup()
+
+longseason_intersite_var %>%
+  group_by(ParticipantCentreID, Metric) %>%
+  ggplot(aes(Season, intersite_var, color = Metric, group = interaction(ParticipantCentreID, Metric))) + 
+  geom_point() + 
+  geom_line() +
+  labs(
+    title = "Intersite variation across seasons",
+    x = "Season",
+    y = "Intersite variation"
+  ) +
+  theme_classic() +
+  scale_color_manual(values = c("R" = "red", "G" = "green", "B" = "blue", "L" = "#fffdd0", "a" = "orange", "b" = "#4fb9af", "M" = "#4a2c2a", "E" = "pink")) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+  
+```
+
+### Intraindividual, intrasite variability (RGB)
+
+```{r part2q2}
+longseason_intersite_var %>%
+  filter(Metric %in% c("L", "a", "b")) %>%
+  group_by(ParticipantCentreID, Metric) %>%
+  ggplot(aes(Season, intersite_var, color = Metric, group = interaction(ParticipantCentreID, Metric))) + 
+  geom_point() + 
+  geom_line() +
+  labs(
+    title = "Intersite variation across seasons",
+    x = "Season",
+    y = "Intersite variation"
+  ) +
+  theme_classic() +
+  scale_color_manual(values = c("L" = "grey", "a" = "orange", "b" = "#4fb9af")) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+longseason_intersite_var %>%
+  filter(Metric %in% c("R", "G", "B")) %>%
+  group_by(ParticipantCentreID, Metric) %>%
+  ggplot(aes(Season, intersite_var, color = Metric, group = interaction(ParticipantCentreID, Metric))) + 
+  geom_point() + 
+  geom_line() +
+  labs(
+    title = "Intersite variation across seasons",
+    x = "Season",
+    y = "Intersite variation"
+  ) +
+  theme_classic() +
+  scale_color_manual(values = c("R" = "red", "G" = "green", "B" = "blue")) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+longseason_intersite_var %>%
+  filter(Metric %in% c("M", "E")) %>%
+  group_by(ParticipantCentreID, Metric) %>%
+  ggplot(aes(Season, intersite_var, color = Metric, group = interaction(ParticipantCentreID, Metric))) + 
+  geom_point() + 
+  geom_line() +
+  labs(
+    title = "Intersite variation across seasons",
+    x = "Season",
+    y = "Intersite variation"
+  ) +
+  theme_classic() +
+  scale_color_manual(values = c("M" = "#4a2c2a", "E" = "pink")) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+# Behavioral data
+
+In addition to all of the reflectance data, we have survey data on subjects diet and sunning behavior. Making full use of this behavioral data may allow us to create predictions regarding vitamin d levels and tanning response. First, we have to join the sun exposure and diet data to the pigmentation data. Then, we have to factorize the times of day and hours per day spent outside into levels. Similarly, we have to factorize the diet data into levels of vitamin d consumption. 
+
+```{r behavioral}
+sun_expos$x1time_spent_outdoors_weekday = factor(sun_expos$x1time_spent_outdoors_weekday, 
+                                                 levels = c("Less than 15 minutes", 
+                                                            "Between 15 and 30 minutes", 
+                                                            "Between 30 minutes and 2 hours", 
+                                                            "Between 2 and 5 hours", 
+                                                            "More than 5 hours"))
+
+sun_expos$x3time_spent_outdoors_weekend_day = factor(sun_expos$x3time_spent_outdoors_weekend_day, 
+                                                 levels = c("Less than 15 minutes", 
+                                                            "Between 15 and 30 minutes", 
+                                                            "Between 30 minutes and 2 hours", 
+                                                            "Between 2 and 5 hours", 
+                                                            "More than 5 hours"))
+
+sun_expos$x2time_of_day_begin_of_exposure_weekday = factor(sun_expos$x2time_of_day_begin_of_exposure_weekday, 
+                                                 levels = c("Before 10h00", 
+                                                            "Between 10h00 and 12h00",
+                                                            "Between 12h00 and 14h00",
+                                                            "Between 14h00 and 16h00",
+                                                            "After 16h00"))
+sun_expos$x4time_of_day_begin_of_exposure_weekend = factor(sun_expos$x4time_of_day_begin_of_exposure_weekend, 
+                                                 levels = c("Before 10h00", 
+                                                            "Between 10h00 and 12h00",
+                                                            "Between 12h00 and 14h00",
+                                                            "Between 14h00 and 16h00",
+                                                            "After 16h00"))
+```
+
+```{r diet_facto}
+food_freq <- food_freq_long %>%
+  select(-matches("source|notes|description|per_100|per100|_no|proportion|amount|time"))
+
+names <- c("sardines_yes", "pilchards_yes", "snoek_yes", "tuna_tinned_water_yes", "tuna_tinned_oil_yes",
+           "tuna_fresh_yes", "mackerel_yes")
+for (name in names) {
+  food_freq[[name]] <- factor(food_freq[[name]], levels = c("TRUE", "FALSE"))
+}
+
+food_freq <- food_freq[,colSums(is.na(food_freq))<nrow(food_freq)]
+
+food_freq <- food_freq %>%
+  mutate_at(vars(matches("micro_grams|vit_d_intake")), ~replace(., is.na(.), 0))
+
+food_freq<-food_freq %>%
+  mutate(vitd_quantile_intake = cut(total_vit_d_intake, 100, label = FALSE))
+
+vitdscore <- food_freq %>%
+  select(c(participant_centre_id, vitd_quantile_intake, collection_period, total_vit_d_intake))
+
+longvitd <- left_join(longseason_clean, vitdscore, by = c("ParticipantCentreID" = "participant_centre_id", "Season" = "collection_period"))
+
+vitdshort <- food_freq %>%
+  filter(collection_period == "Summer")
+
+scores <- wide_data %>%
+  mutate(serum_vitd_score = cut(VitDResult_summer, 100, label = FALSE))
+
+scores <- scores %>%
+  select(c("serum_vitd_score", "ParticipantCentreID"))
+names(scores)[names(scores) == "ParticipantCentreID"] <- "IID"
+scores$IID <- gsub("VDKH([0-9]+)", "VDKHS\\1", scores$IID)
+scores$IID <- gsub("([A-Za-z]+)0(\\d{2})$", "\\1\\2", scores$IID)
+
+scores <- scores[, c("IID", "serum_vitd_score")]
+```
+
+moving forward i need to replace the fam file from the SAfrADMIX vault with a new fam file from the phenotype data and then run plink as usual as it is throwing errors for missing phenotype data when I try and use a separate file. 
+
+
+```{r long2}
+long2 <- wide_data %>%
+  select(matches("VitDResult|ParticipantCentreID"))
+long2 <- pivot_longer(long2, 
+                      cols = c(VitDResult_summer, VitDResult_6weeks, VitDResult_winter),
+                      names_to = c(".value","Season"),
+                      names_sep = "_")
+long2 <- long2 %>%
+  mutate(Season = recode(Season, "summer" = "Summer"),
+         Season = recode(Season, "winter" = "Winter"),
+         Season = recode(Season, "6weeks" = "6Weeks"))
+
+longvitd2 <- left_join(longvitd, long2, by = c("ParticipantCentreID", "Season"))
+longvitd2 <- left_join(longvitd2, sun_expos, by = c("ParticipantCentreID" = "participant_centre_id", "Season" = "collection_period"))
+```
+
+```{r lmer}
+ggplot(longvitd, aes(x = vitd_quantile_intake, y = Value, colour = Metric)) +
+  geom_point(size = 2) +
+  theme_classic() +
+  theme(legend.position = "none")
+lmer <- lmer(Value ~ vitd_quantile_intake + Season + Metric + (1|ParticipantCentreID), data = longvitd)
+qqnorm(resid(lmer))
+qqline(resid(lmer))
+plot(lmer) 
+
+ggplot(longvitd2, aes(x = Value, y = vitd_quantile_intake)) +
+     geom_point() +
+    geom_smooth(method = "lm")
+
+ggplot(longvitd2, aes(x = vitd_quantile_intake, y = VitDResult, colour = Season)) +
+  geom_point(size = 2) +
+  theme_classic() +
+  theme(legend.position = "none")
+```
+
+```{r lmervis}
+lm3 <- lm(VitDResult ~ total_vit_d_intake + Season + x1time_spent_outdoors_weekday + 
+            x3time_spent_outdoors_weekend_day + x2time_of_day_begin_of_exposure_weekday + x4time_of_day_begin_of_exposure_weekend, data = longvitd2)
+summary(lm3)
+```
+
+
+# triplicates PCA
+
+```{r unclean}
+ethnicity <- function(EthnicityAfricanBlack, EthnicityColoured, EthnicityWhite, 
+                      EthnicityIndianAsian) {
+  case_when(
+    EthnicityAfricanBlack == TRUE & 
+      EthnicityColoured == FALSE & 
+      EthnicityWhite == FALSE & 
+      EthnicityIndianAsian == FALSE ~ "Xhosa",
+    EthnicityAfricanBlack == FALSE & 
+      EthnicityColoured == TRUE & 
+      EthnicityWhite == FALSE & 
+      EthnicityIndianAsian == FALSE ~ "Cape_colored",
+    TRUE ~ NA_character_
+  )
+}
+
+data_summer <- data_summer %>%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+data_summer = subset(data_summer, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian, EthnicitySpecifyOther,
+                                              EthnicityOther))
+
+data_winter <- data_winter %>%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+data_winter = subset(data_winter, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian, EthnicitySpecifyOther,
+                                              EthnicityOther))
+
+data_6weeks <- data_6weeks %>%
+  mutate(Ethnicity = ethnicity(EthnicityAfricanBlack, EthnicityColoured, 
+                               EthnicityWhite, EthnicityIndianAsian))
+data_6weeks = subset(data_6weeks, select = -c(EthnicityAfricanBlack, 
+                                               EthnicityColoured, EthnicityWhite, 
+                                               EthnicityIndianAsian, EthnicitySpecifyOther,
+                                              EthnicityOther))
+
+raw <- left_join(data_summer, data_winter, by = c("ParticipantCentreID", "Ethnicity"), suffix = c("_summer", "_winter"))
+```
+
+```{r widepcdat}
+clean_raw <- raw %>%
+  select(
+    contains("SkinReflectance"), 
+    contains("ParticipantCentreID"), 
+    contains("Ethnicity"),
+    contains("VitD")
+  )
+
+naomit_rawclean <- na.omit(clean_raw)
+raw_pca <- naomit_rawclean %>%
+  select(matches("SkinReflectance"))
+
+raw_pca <- scale(raw_pca)
+reflectancepca_raw <- prcomp(raw_pca)
+summary(reflectancepca_raw)
+reflectancepca_raw$loadings[, 1:2]
+
+fviz_eig(reflectancepca_raw, addlabels = TRUE)
+
+fviz_pca_var(reflectancepca_raw, col.var = "black")
+
+raw_comps <- as.data.frame(reflectancepca_raw$x)
+wide_pc_score <- cbind(naomit_rawclean,raw_comps[,c(1,2)])
+
+ggplot(wide_pc_score, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Wide Pigmentation PCA")
+```
+
+This is a PCA with the triplicate measurements for each individual across RGB and CIElab colorspaces including melanin and erythema indices. Now, I need to do the same thing for each individual in each colorspace in each season in order to accurately construct PC scores for each individual, for each colorspace, for each season. These can then be used as outcome variables in a linear regression using vitamin d levels, ethnicity, and season as predictors? I will only do this for summer and winter measurements, as the six week measurements were only taken for Xhosa individuals.
+
+
+```{r prepping}
+winter <- raw %>%
+  select(matches("_winter|ParticipantCentreID|Ethnicity"))
+winter <- winter %>%
+    select(
+    contains("SkinReflectance"), 
+    contains("ParticipantCentreID"), 
+    contains("Ethnicity"),
+    contains("VitD")
+  )
+
+summer <- raw %>%
+  select(matches("_summer|ParticipantCentreID|Ethnicity"))
+summer <- summer %>%
+    select(
+    contains("SkinReflectance"), 
+    contains("ParticipantCentreID"), 
+    contains("Ethnicity"),
+    contains("VitD")
+  )
+naomit_winter <- na.omit(winter)
+naomit_summer <- na.omit(summer)
+
+winter_rgb <- naomit_winter %>%
+  select(matches("ForeheadR|InnerArmR|ForeheadG|InnerArmG|ForeheadB|InnerArmB", ignore.case = FALSE))
+winter_cie <- naomit_winter %>%
+  select(matches("ForeheadL|InnerArmL|Foreheada|InnerArma|Foreheadb|InnerArmb", ignore.case = FALSE))
+
+summer_rgb <- naomit_summer %>%
+  select(matches("ForeheadR|InnerArmR|ForeheadG|InnerArmG|ForeheadB|InnerArmB", ignore.case = FALSE))
+summer_cie <- naomit_summer %>%
+  select(matches("ForeheadL|InnerArmL|Foreheada|InnerArma|Foreheadb|InnerArmb", ignore.case = FALSE))
+```
+
+```{r winter_rgb}
+w_rgb <- scale(winter_rgb)
+w_rgb_pca <- prcomp(w_rgb)
+summary(w_rgb_pca)
+w_rgb_pca$loadings[, 1:2]
+
+fviz_eig(w_rgb_pca, addlabels = TRUE)
+
+fviz_pca_var(w_rgb_pca, col.var = "black")
+
+w_rgb_comps <- as.data.frame(w_rgb_pca$x)
+w_rgb_score <- cbind(naomit_winter,w_rgb_comps[,c(1,2)])
+
+ggplot(w_rgb_score, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Winter RGB Pigmentation PCA")
+```
+
+```{r winter_cie}
+w_cie <- scale(winter_cie)
+w_cie_pca <- prcomp(w_cie)
+summary(w_rgb_pca)
+w_cie_pca$loadings[, 1:2]
+
+fviz_eig(w_cie_pca, addlabels = TRUE)
+
+fviz_pca_var(w_cie_pca, col.var = "black")
+
+w_cie_comps <- as.data.frame(w_cie_pca$x)
+w_cie_score <- cbind(naomit_winter,w_cie_comps[,c(1,2)])
+
+ggplot(w_cie_score, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Winter CIElab Pigmentation PCA")
+```
+
+```{r summer_rgb}
+s_rgb <- scale(summer_rgb)
+s_rgb_pca <- prcomp(s_rgb)
+summary(s_rgb_pca)
+s_rgb_pca$loadings[, 1:2]
+
+fviz_eig(s_rgb_pca, addlabels = TRUE)
+
+fviz_pca_var(s_rgb_pca, col.var = "black")
+
+s_rgb_comps <- as.data.frame(s_rgb_pca$x)
+s_rgb_score <- cbind(naomit_summer,s_rgb_comps[,c(1,2)])
+
+ggplot(s_rgb_score, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Summer RGB Pigmentation PCA")
+```
+
+```{r summer_cie}
+s_cie <- scale(summer_cie)
+s_cie_pca <- prcomp(s_cie)
+summary(s_cie_pca)
+s_cie_pca$loadings[, 1:2]
+
+fviz_eig(s_cie_pca, addlabels = TRUE)
+
+fviz_pca_var(s_cie_pca, col.var = "black")
+
+s_cie_comps <- as.data.frame(s_cie_pca$x)
+s_cie_score <- cbind(naomit_summer,s_cie_comps[,c(1,2)])
+
+ggplot(s_cie_score, aes(x=PC1, y=PC2, col = Ethnicity, fill = Ethnicity)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "Summer CIElab Pigmentation PCA")
+```
+
+Now that I have PCAs from the triplicate measurements for each season and each color space, I can extract the PC scores for each individual and use these as outcome variables based on our predictors in a simple regression. 
+
+```{r extract}
+s_cie_score <- s_cie_score %>%
+  select(c("PC1", "PC2", "ParticipantCentreID", "Ethnicity"))
+w_cie_score <- w_cie_score %>%
+  select(c("PC1", "PC2", "ParticipantCentreID", "Ethnicity"))
+s_rgb_score <- s_rgb_score %>%
+  select(c("PC1", "PC2", "ParticipantCentreID", "Ethnicity"))
+w_rgb_score <- w_rgb_score %>%
+  select(c("PC1", "PC2", "ParticipantCentreID", "Ethnicity"))
+cie_scores <- left_join(s_cie_score, w_cie_score, by = "ParticipantCentreID", 
+                        suffix = c("_summerCIE", "_winterCIE"))
+rgb_scores <- left_join(s_rgb_score, w_rgb_score, by = "ParticipantCentreID", 
+                        suffix = c("_summerRGB", "_winterRGB"))
+colorspace_scores <- left_join(rgb_scores, cie_scores, by = "ParticipantCentreID")
+
+sunning <- sun_expos %>%
+  select(contains(c("x1", "x2", "x3", "x4", "participant", "collection"))) %>%
+  pivot_wider(names_from = collection_period, values_from = c("x1time_spent_outdoors_weekday", "x2time_of_day_begin_of_exposure_weekday", "x3time_spent_outdoors_weekend_day", "x4time_of_day_begin_of_exposure_weekend"))
+colorspace_predictors <- left_join(colorspace_scores, sunning, by = c("ParticipantCentreID" = "participant_centre_id"))
+vitd_score <- vitdscore %>%
+  pivot_wider(names_from = collection_period, values_from = c(vitd_quantile_intake, total_vit_d_intake), values_fill = 0)
+colorspace_predictors <- left_join(colorspace_predictors, vitd_score, by = c("ParticipantCentreID" = "participant_centre_id"))
+
+```
+
+```{r wrgblm}
+wrgblm <- lm(PC1_winterRGB ~ Ethnicity_summerRGB + total_vit_d_intake_Winter + 
+               x1time_spent_outdoors_weekday_Winter + x2time_of_day_begin_of_exposure_weekday_Winter + 
+               x3time_spent_outdoors_weekend_day_Winter + x4time_of_day_begin_of_exposure_weekend_Winter, 
+             data = colorspace_predictors)
+
+wrgblm_summary <- summary(wrgblm)
+wrgbr_squared <- wrgblm_summary$r.squared
+wrgbcoefficients <- wrgblm_summary$coefficients
+
+ggplot(colorspace_predictors, aes(x = total_vit_d_intake_Winter, y = PC1_winterRGB, color = Ethnicity_winterRGB)) + 
+  geom_point() + 
+  scale_color_manual(values = wes_palette("Darjeeling1")) + 
+  geom_smooth(method = "lm", aes(group = Ethnicity_winterRGB)) +
+  theme_minimal() + 
+  labs(
+    title = "VitD vs Summer RGB PC score",
+    x = "Total Vitamin D Intake (Summer)",
+    y = "Summer RGB PC1",
+    color = "Ethnicity"
+  ) + 
+  annotate("text", 
+           x = 15,
+           y = -10,
+           label = paste("R-squared: ", round(wrgbr_squared, 3)), 
+           size = 4, color = "black", hjust = 0)
+```
+
+```{r srgblm}
+srgblm <- lm(PC1_summerRGB ~ Ethnicity_summerRGB + total_vit_d_intake_Summer + 
+               x1time_spent_outdoors_weekday_Summer + x2time_of_day_begin_of_exposure_weekday_Summer + 
+               x3time_spent_outdoors_weekend_day_Summer + x4time_of_day_begin_of_exposure_weekend_Summer, 
+             data = colorspace_predictors)
+
+srgblm_summary <- summary(srgblm)
+srgbr_squared <- srgblm_summary$r.squared
+srgbcoefficients <- srgblm_summary$coefficients
+
+ggplot(colorspace_predictors, aes(x = total_vit_d_intake_Summer, y = PC1_summerRGB, color = Ethnicity_summerRGB)) + 
+  geom_point() + 
+  scale_color_manual(values = wes_palette("Darjeeling1")) + 
+  geom_smooth(method = "lm", aes(group = Ethnicity_summerRGB)) +
+  theme_minimal() + 
+  labs(
+    title = "VitD vs Summer RGB PC score",
+    x = "Total Vitamin D Intake (Summer)",
+    y = "Summer RGB PC1",
+    color = "Ethnicity"
+  ) + 
+  annotate("text", 
+           x = 15,
+           y = -10,
+           label = paste("R-squared: ", round(srgbr_squared, 3)), 
+           size = 4, color = "black", hjust = 0)
+```
+
+```{r wcielm}
+wcielm <- lm(PC1_winterCIE ~ Ethnicity_summerRGB + total_vit_d_intake_Winter + 
+               x1time_spent_outdoors_weekday_Winter + x2time_of_day_begin_of_exposure_weekday_Winter + 
+               x3time_spent_outdoors_weekend_day_Winter + x4time_of_day_begin_of_exposure_weekend_Winter, 
+             data = colorspace_predictors)
+
+wcielm_summary <- summary(wcielm)
+wcier_squared <- wcielm_summary$r.squared
+wciecoefficients <- wcielm_summary$coefficients
+
+ggplot(colorspace_predictors, aes(x = total_vit_d_intake_Winter, y = PC1_winterCIE, color = Ethnicity_winterCIE)) + 
+  geom_point() + 
+  scale_color_manual(values = wes_palette("Darjeeling1")) + 
+  geom_smooth(method = "lm", aes(group = Ethnicity_winterCIE)) +
+  theme_minimal() + 
+  labs(
+    title = "VitD vs Winter CIE PC score",
+    x = "Total Vitamin D Intake (Winter)",
+    y = "Winter CIElab PC1",
+    color = "Ethnicity"
+  ) + 
+  annotate("text", 
+           x = 15,
+           y = -10,
+           label = paste("R-squared: ", round(wcier_squared, 3)), 
+           size = 4, color = "black", hjust = 0)
+```
+
+
+
+```{r scielm}
+scielm <- lm(PC1_summerCIE ~ Ethnicity_summerRGB + total_vit_d_intake_Summer + 
+               x1time_spent_outdoors_weekday_Summer + x2time_of_day_begin_of_exposure_weekday_Summer + 
+               x3time_spent_outdoors_weekend_day_Summer + x4time_of_day_begin_of_exposure_weekend_Summer, 
+             data = colorspace_predictors)
+
+scielm_summary <- summary(scielm)
+scier_squared <- scielm_summary$r.squared
+sciecoefficients <- scielm_summary$coefficients
+
+ggplot(colorspace_predictors, aes(x = total_vit_d_intake_Summer, y = PC1_summerCIE, color = Ethnicity_summerCIE)) + 
+  geom_point() +
+  scale_color_manual(values = wes_palette("Darjeeling1")) + 
+  geom_smooth(method = "lm", aes(group = Ethnicity_summerCIE)) +
+  theme_minimal() + 
+  labs(
+    title = "VitD vs Summer CIE PC score",
+    x = "Total Vitamin D Intake (Summer)",
+    y = "Summer CIElab PC1",
+    color = "Ethnicity"
+  ) + 
+  annotate("text", 
+           x = max(colorspace_predictors$total_vit_d_intake_Summer) * 0.75,  # Adjust x-position to fit within the plot area
+           y = min(colorspace_predictors$PC1_summerCIE) + 0.1,  # Adjust y-position to prevent overlap
+           label = paste("R-squared: ", round(scier_squared, 3)), 
+           size = 4, color = "black", hjust = 0)
+```
+
+
+
+
+
+
+
+
+
+
+
