@@ -17,3 +17,5 @@ Click on this [link](data_modeling_1.html) to see the Linear Mixed Effects Model
 Click on this [link](pca.html) to see the PCAs
  
 Click on this [link](statsplot.html) to see the statsplot figures
+
+Click on this [link](color_metrics.html) to see the linear regressions on PC scores
