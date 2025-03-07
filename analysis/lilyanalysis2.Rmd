@@ -1,8 +1,10 @@
 ---
-title: "PCA"
-output:
-  html_document: default
-  pdf_document: default
+title: "Lily Analysis"
+author: "Lily Heald"
+date: "2025-03-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
 ---
 
 ```{r load, include=FALSE}
@@ -28,16 +30,16 @@ library(ggplot2)
 ```
 
 ```{r read}
-file_path <- "~/sapphire/data/serum_vit_D_study_with_lab_results.xlsx" 
+file_path <- "data/serum_vit_D_study_with_lab_results.xlsx" 
 data_summer <- read_excel(file_path, sheet = "ScreeningDataCollectionSummer")
 data_winter <- read_excel(file_path, sheet = "ScreeningDataCollectionWinter")
 data_6weeks <- read_excel(file_path, sheet = "ScreeningDataCollection6Weeks")
-sun_expos <- read.csv("~/sapphire/data/sun_expos_data/sun_expos_long.csv")
+sun_expos <- read.csv("data/sun_expos_data/sun_expos_long.csv")
 sun_expos_summer <- sun_expos[sun_expos$collection_period == 'Summer', ]
 sun_expos_winter <- sun_expos[sun_expos$collection_period == 'Winter', ]
 sun_expos_6Weeks <- sun_expos[sun_expos$collection_period == '6Weeks', ]
-SAfrADMIX <- read.table("~/sapphire/SAfrADMIX/SAfrADMIX.ped")
-SAfrADMIXm <- read.table("~/sapphire/SAfrADMIX/SAfrADMIX.map")
+# SAfrADMIX <- read.table("~/sapphire/SAfrADMIX/SAfrADMIX.ped")
+# SAfrADMIXm <- read.table("~/sapphire/SAfrADMIX/SAfrADMIX.map")
 ```
 
 # part 0: cleaning
