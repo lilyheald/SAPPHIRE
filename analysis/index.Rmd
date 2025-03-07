@@ -17,3 +17,7 @@ Click on this [link](data_modeling_1.html) to see the Linear Mixed Effects Model
 Click on this [link](pca.html) to see the PCAs
  
 Click on this [link](statsplot.html) to see the statsplot figures
+
+Created a clean pigmentation data set with the outliers removed properly [here](pigmentationdata.html)
+
+Created new summer-winter analysies [here](summer-winter.html)

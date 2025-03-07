@@ -1,0 +1,621 @@
+---
+title: "Pigmentation Data"
+author: "Tina Lasisi"
+date: "2025-03-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r}
+# Install packages if needed:
+# install.packages("readxl")
+# 
+
+library(readxl)
+library(tidyverse)
+
+# Path to your Excel file
+workbook_path <- "data/serum_vit_D_study_with_lab_results.xlsx"
+
+# Get the list of all sheet names in the workbook
+sheets <- excel_sheets(workbook_path)
+
+# Loop through each sheet, read it, and write it to a CSV
+for (sheet_name in sheets) {
+  df <- read_excel(workbook_path, sheet = sheet_name)
+  
+  # Replace problematic characters in sheet name
+  safe_sheet_name <- gsub("[^A-Za-z0-9\\-_]+", "_", sheet_name)
+  
+  # Create file name and save
+  output_path <- file.path("data", paste0(safe_sheet_name, ".csv"))
+  write.csv(df, output_path, row.names = FALSE)
+  
+  message("Created CSV file for sheet '", sheet_name, "': ", output_path)
+}
+```
+
+```{r}
+# (Optional) Install packages if needed
+# install.packages("dplyr")
+
+# Read each CSV and add a "Season" column
+summer_data  <- read.csv("data/ScreeningDataCollectionSummer.csv") %>%
+  mutate(Season = "Summer")
+
+winter_data  <- read.csv("data/ScreeningDataCollectionWinter.csv") %>%
+  mutate(Season = "Winter")
+
+sixweek_data <- read.csv("data/ScreeningDataCollection6Weeks.csv") %>%
+  mutate(Season = "6Weeks")
+
+# Combine into one data frame
+combined_data <- bind_rows(summer_data, winter_data, sixweek_data)
+
+# Write the combined data to a single CSV
+write.csv(combined_data, "data/ScreeningDataCollection.csv", row.names = FALSE)
+```
+
+
+```{r clean-data}
+
+# Step 1: Read & Clean the Data
+# Load required libraries
+library(tidyverse)
+library(readr)
+
+# Read the original data
+df_original <- read.csv("data/ScreeningDataCollection.csv")
+
+# Clean and rename variables
+df_cleaned <- df_original |>
+  mutate(
+    # Convert EthnicityColoured -> Ethnicity (adapt if it's character/string)
+    Ethnicity = if_else(EthnicityColoured == TRUE, "CapeMixed", "Xhosa")
+  ) |>
+  select(
+    ParticipantCentreID,
+    TodayDate,
+    Gender,
+    Ethnicity,
+    Season,
+    starts_with("SkinReflectance"),
+    VitDResult
+  )
+
+# Get all column names
+all_columns <- colnames(df_cleaned)
+
+# Find columns with L., a., and b. and rename them
+renamed_columns <- all_columns
+
+# Create a function to rename CIE variables
+rename_cie_vars <- function(column_name) {
+  # Replace L. with CIE_L
+  column_name <- gsub("SkinReflectanceForehead[L]\\.([1-3])", "SkinReflectanceForeheadCIE_L\\1", column_name)
+  column_name <- gsub("SkinReflectanceRightUpperInnerArm[L]\\.([1-3])", "SkinReflectanceRightUpperInnerArmCIE_L\\1", column_name)
+  column_name <- gsub("SkinReflectanceLeftUpperInnerArm[L]\\.([1-3])", "SkinReflectanceLeftUpperInnerArmCIE_L\\1", column_name)
+  
+  # Replace a. with CIE_a
+  column_name <- gsub("SkinReflectanceForehead[a]\\.([1-3])", "SkinReflectanceForeheadCIE_a\\1", column_name)
+  column_name <- gsub("SkinReflectanceRightUpperInnerArm[a]\\.([1-3])", "SkinReflectanceRightUpperInnerArmCIE_a\\1", column_name)
+  column_name <- gsub("SkinReflectanceLeftUpperInnerArm[a]\\.([1-3])", "SkinReflectanceLeftUpperInnerArmCIE_a\\1", column_name)
+  
+  # Replace b. with CIE_b
+  column_name <- gsub("SkinReflectanceForehead[b]\\.([1-3])", "SkinReflectanceForeheadCIE_b\\1", column_name)
+  column_name <- gsub("SkinReflectanceRightUpperInnerArm[b]\\.([1-3])", "SkinReflectanceRightUpperInnerArmCIE_b\\1", column_name)
+  column_name <- gsub("SkinReflectanceLeftUpperInnerArm[b]\\.([1-3])", "SkinReflectanceLeftUpperInnerArmCIE_b\\1", column_name)
+  
+  return(column_name)
+}
+
+# Apply the renaming function to each column
+for (i in 1:length(all_columns)) {
+  renamed_columns[i] <- rename_cie_vars(all_columns[i])
+}
+
+# Create a rename map
+rename_map <- setNames(all_columns, renamed_columns)
+
+# Check if any columns were changed
+changed_columns <- which(renamed_columns != all_columns)
+if (length(changed_columns) > 0) {
+  cat("Renamed columns:\n")
+  for (i in changed_columns) {
+    cat(paste("  ", all_columns[i], "->", renamed_columns[i], "\n"))
+  }
+} else {
+  cat("No columns were renamed.\n")
+}
+
+# Now let's try a different approach since the regex might not be capturing correctly
+# Directly identify and rename columns with specific patterns
+
+# Create a new renamed dataframe
+df_renamed <- df_cleaned
+
+# Iterate through each column and apply renaming
+rename_columns <- function(df) {
+  col_names <- colnames(df)
+  new_names <- col_names
+  
+  for (i in seq_along(col_names)) {
+    # Check for L. pattern
+    if (grepl("L\\.", col_names[i])) {
+      new_names[i] <- gsub("L\\.", "CIE_L", col_names[i])
+    }
+    # Check for a. pattern
+    else if (grepl("a\\.", col_names[i])) {
+      new_names[i] <- gsub("a\\.", "CIE_a", col_names[i])
+    }
+    # Check for b. pattern
+    else if (grepl("b\\.", col_names[i])) {
+      new_names[i] <- gsub("b\\.", "CIE_b", col_names[i])
+    }
+  }
+  
+  # Show which columns were renamed
+  changed <- which(new_names != col_names)
+  if (length(changed) > 0) {
+    cat("Renamed columns:\n")
+    for (i in changed) {
+      cat(paste("  ", col_names[i], "->", new_names[i], "\n"))
+    }
+  }
+  
+  # Rename the columns
+  colnames(df) <- new_names
+  return(df)
+}
+
+# Apply the renaming
+df_renamed <- rename_columns(df_cleaned)
+
+# Write to csv
+write.csv(df_renamed, "data/ScreeningDataCollection_cleaned.csv", row.names = FALSE)
+
+# Verify the renamed file
+df_check <- read.csv("data/ScreeningDataCollection_cleaned.csv")
+cat("\nVerification of renamed columns in saved file:\n")
+cie_columns <- grep("CIE_[Lab]", colnames(df_check), value = TRUE)
+if (length(cie_columns) > 0) {
+  cat("CIE columns found in the renamed file:\n")
+  print(cie_columns)
+} else {
+  cat("No CIE columns found in the renamed file.\n")
+}
+
+# Print a summary of all column names for verification
+cat("\nAll column names in final dataset:\n")
+all_final_columns <- colnames(df_check)
+print(all_final_columns)
+
+# Count of each type of column
+cat("\nCount of each type of reflectance measurement:\n")
+count_pattern <- function(pattern) {
+  sum(grepl(pattern, all_final_columns))
+}
+
+cat("E columns:", count_pattern("E[1-3]$"), "\n")
+cat("M columns:", count_pattern("M[1-3]$"), "\n")
+cat("R columns:", count_pattern("R[1-3]$"), "\n")
+cat("G columns:", count_pattern("G[1-3]$"), "\n")
+cat("B columns:", count_pattern("B[1-3]$"), "\n")
+cat("CIE_L columns:", count_pattern("CIE_L[1-3]$"), "\n")
+cat("CIE_a columns:", count_pattern("CIE_a[1-3]$"), "\n")
+cat("CIE_b columns:", count_pattern("CIE_b[1-3]$"), "\n")
+```
+
+# Long data pivot 
+
+```{r pivot-data-long}
+library(tidyverse)
+library(readr)
+
+# 1) Read your dataset (wide format).
+skin_data <- read_csv("data/ScreeningDataCollection_cleaned.csv")
+
+# 2) Convert to long + calculate CV.
+#    This function is essentially your original pivot plus CV calculation.
+prepare_triplicates_for_plotting_with_cv <- function(data) {
+  body_sites    <- c("Forehead", "RightUpperInnerArm", "LeftUpperInnerArm")
+  measure_types <- c("E", "M", "R", "G", "B", "CIE_L", "CIE_a", "CIE_b")
+  
+  all_triplicates <- tibble()
+  
+  for (body_site in body_sites) {
+    for (measure_type in measure_types) {
+      # Identify columns like SkinReflectanceForeheadE1..3
+      col_pattern <- paste0("SkinReflectance", body_site, measure_type, "[1-3]$")
+      triplicate_cols <- names(data)[grepl(col_pattern, names(data))]
+      
+      if (length(triplicate_cols) != 3) {
+        cat("Warning: Did not find exactly 3 columns for", body_site, "-", measure_type,
+            ". Found", length(triplicate_cols), "columns.\n")
+        next
+      }
+      
+      # Pivot these columns to long
+      trip_long <- data %>%
+        select(ParticipantCentreID, Gender, Ethnicity, Season, all_of(triplicate_cols)) %>%
+        pivot_longer(
+          cols      = all_of(triplicate_cols),
+          names_to  = "measurement",
+          values_to = "value"
+        ) %>%
+        mutate(
+          replicate        = str_extract(measurement, "\\d$"),
+          body_site        = body_site,
+          measurement_type = measure_type
+        )
+      
+      # Compute CV info for each participant-season-bodySite-metric group
+      cv_info <- trip_long %>%
+        group_by(ParticipantCentreID, Season, body_site, measurement_type) %>%
+        summarize(
+          mean_val = mean(value, na.rm = TRUE),
+          sd_val   = sd(value, na.rm = TRUE),
+          n_valid  = sum(!is.na(value)),
+          cv = ifelse(n_valid >= 2, (sd_val / mean_val) * 100, NA_real_),
+          .groups = "drop"
+        ) %>%
+        mutate(
+          cv_category = case_when(
+            is.na(cv)    ~ NA_character_,
+            cv <= 5      ~ "Low",
+            cv <= 15     ~ "Medium",
+            TRUE         ~ "High"
+          )
+        )
+      
+      # Join the CV info back to each replicate row
+      trip_cv <- trip_long %>%
+        left_join(cv_info, 
+                  by = c("ParticipantCentreID","Season","body_site","measurement_type"))
+      
+      all_triplicates <- bind_rows(all_triplicates, trip_cv)
+    }
+  }
+  
+  return(all_triplicates)
+}
+```
+
+```{r}
+library(dplyr)
+
+calculate_triplicate_cv <- function(long_data) {
+  library(dplyr)
+  
+  cv_info <- long_data %>%
+    group_by(ParticipantCentreID, Season, body_site, measurement_type) %>%
+    summarize(
+      mean_val = mean(value, na.rm = TRUE),
+      sd_val   = sd(value, na.rm = TRUE),
+      n_valid  = sum(!is.na(value)),
+      cv       = ifelse(n_valid >= 2 & mean_val != 0 & !is.na(mean_val),
+                        (sd_val / mean_val)*100, NA_real_),
+      .groups  = "drop"
+    ) %>%
+    mutate(
+      cv_category = case_when(
+        is.na(cv)   ~ NA_character_,
+        cv <= 5     ~ "Low",
+        cv <= 15    ~ "Medium",
+        TRUE        ~ "High"
+      )
+    )
+  
+  # Remove old CV columns if they exist, then join new ones
+  long_data_stripped <- long_data %>%
+    select(-any_of(c("mean_val","sd_val","n_valid","cv","cv_category")))
+  
+  long_data_cv <- long_data_stripped %>%
+    left_join(cv_info, by=c("ParticipantCentreID","Season","body_site","measurement_type"))
+  
+  return(long_data_cv)
+}
+
+
+
+
+```
+
+```{r}
+library(ggplot2)
+
+plot_triplicate_cv_lines <- function(long_data_cv, output_dir = "output/cv_line_plots") {
+  dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
+  
+  # Unique combos of body_site & measurement_type
+  combos <- long_data_cv %>%
+    select(body_site, measurement_type) %>%
+    distinct()
+  
+  all_plots <- list()
+  
+  for (i in seq_len(nrow(combos))) {
+    bs <- combos$body_site[i]
+    mt <- combos$measurement_type[i]
+    
+    plot_data <- long_data_cv %>%
+      filter(body_site == bs, measurement_type == mt)
+    
+    p <- ggplot(plot_data, aes(
+      x = replicate,
+      y = value,
+      group = interaction(ParticipantCentreID, Season),
+      color = cv_category
+    )) +
+      geom_line(alpha = 0.6, na.rm = TRUE) +
+      geom_point(alpha = 0.6, na.rm = TRUE) +
+      facet_wrap(~ Season) +
+      scale_color_manual(
+        values  = c("Low" = "green", "Medium" = "orange", "High" = "red"),
+        na.value = "grey50",
+        name    = "CV Category"
+      ) +
+      labs(
+        title    = paste("Triplicate Measurements for", bs, "-", mt),
+        subtitle = "Colored by CV: ≤5% (Green), 5–15% (Orange), >15% (Red)",
+        x        = "Replicate",
+        y        = "Value"
+      ) +
+      theme_minimal()
+    
+    filename <- file.path(output_dir, paste0("cv_", bs, "_", mt, ".png"))
+    ggsave(filename, p, width = 12, height = 8)
+    
+    all_plots[[paste(bs, mt, sep="_")]] <- p
+  }
+  
+  return(all_plots)
+}
+```
+
+```{r pivot-data-long-exec}
+## ---- pivot-long-original ----
+library(tidyverse)
+library(readr)
+
+# 1) Read the wide dataset
+skin_data <- read_csv("data/ScreeningDataCollection_cleaned.csv")
+
+# 2) Convert to long + calculate initial CV
+all_triplicates_cv <- prepare_triplicates_for_plotting_with_cv(skin_data)
+
+# 3) Plot lines color-coded by the initial CV
+cv_plots_original <- plot_triplicate_cv_lines(
+  all_triplicates_cv,
+  output_dir = "output/cv_line_plots_original"
+)
+```
+
+
+```{r}
+detect_distribution_outliers_by_metric <- function(long_data, iqr_factor = 1.5) {
+  # Summarize distribution stats by measurement_type ONLY
+  distribution_stats <- long_data %>%
+    group_by(measurement_type) %>%
+    summarize(
+      n           = n(),
+      min_value   = min(value, na.rm = TRUE),
+      q1          = quantile(value, 0.25, na.rm = TRUE),
+      median_val  = median(value, na.rm = TRUE),
+      q3          = quantile(value, 0.75, na.rm = TRUE),
+      max_value   = max(value, na.rm = TRUE),
+      iqr         = q3 - q1,
+      lower_thresh= q1 - iqr_factor * iqr,
+      upper_thresh= q3 + iqr_factor * iqr,
+      .groups     = "drop"
+    )
+  
+  # Join thresholds back by measurement_type only
+  data_with_thresh <- long_data %>%
+    left_join(distribution_stats, by = "measurement_type")
+  
+  # Mark outliers
+  data_out <- data_with_thresh %>%
+    mutate(is_outlier_allSites = value < lower_thresh | value > upper_thresh)
+  
+  list(
+    stats = distribution_stats,
+    data  = data_out
+  )
+}
+```
+
+```{r}
+plot_distribution_outliers_by_metric <- function(data_with_outliers, dist_stats,
+                                                 output_dir = "output/dist_plots_by_metric") {
+  dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
+  
+  # Unique measurement_types
+  metrics <- dist_stats$measurement_type
+  
+  all_plots <- list()
+  
+  for (mt in metrics) {
+    # Pull the row with thresholds for this metric
+    thresh <- dist_stats %>%
+      filter(measurement_type == mt)
+    
+    # If there's no data for that metric, skip
+    if (nrow(thresh) == 0) next
+    
+    # Filter the main data to just this metric
+    plot_data <- data_with_outliers %>%
+      filter(measurement_type == mt)
+    
+    # Build a histogram ignoring site
+    p <- ggplot(plot_data, aes(x = value)) +
+      geom_histogram(
+        binwidth = (thresh$max_value - thresh$min_value) / 30,
+        fill = "skyblue", alpha = 0.7
+      ) +
+      geom_vline(xintercept = thresh$lower_thresh, color = "red", linetype = "dashed") +
+      geom_vline(xintercept = thresh$upper_thresh, color = "red", linetype = "dashed") +
+      labs(
+        title = paste("Distribution of", mt, "(All Body Sites)"),
+        subtitle = paste0("Red dashed lines = outlier cutoffs (",
+                          round(thresh$lower_thresh, 2), ", ",
+                          round(thresh$upper_thresh, 2), ")"),
+        x = paste(mt, "Value"),
+        y = "Count"
+      ) +
+      theme_minimal()
+    
+    # Save the plot
+    filename <- file.path(output_dir, paste0("dist_", mt, "_allSites.png"))
+    ggsave(filename, p, width = 10, height = 6)
+    
+    all_plots[[mt]] <- p
+  }
+  
+  return(all_plots)
+}
+```
+
+
+```{r}
+## ---- distribution-detection ----
+
+# 1) Detect outliers ignoring body site
+res <- detect_distribution_outliers_by_metric(all_triplicates_cv) 
+dist_stats <- res$stats
+dist_data  <- res$data  # 'dist_data' has is_outlier_allSites = TRUE/FALSE
+
+# 2) Plot distribution ignoring site
+dist_plots_allSites <- plot_distribution_outliers_by_metric(
+  data_with_outliers = dist_data,
+  dist_stats         = dist_stats,
+  output_dir         = "output/dist_plots_by_metric"
+)
+```
+
+```{r}
+## ---- distribution-removal-stage1 ----
+
+# 1) Remove distribution outliers => set 'value' to NA if is_outlier_allSites == TRUE
+dist_data_clean <- dist_data %>%
+  mutate(value = ifelse(is_outlier_allSites, NA_real_, value))
+
+# 2) Recompute CV on this newly "cleaned" data
+dist_data_clean_cv <- calculate_triplicate_cv(dist_data_clean)
+
+# 3) Plot lines with updated CV categories
+cv_plots_stage1 <- plot_triplicate_cv_lines(
+  dist_data_clean_cv,
+  output_dir = "output/cv_line_plots_stage1"
+)
+```
+
+
+## Visualize CV after outlier removal
+
+
+```{r}
+## ---- distribution-removal-stage1 ----
+
+# 1) Remove distribution outliers => set 'value' to NA if is_outlierAllSites == TRUE
+dist_data_clean <- dist_data %>%
+  mutate(value = ifelse(is_outlier_allSites, NA_real_, value))
+
+
+# 2) (Optional) Save or examine replicate-level data after Stage 1
+write_csv(dist_data_clean, "data/ScreeningDataCollection_stage1.csv")
+
+```
+
+```{r}
+names(dist_data_clean)
+head(dist_data_clean)
+```
+
+
+
+
+```{r}
+# 2) Recompute CV on this newly "cleaned" data
+dist_data_clean_cv <- calculate_triplicate_cv(dist_data_clean)
+```
+
+```{r}
+names(dist_data_clean_cv)
+head(dist_data_clean_cv)
+```
+
+
+# Remove based on CV
+
+```{r}
+# 2) Remove high CV replicate
+remove_high_cv_replicate <- function(data, cv_threshold = 15) {
+  library(dplyr)
+  
+  data_new <- data %>%
+    group_by(ParticipantCentreID, Season, body_site, measurement_type) %>%
+    group_modify(~ {
+      .x <- .x
+      
+      # "Classic" CV with mean
+      mean_val  <- mean(.x$value, na.rm=TRUE)
+      sd_val    <- sd(.x$value, na.rm=TRUE)
+      n_valid   <- sum(!is.na(.x$value))
+      cv_val    <- if (n_valid >= 2 && !is.na(mean_val) && mean_val != 0) {
+        (sd_val / mean_val) * 100
+      } else {
+        NA_real_
+      }
+      
+      # Use median to pick the farthest replicate if CV>threshold
+      median_val <- median(.x$value, na.rm=TRUE)
+      
+      if (!is.na(cv_val) && cv_val > cv_threshold) {
+        idx_farthest <- which.max(abs(.x$value - median_val))
+        .x$value[idx_farthest] <- NA
+      }
+      .x
+    }) %>%
+    ungroup()
+  
+  return(data_new)
+}
+```
+
+```{r}
+## ---- stage2-highcv-removal ----
+# 5) Remove high CV replicate from Stage 1–cleaned data
+data_stage2 <- remove_high_cv_replicate(dist_data_clean, cv_threshold = 15)
+
+# 6) Recompute CV again with final replicate set
+data_stage2_cv <- calculate_triplicate_cv(data_stage2)
+
+# 7) Plot final lines color-coded by updated CV for Stage 2
+cv_plots_stage2 <- plot_triplicate_cv_lines(
+  data_stage2_cv,
+  output_dir = "output/cv_line_plots_stage2"
+)
+
+# 8) (Optional) Save replicate-level final dataset (Stage 2 cleaned)
+write_csv(data_stage2, "data/ScreeningDataCollection_stage2.csv")
+```
+
+```{r}
+## ---- stage2-final-medians ----
+# 9) Create final medians from data_stage2
+df_final_medians <- data_stage2 %>%
+  group_by(ParticipantCentreID, Ethnicity, Gender, Season, body_site, measurement_type) %>%
+  summarize(
+    final_median = median(value, na.rm = TRUE),
+    n_valid = sum(!is.na(value)),
+    .groups = "drop"
+  )
+
+# 10) Write final medians
+write_csv(df_final_medians, "data/ScreeningDataCollection_medians.csv")
+```
+

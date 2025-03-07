@@ -1,0 +1,273 @@
+---
+title: "summer-winter"
+author: "Tina Lasisi"
+date: "2025-03-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r}
+library(ggstatsplot)
+```
+
+
+### median data
+
+```{r}
+## ---- ensure-both-seasons-and-then-ggwithinstats ----
+## This code explicitly filters your data so that each participant has BOTH Summer and Winter 
+## for each (body_site, measurement_type). We then run grouped_ggwithinstats on that subset.
+## This ensures a truly paired analysis with no partial data.
+
+library(tidyverse)
+library(ggstatsplot)
+
+# 1) Read your final medians data, with columns like:
+#    ParticipantCentreID, Season, Ethnicity, final_median, body_site, measurement_type
+df <- read_csv("data/ScreeningDataCollection_medians.csv") %>%
+  filter(Season %in% c("Summer","Winter")) %>%
+  mutate(Season = factor(Season, levels = c("Summer","Winter")))
+
+# 2) Keep only those participants who have BOTH Summer and Winter for each site+metric.
+#    i.e., for each (ParticipantCentreID, body_site, metric), n_distinct(Season) == 2
+df_valid <- df %>%
+  group_by(ParticipantCentreID, body_site, measurement_type) %>%
+  filter(n_distinct(Season) == 2) %>%
+  ungroup()
+
+# 3) Now for each (body_site, measurement_type) combo, we do a grouped_ggwithinstats
+#    that splits the data by Ethnicity, and does a repeated-measures (paired) test
+#    comparing Summer vs. Winter. 
+combos <- df_valid %>%
+  distinct(body_site, measurement_type)
+
+# 4) We'll loop over combos and produce a plot for each
+#    (If you want a single big combined plot, you'd do a different approach.)
+plots <- combos %>%
+  mutate(
+    plotobj = map2(body_site, measurement_type, ~ {
+      
+      sub_data <- df_valid %>%
+        filter(body_site == .x, measurement_type == .y)
+      
+      # If we have no data, skip
+      if (nrow(sub_data) < 2) return(NULL)
+      
+      grouped_ggwithinstats(
+        data         = sub_data,
+        x            = Season,             # 2-level repeated measure
+        y            = final_median,       # numeric outcome
+        subject.id   = ParticipantCentreID,# repeated ID column
+        grouping.var = Ethnicity,          # one subplot per Ethnicity
+        paired       = TRUE,              # do a paired test
+        type         = "parametric",       # or "nonparametric", etc.
+        title.text   = paste("Body site:", .x, "| Metric:", .y),
+        caption.text = "Paired test (Summer vs. Winter) within each Ethnicity",
+        plotgrid.args= list(ncol = 2)      # if you have 2 Ethnicities, side-by-side
+      )
+    })
+  )
+
+# 5) Save each figure
+dir.create("output/withinstats_filtered", showWarnings = FALSE, recursive = TRUE)
+
+plots %>%
+  rowwise() %>%
+  mutate(
+    outfile = paste0("output/withinstats_filtered/", body_site, "_", measurement_type, ".png"),
+    saved = {
+      if (!is.null(plotobj)) {
+        ggsave(outfile, plotobj, width=10, height=6)
+        TRUE
+      } else FALSE
+    }
+  )
+```
+
+### replicate data
+
+```{r}
+stage2_data <- read_csv("data/ScreeningDataCollection_stage2.csv") %>%
+  group_by(ParticipantCentreID, body_site, measurement_type, Season) %>%
+  mutate(
+    # Subtract however many NA values are in 'value' from n_valid
+    n_valid = n_valid - sum(is.na(value))
+  ) %>%
+  ungroup() %>%
+  # Then remove rows with NA in 'value'
+  filter(!is.na(value))
+
+write.csv(stage2_data, "data/ScreeningDataCollection_stage2_clean.csv", row.names = FALSE)
+```
+
+```{r}
+stage2_data <- stage2_data %>%
+  filter(Season %in% c("Summer","Winter")) %>%
+  mutate(Season = factor(Season, levels=c("Summer","Winter")))
+```
+
+## One model per metric per body site
+
+```{r}
+# Suppose your replicate-level data is in 'stage2_data' with columns:
+#   ParticipantCentreID, body_site, metric, Ethnicity, Season, value, etc.
+#   We have 2 levels in Season: "Summer","Winter".
+
+library(lmerTest)
+library(tidyverse)
+
+
+# 2) Identify combos of body_site, metric, and Ethnicity
+combos <- stage2_data %>%
+  distinct(body_site, measurement_type, Ethnicity)
+
+results_list <- list()
+
+# 3) Loop over each combination
+for (i in seq_len(nrow(combos))) {
+  bs <- combos$body_site[i]
+  mt <- combos$measurement_type[i]
+  eth <- combos$Ethnicity[i]
+  
+  # subset
+  sub_data <- stage2_data %>%
+    filter(body_site == bs, measurement_type == mt, Ethnicity == eth)
+  
+  # skip if not enough data
+  if (nrow(sub_data) < 4) {
+    next
+  }
+  
+  # 4) Fit random intercept model
+  #   value ~ Season + (1|ParticipantCentreID)
+  mod <- tryCatch({
+    lmer(
+      value ~ Season + (1|ParticipantCentreID),
+      data = sub_data
+    )
+  }, error=function(e) NULL)
+  
+  if (!is.null(mod)) {
+    # store summary or any results
+    sum_mod <- summary(mod)
+    results_list[[paste(bs,mt,eth,sep="_")]] <- sum_mod
+  }
+}
+
+# Then you can examine 'results_list', each containing the model summary for
+# that site–metric–ethnicity combination. You see if 'Season' is significant
+# in each subset.
+```
+
+
+```{r}
+## ---- coeff-plots-summer-winter ----
+## This script creates a single side-by-side (ncol=2) coefficient plot
+## for each (body_site, measurement_type), comparing the two ethnic groups
+## (e.g., "CapeMixed" vs. "Xhosa"). Each subplot shows a random-intercept
+## model's coefficients for value ~ Season + (1|ParticipantCentreID).
+
+library(lmerTest)
+library(tidyverse)
+library(ggstatsplot)
+
+# 1) Load and clean your stage2_data
+stage2_data <- read_csv("data/ScreeningDataCollection_stage2.csv") %>%
+  group_by(ParticipantCentreID, body_site, measurement_type, Season) %>%
+  mutate(
+    # Subtract however many NA values are in 'value' from n_valid
+    n_valid = n_valid - sum(is.na(value))
+  ) %>%
+  ungroup() %>%
+  # Then remove rows with NA in 'value'
+  filter(!is.na(value)) %>%
+  # Keep only Summer/Winter
+  filter(Season %in% c("Summer","Winter")) %>%
+  mutate(
+    Season             = factor(Season, levels=c("Summer","Winter")),
+    body_site          = factor(body_site),
+    measurement_type   = factor(measurement_type),
+    Ethnicity          = factor(Ethnicity),
+    ParticipantCentreID= factor(ParticipantCentreID)
+  )
+
+# 2) Identify combos of body_site + measurement_type
+combos <- stage2_data %>%
+  distinct(body_site, measurement_type) %>%
+  arrange(body_site, measurement_type)
+
+# 3) Create a directory "output/coeff_plots_summer-winter"
+dir.create("output/coeff_plots_summer-winter", showWarnings = FALSE, recursive = TRUE)
+
+# 4) We'll handle two ethnic groups side-by-side: "CapeMixed" & "Xhosa"
+ethnic_groups <- c("CapeMixed", "Xhosa")
+
+for (i in seq_len(nrow(combos))) {
+  bs <- combos$body_site[i]
+  mt <- combos$measurement_type[i]
+  
+  # We'll store the two coefficient plots in a list
+  plot_list <- list()
+  valid_plots <- 0
+  
+  for (eth in ethnic_groups) {
+    # Subset data
+    sub_data <- stage2_data %>%
+      filter(body_site == bs, measurement_type == mt, Ethnicity == eth)
+    
+    if (nrow(sub_data) < 4) {
+      message("Skipping: ", bs, " - ", mt, " - ", eth, " => not enough data.")
+      plot_list[[eth]] <- NULL
+      next
+    }
+    
+    # Fit a random intercept model
+    mod <- tryCatch({
+      lmer(value ~ Season + (1|ParticipantCentreID), data=sub_data)
+    }, error = function(e) NULL)
+    
+    if (is.null(mod)) {
+      message("Model failed for: ", bs, " - ", mt, " - ", eth)
+      plot_list[[eth]] <- NULL
+      next
+    }
+    
+    # Create a coefficient plot
+    plot_title <- paste0(bs, " - ", as.character(mt), " - ", eth)
+    p <- ggcoefstats(
+      x = mod,
+      title = plot_title,
+      xlab  = "Coefficient (beta)",
+      ylab  = "Fixed Effects"
+    )
+    
+    plot_list[[eth]] <- p
+    valid_plots <- valid_plots + 1
+  }
+  
+  # If neither ethnicity had enough data, skip saving
+  if (valid_plots == 0) {
+    next
+  }
+  
+  # 5) Combine the two coefficient plots side by side (ncol=2)
+  #    If one ethnicity was missing data, combine_plots can handle a NULL
+  final_plot <- combine_plots(
+    plotlist       = plot_list,
+    plotgrid.args  = list(ncol = 2),
+    annotation.args= list(
+      title    = paste0("Coefficients: ", bs, " - ", mt),
+      caption  = "Random intercept model: value ~ Season + (1|ParticipantCentreID)"
+    )
+  )
+  
+  # 6) Save
+  outfile <- paste0("output/coeff_plots_summer-winter/coeff_", bs, "_", mt, ".png")
+  ggsave(outfile, final_plot, width=10, height=6)
+  message("Saved: ", outfile)
+}
+```
+
