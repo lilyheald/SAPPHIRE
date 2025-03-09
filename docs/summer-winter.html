@@ -358,7 +358,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">summer-winter</h1>
 <h4 class="author">Tina Lasisi</h4>
-<h4 class="date">2025-03-09 16:00:48</h4>
+<h4 class="date">2025-03-09 16:42:01</h4>
 
 </div>
 
@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree9217a86ffa649f8711002ae80658e05d2fa4edb2targetblank9217a86a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree3460f1b72d70362797b29bacaa13240488c0d10btargetblank3460f1ba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/9217a86ffa649f8711002ae80658e05d2fa4edb2" target="_blank">9217a86</a>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/3460f1b72d70362797b29bacaa13240488c0d10b" target="_blank">3460f1b</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree9217a86ffa649f8711002ae80658e05d2fa4edb2targetblank9217a86a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree3460f1b72d70362797b29bacaa13240488c0d10btargetblank3460f1ba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lasisilab/SAPPHIRE/tree/9217a86ffa649f8711002ae80658e05d2fa4edb2" target="_blank">9217a86</a>.
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/3460f1b72d70362797b29bacaa13240488c0d10b" target="_blank">3460f1b</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -660,6 +660,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/3460f1b72d70362797b29bacaa13240488c0d10b/analysis/summer-winter.Rmd" target="_blank">3460f1b</a>
+</td>
+<td>
+Tina Lasisi
+</td>
+<td>
+2025-03-09
+</td>
+<td>
+Updating index page and dates
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lasisilab/SAPPHIRE/3460f1b72d70362797b29bacaa13240488c0d10b/docs/summer-winter.html" target="_blank">3460f1b</a>
+</td>
+<td>
+Tina Lasisi
+</td>
+<td>
+2025-03-09
+</td>
+<td>
+Updating index page and dates
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/lasisilab/SAPPHIRE/blob/9217a86ffa649f8711002ae80658e05d2fa4edb2/analysis/summer-winter.Rmd" target="_blank">9217a86</a>
 </td>
 <td>
@@ -681,10 +715,6 @@ Cleaned data and redid analyses
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<pre class="r"><code>library(ggstatsplot)</code></pre>
-<pre><code>You can cite this package as:
-     Patil, I. (2021). Visualizations with statistical details: The &#39;ggstatsplot&#39; approach.
-     Journal of Open Source Software, 6(61), 3167, doi:10.21105/joss.03167</code></pre>
 <div id="median-data" class="section level3">
 <h3>median data</h3>
 <pre class="r"><code>## ---- ensure-both-seasons-and-then-ggwithinstats ----
@@ -692,52 +722,32 @@ Cleaned data and redid analyses
 ## for each (body_site, measurement_type). We then run grouped_ggwithinstats on that subset.
 ## This ensures a truly paired analysis with no partial data.
 
-library(tidyverse)</code></pre>
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-✔ purrr     1.0.4     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(ggstatsplot)
-
 # 1) Read your final medians data, with columns like:
 #    ParticipantCentreID, Season, Ethnicity, final_median, body_site, measurement_type
-df &lt;- read_csv(&quot;data/ScreeningDataCollection_medians.csv&quot;) %&gt;%
-  filter(Season %in% c(&quot;Summer&quot;,&quot;Winter&quot;)) %&gt;%
-  mutate(Season = factor(Season, levels = c(&quot;Summer&quot;,&quot;Winter&quot;)))</code></pre>
-<pre><code>Rows: 5280 Columns: 8
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: &quot;,&quot;
-chr (5): ParticipantCentreID, Ethnicity, Season, body_site, measurement_type
-dbl (3): Gender, final_median, n_valid
+df &lt;- read_csv(&quot;data/ScreeningDataCollection_medians.csv&quot;) |&gt; 
+  filter(Season %in% c(&quot;Summer&quot;,&quot;Winter&quot;)) |&gt; 
+  mutate(Season = factor(Season, levels = c(&quot;Summer&quot;,&quot;Winter&quot;)))
 
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code># 2) Keep only those participants who have BOTH Summer and Winter for each site+metric.
+# 2) Keep only those participants who have BOTH Summer and Winter for each site+metric.
 #    i.e., for each (ParticipantCentreID, body_site, metric), n_distinct(Season) == 2
-df_valid &lt;- df %&gt;%
-  group_by(ParticipantCentreID, body_site, measurement_type) %&gt;%
-  filter(n_distinct(Season) == 2) %&gt;%
+df_valid &lt;- df |&gt; 
+  group_by(ParticipantCentreID, body_site, measurement_type) |&gt; 
+  filter(n_distinct(Season) == 2) |&gt; 
   ungroup()
 
 # 3) Now for each (body_site, measurement_type) combo, we do a grouped_ggwithinstats
 #    that splits the data by Ethnicity, and does a repeated-measures (paired) test
 #    comparing Summer vs. Winter. 
-combos &lt;- df_valid %&gt;%
+combos &lt;- df_valid |&gt; 
   distinct(body_site, measurement_type)
 
 # 4) We&#39;ll loop over combos and produce a plot for each
 #    (If you want a single big combined plot, you&#39;d do a different approach.)
-plots &lt;- combos %&gt;%
+plots &lt;- combos |&gt; 
   mutate(
     plotobj = map2(body_site, measurement_type, ~ {
       
-      sub_data &lt;- df_valid %&gt;%
+      sub_data &lt;- df_valid |&gt; 
         filter(body_site == .x, measurement_type == .y)
       
       # If we have no data, skip
@@ -751,9 +761,11 @@ plots &lt;- combos %&gt;%
         grouping.var = Ethnicity,          # one subplot per Ethnicity
         paired       = TRUE,              # do a paired test
         type         = &quot;parametric&quot;,       # or &quot;nonparametric&quot;, etc.
-        title.text   = paste(&quot;Body site:&quot;, .x, &quot;| Metric:&quot;, .y),
         caption.text = &quot;Paired test (Summer vs. Winter) within each Ethnicity&quot;,
-        plotgrid.args= list(ncol = 2)      # if you have 2 Ethnicities, side-by-side
+        plotgrid.args= list(ncol = 2),    # if you have 2 Ethnicities, side-by-side
+        annotation.args = list(
+          title = paste0(.x, &quot; | &quot;, .y)
+        )
       )
     })
   )
@@ -761,56 +773,39 @@ plots &lt;- combos %&gt;%
 # 5) Save each figure
 dir.create(&quot;output/withinstats_filtered&quot;, showWarnings = FALSE, recursive = TRUE)
 
-plots %&gt;%
-  rowwise() %&gt;%
+plots |&gt; 
+  rowwise() |&gt; 
   mutate(
     outfile = paste0(&quot;output/withinstats_filtered/&quot;, body_site, &quot;_&quot;, measurement_type, &quot;.png&quot;),
     saved = {
       if (!is.null(plotobj)) {
-        ggsave(outfile, plotobj, width=10, height=6)
+        ggsave(outfile, plotobj, width=12, height=4)
         TRUE
       } else FALSE
     }
-  )</code></pre>
-<pre><code># A tibble: 24 × 5
-# Rowwise: 
-   body_site         measurement_type plotobj    outfile                   saved
-   &lt;chr&gt;             &lt;chr&gt;            &lt;list&gt;     &lt;chr&gt;                     &lt;lgl&gt;
- 1 Forehead          B                &lt;patchwrk&gt; output/withinstats_filte… TRUE 
- 2 Forehead          CIE_L            &lt;patchwrk&gt; output/withinstats_filte… TRUE 
- 3 Forehead          CIE_a            &lt;patchwrk&gt; output/withinstats_filte… TRUE 
- 4 Forehead          CIE_b            &lt;patchwrk&gt; output/withinstats_filte… TRUE 
- 5 Forehead          E                &lt;patchwrk&gt; output/withinstats_filte… TRUE 
- 6 Forehead          G                &lt;patchwrk&gt; output/withinstats_filte… TRUE 
- 7 Forehead          M                &lt;patchwrk&gt; output/withinstats_filte… TRUE 
- 8 Forehead          R                &lt;patchwrk&gt; output/withinstats_filte… TRUE 
- 9 LeftUpperInnerArm B                &lt;patchwrk&gt; output/withinstats_filte… TRUE 
-10 LeftUpperInnerArm CIE_L            &lt;patchwrk&gt; output/withinstats_filte… TRUE 
-# ℹ 14 more rows</code></pre>
+  ) |&gt; 
+  # then print each plot object inline
+  # or do it in a separate step
+  ungroup() |&gt; 
+  pull(plotobj) |&gt; 
+  walk(~ if (!is.null(.x)) print(.x))</code></pre>
+<p><img src="figure/summer-winter.Rmd/unnamed-chunk-1-1.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-2.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-3.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-4.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-5.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-6.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-7.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-8.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-9.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-10.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-11.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-12.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-13.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-14.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-15.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-16.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-17.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-18.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-19.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-20.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-21.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-22.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-23.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-1-24.png" width="3600" style="display: block; margin: auto;" /></p>
 </div>
 <div id="replicate-data" class="section level3">
 <h3>replicate data</h3>
-<pre class="r"><code>stage2_data &lt;- read_csv(&quot;data/ScreeningDataCollection_stage2.csv&quot;) %&gt;%
-  group_by(ParticipantCentreID, body_site, measurement_type, Season) %&gt;%
+<pre class="r"><code>stage2_data &lt;- read_csv(&quot;data/ScreeningDataCollection_stage2.csv&quot;) |&gt; 
+  group_by(ParticipantCentreID, body_site, measurement_type, Season) |&gt; 
   mutate(
     # Subtract however many NA values are in &#39;value&#39; from n_valid
     n_valid = n_valid - sum(is.na(value))
-  ) %&gt;%
-  ungroup() %&gt;%
+  ) |&gt; 
+  ungroup() |&gt; 
   # Then remove rows with NA in &#39;value&#39;
-  filter(!is.na(value))</code></pre>
-<pre><code>Rows: 15840 Columns: 24
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: &quot;,&quot;
-chr  (7): ParticipantCentreID, Season, body_site, measurement_type, Ethnicit...
-dbl (16): Gender, value, replicate, mean_val, sd_val, n_valid, cv, n, min_va...
-lgl  (1): is_outlier_allSites
+  filter(!is.na(value))
 
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>write.csv(stage2_data, &quot;data/ScreeningDataCollection_stage2_clean.csv&quot;, row.names = FALSE)</code></pre>
-<pre class="r"><code>stage2_data &lt;- stage2_data %&gt;%
-  filter(Season %in% c(&quot;Summer&quot;,&quot;Winter&quot;)) %&gt;%
+write.csv(stage2_data, &quot;data/ScreeningDataCollection_stage2_clean.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code>stage2_data &lt;- stage2_data |&gt; 
+  filter(Season %in% c(&quot;Summer&quot;,&quot;Winter&quot;)) |&gt; 
   mutate(Season = factor(Season, levels=c(&quot;Summer&quot;,&quot;Winter&quot;)))</code></pre>
 </div>
 </div>
@@ -820,27 +815,12 @@ lgl  (1): is_outlier_allSites
 #   ParticipantCentreID, body_site, metric, Ethnicity, Season, value, etc.
 #   We have 2 levels in Season: &quot;Summer&quot;,&quot;Winter&quot;.
 
-library(lmerTest)</code></pre>
-<pre><code>Loading required package: lme4</code></pre>
-<pre><code>Loading required package: Matrix</code></pre>
-<pre><code>
-Attaching package: &#39;Matrix&#39;</code></pre>
-<pre><code>The following objects are masked from &#39;package:tidyr&#39;:
-
-    expand, pack, unpack</code></pre>
-<pre><code>
-Attaching package: &#39;lmerTest&#39;</code></pre>
-<pre><code>The following object is masked from &#39;package:lme4&#39;:
-
-    lmer</code></pre>
-<pre><code>The following object is masked from &#39;package:stats&#39;:
-
-    step</code></pre>
-<pre class="r"><code>library(tidyverse)
+library(lmerTest)
+library(tidyverse)
 
 
 # 2) Identify combos of body_site, metric, and Ethnicity
-combos &lt;- stage2_data %&gt;%
+combos &lt;- stage2_data |&gt; 
   distinct(body_site, measurement_type, Ethnicity)
 
 results_list &lt;- list()
@@ -852,7 +832,7 @@ for (i in seq_len(nrow(combos))) {
   eth &lt;- combos$Ethnicity[i]
   
   # subset
-  sub_data &lt;- stage2_data %&gt;%
+  sub_data &lt;- stage2_data |&gt; 
     filter(body_site == bs, measurement_type == mt, Ethnicity == eth)
   
   # skip if not enough data
@@ -890,36 +870,28 @@ library(tidyverse)
 library(ggstatsplot)
 
 # 1) Load and clean your stage2_data
-stage2_data &lt;- read_csv(&quot;data/ScreeningDataCollection_stage2.csv&quot;) %&gt;%
-  group_by(ParticipantCentreID, body_site, measurement_type, Season) %&gt;%
+stage2_data &lt;- read_csv(&quot;data/ScreeningDataCollection_stage2.csv&quot;) |&gt; 
+  group_by(ParticipantCentreID, body_site, measurement_type, Season) |&gt; 
   mutate(
     # Subtract however many NA values are in &#39;value&#39; from n_valid
     n_valid = n_valid - sum(is.na(value))
-  ) %&gt;%
-  ungroup() %&gt;%
+  ) |&gt; 
+  ungroup() |&gt; 
   # Then remove rows with NA in &#39;value&#39;
-  filter(!is.na(value)) %&gt;%
+  filter(!is.na(value)) |&gt; 
   # Keep only Summer/Winter
-  filter(Season %in% c(&quot;Summer&quot;,&quot;Winter&quot;)) %&gt;%
+  filter(Season %in% c(&quot;Summer&quot;,&quot;Winter&quot;)) |&gt; 
   mutate(
     Season             = factor(Season, levels=c(&quot;Summer&quot;,&quot;Winter&quot;)),
     body_site          = factor(body_site),
     measurement_type   = factor(measurement_type),
     Ethnicity          = factor(Ethnicity),
     ParticipantCentreID= factor(ParticipantCentreID)
-  )</code></pre>
-<pre><code>Rows: 15840 Columns: 24
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: &quot;,&quot;
-chr  (7): ParticipantCentreID, Season, body_site, measurement_type, Ethnicit...
-dbl (16): Gender, value, replicate, mean_val, sd_val, n_valid, cv, n, min_va...
-lgl  (1): is_outlier_allSites
+  )
 
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code># 2) Identify combos of body_site + measurement_type
-combos &lt;- stage2_data %&gt;%
-  distinct(body_site, measurement_type) %&gt;%
+# 2) Identify combos of body_site + measurement_type
+combos &lt;- stage2_data |&gt; 
+  distinct(body_site, measurement_type) |&gt; 
   arrange(body_site, measurement_type)
 
 # 3) Create a directory &quot;output/coeff_plots_summer-winter&quot;
@@ -938,7 +910,7 @@ for (i in seq_len(nrow(combos))) {
   
   for (eth in ethnic_groups) {
     # Subset data
-    sub_data &lt;- stage2_data %&gt;%
+    sub_data &lt;- stage2_data |&gt; 
       filter(body_site == bs, measurement_type == mt, Ethnicity == eth)
     
     if (nrow(sub_data) &lt; 4) {
@@ -989,33 +961,13 @@ for (i in seq_len(nrow(combos))) {
   
   # 6) Save
   outfile &lt;- paste0(&quot;output/coeff_plots_summer-winter/coeff_&quot;, bs, &quot;_&quot;, mt, &quot;.png&quot;)
-  ggsave(outfile, final_plot, width=10, height=6)
-  message(&quot;Saved: &quot;, outfile)
+  ggsave(outfile, final_plot, width=12, height=4)
+  # message(&quot;Saved: &quot;, outfile)
+  
+  # 7) **Print** to see in the knitted doc
+  print(final_plot) 
 }</code></pre>
-<pre><code>Saved: output/coeff_plots_summer-winter/coeff_Forehead_B.png
-Saved: output/coeff_plots_summer-winter/coeff_Forehead_CIE_a.png
-Saved: output/coeff_plots_summer-winter/coeff_Forehead_CIE_b.png
-Saved: output/coeff_plots_summer-winter/coeff_Forehead_CIE_L.png
-Saved: output/coeff_plots_summer-winter/coeff_Forehead_E.png
-Saved: output/coeff_plots_summer-winter/coeff_Forehead_G.png
-Saved: output/coeff_plots_summer-winter/coeff_Forehead_M.png
-Saved: output/coeff_plots_summer-winter/coeff_Forehead_R.png
-Saved: output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_B.png
-Saved: output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_CIE_a.png
-Saved: output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_CIE_b.png
-Saved: output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_CIE_L.png
-Saved: output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_E.png
-Saved: output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_G.png
-Saved: output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_M.png
-Saved: output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_R.png
-Saved: output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_B.png
-Saved: output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_CIE_a.png
-Saved: output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_CIE_b.png
-Saved: output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_CIE_L.png
-Saved: output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_E.png
-Saved: output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_G.png
-Saved: output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_M.png
-Saved: output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_R.png</code></pre>
+<p><img src="figure/summer-winter.Rmd/unnamed-chunk-5-1.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-2.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-3.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-4.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-5.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-6.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-7.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-8.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-9.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-10.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-11.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-12.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-13.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-14.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-15.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-16.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-17.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-18.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-19.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-20.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-21.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-22.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-23.png" width="3600" style="display: block; margin: auto;" /><img src="figure/summer-winter.Rmd/unnamed-chunk-5-24.png" width="3600" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1054,33 +1006,33 @@ loaded via a namespace (and not attached):
  [7] compiler_4.4.3         statsExpressions_1.6.2 getPass_0.2-4         
 [10] systemfonts_1.2.1      callr_3.7.6            vctrs_0.6.5           
 [13] pkgconfig_2.0.3        crayon_1.5.3           fastmap_1.2.0         
-[16] labeling_0.4.3         effectsize_1.0.0       utf8_1.2.4            
-[19] promises_1.3.2         rmarkdown_2.29         tzdb_0.4.0            
-[22] ps_1.8.1               nloptr_2.1.1           ragg_1.3.3            
-[25] MatrixModels_0.5-3     bit_4.5.0.1            xfun_0.50             
-[28] cachem_1.1.0           jsonlite_1.8.9         later_1.4.1           
-[31] parallel_4.4.3         R6_2.5.1               bslib_0.9.0           
-[34] stringi_1.8.4          boot_1.3-31            numDeriv_2016.8-1.1   
-[37] jquerylib_0.1.4        estimability_1.5.1     Rcpp_1.0.14           
-[40] knitr_1.49             parameters_0.24.2      correlation_0.8.7     
-[43] httpuv_1.6.15          splines_4.4.3          timechange_0.3.0      
-[46] tidyselect_1.2.1       rstudioapi_0.17.1      yaml_2.3.10           
-[49] processx_3.8.5         lattice_0.22-6         withr_3.0.2           
-[52] bayestestR_0.15.2      coda_0.19-4.1          evaluate_1.0.3        
-[55] RcppParallel_5.1.10    pillar_1.10.1          whisker_0.4.1         
-[58] reformulas_0.4.0       insight_1.1.0          generics_0.1.3        
-[61] vroom_1.6.5            rprojroot_2.0.4        paletteer_1.6.0       
-[64] hms_1.1.3              rstantools_2.4.0       munsell_0.5.1         
-[67] scales_1.3.0           minqa_1.2.8            glue_1.8.0            
-[70] emmeans_1.10.7         tools_4.4.3            fs_1.6.5              
-[73] mvtnorm_1.3-3          grid_4.4.3             rbibutils_2.3         
-[76] datawizard_1.0.1       colorspace_2.1-1       nlme_3.1-167          
-[79] patchwork_1.3.0        performance_0.13.0     cli_3.6.3             
-[82] textshaping_1.0.0      gtable_0.3.6           zeallot_0.1.0         
-[85] sass_0.4.9             digest_0.6.37          prismatic_1.1.2       
-[88] ggrepel_0.9.6          farver_2.1.2           htmltools_0.5.8.1     
-[91] lifecycle_1.0.4        httr_1.4.7             bit64_4.6.0-1         
-[94] BayesFactor_0.9.12-4.7 MASS_7.3-64           </code></pre>
+[16] labeling_0.4.3         effectsize_1.0.0       promises_1.3.2        
+[19] rmarkdown_2.29         tzdb_0.4.0             ps_1.8.1              
+[22] nloptr_2.1.1           ragg_1.3.3             MatrixModels_0.5-3    
+[25] bit_4.5.0.1            xfun_0.50              cachem_1.1.0          
+[28] jsonlite_1.8.9         later_1.4.1            parallel_4.4.3        
+[31] R6_2.5.1               bslib_0.9.0            stringi_1.8.4         
+[34] boot_1.3-31            numDeriv_2016.8-1.1    jquerylib_0.1.4       
+[37] estimability_1.5.1     Rcpp_1.0.14            knitr_1.49            
+[40] parameters_0.24.2      correlation_0.8.7      httpuv_1.6.15         
+[43] splines_4.4.3          timechange_0.3.0       tidyselect_1.2.1      
+[46] rstudioapi_0.17.1      yaml_2.3.10            processx_3.8.5        
+[49] lattice_0.22-6         withr_3.0.2            bayestestR_0.15.2     
+[52] coda_0.19-4.1          evaluate_1.0.3         RcppParallel_5.1.10   
+[55] pillar_1.10.1          whisker_0.4.1          reformulas_0.4.0      
+[58] insight_1.1.0          generics_0.1.3         vroom_1.6.5           
+[61] rprojroot_2.0.4        paletteer_1.6.0        hms_1.1.3             
+[64] rstantools_2.4.0       munsell_0.5.1          scales_1.3.0          
+[67] minqa_1.2.8            glue_1.8.0             emmeans_1.10.7        
+[70] tools_4.4.3            fs_1.6.5               mvtnorm_1.3-3         
+[73] grid_4.4.3             rbibutils_2.3          datawizard_1.0.1      
+[76] colorspace_2.1-1       nlme_3.1-167           patchwork_1.3.0       
+[79] performance_0.13.0     cli_3.6.3              textshaping_1.0.0     
+[82] gtable_0.3.6           zeallot_0.1.0          sass_0.4.9            
+[85] digest_0.6.37          prismatic_1.1.2        ggrepel_0.9.6         
+[88] farver_2.1.2           htmltools_0.5.8.1      lifecycle_1.0.4       
+[91] httr_1.4.7             bit64_4.6.0-1          BayesFactor_0.9.12-4.7
+[94] MASS_7.3-64           </code></pre>
 </div>
 </div>
 </div>

@@ -9,14 +9,26 @@ editor_options:
 
 ## Introduction
 
-```{r}
-# Install packages if needed:
-# install.packages("readxl")
-# 
 
+```{r setup, include=FALSE}
+# This chunk runs before everything else, setting default knitr options
+knitr::opts_chunk$set(
+  fig.width  = 12,   # default figure width in inches
+  fig.height = 4,   # default figure height in inches
+  dev        = "png",   # device for figure output (e.g., 'png', 'pdf', etc.)
+  dpi        = 300,     # resolution of PNG output
+  echo       = TRUE,    # show R code by default
+  message    = FALSE,   # suppress package load messages
+  warning    = FALSE    # suppress warnings in final doc
+)
+
+library(ggstatsplot)
 library(readxl)
 library(tidyverse)
+```
 
+
+```{r}
 # Path to your Excel file
 workbook_path <- "data/serum_vit_D_study_with_lab_results.xlsx"
 
