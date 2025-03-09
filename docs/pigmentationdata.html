@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Tina Lasisi" />
+
+
+<title>Pigmentation Data</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SAPPHIRE</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+<li>
+  <a href="pca.html">PCA</a>
+</li>
+<li>
+  <a href="statsplot.html">statsplot</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Pigmentation Data</h1>
+<h4 class="author">Tina Lasisi</h4>
+<h4 class="date">2025-03-09 16:00:13</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-03-09
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SAPPHIRE/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240923code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240923)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240923code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240923)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree9217a86ffa649f8711002ae80658e05d2fa4edb2targetblank9217a86a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/9217a86ffa649f8711002ae80658e05d2fa4edb2" target="_blank">9217a86</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomlasisilabSAPPHIREtree9217a86ffa649f8711002ae80658e05d2fa4edb2targetblank9217a86a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/lasisilab/SAPPHIRE/tree/9217a86ffa649f8711002ae80658e05d2fa4edb2" target="_blank">9217a86</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/.DS_Store
+    Ignored:    output/.DS_Store
+
+Unstaged changes:
+    Modified:   analysis/pigmentationdata.Rmd
+    Modified:   analysis/summer-winter.Rmd
+    Modified:   output/coeff_plots_summer-winter/coeff_Forehead_B.png
+    Modified:   output/coeff_plots_summer-winter/coeff_Forehead_CIE_L.png
+    Modified:   output/coeff_plots_summer-winter/coeff_Forehead_CIE_a.png
+    Modified:   output/coeff_plots_summer-winter/coeff_Forehead_CIE_b.png
+    Modified:   output/coeff_plots_summer-winter/coeff_Forehead_E.png
+    Modified:   output/coeff_plots_summer-winter/coeff_Forehead_G.png
+    Modified:   output/coeff_plots_summer-winter/coeff_Forehead_M.png
+    Modified:   output/coeff_plots_summer-winter/coeff_Forehead_R.png
+    Modified:   output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_B.png
+    Modified:   output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_CIE_L.png
+    Modified:   output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_CIE_a.png
+    Modified:   output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_CIE_b.png
+    Modified:   output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_E.png
+    Modified:   output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_G.png
+    Modified:   output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_M.png
+    Modified:   output/coeff_plots_summer-winter/coeff_LeftUpperInnerArm_R.png
+    Modified:   output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_B.png
+    Modified:   output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_CIE_L.png
+    Modified:   output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_CIE_a.png
+    Modified:   output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_CIE_b.png
+    Modified:   output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_E.png
+    Modified:   output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_G.png
+    Modified:   output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_M.png
+    Modified:   output/coeff_plots_summer-winter/coeff_RightUpperInnerArm_R.png
+    Modified:   output/withinstats_filtered/Forehead_B.png
+    Modified:   output/withinstats_filtered/Forehead_CIE_L.png
+    Modified:   output/withinstats_filtered/Forehead_CIE_a.png
+    Modified:   output/withinstats_filtered/Forehead_CIE_b.png
+    Modified:   output/withinstats_filtered/Forehead_E.png
+    Modified:   output/withinstats_filtered/Forehead_G.png
+    Modified:   output/withinstats_filtered/Forehead_M.png
+    Modified:   output/withinstats_filtered/Forehead_R.png
+    Modified:   output/withinstats_filtered/LeftUpperInnerArm_B.png
+    Modified:   output/withinstats_filtered/LeftUpperInnerArm_CIE_L.png
+    Modified:   output/withinstats_filtered/LeftUpperInnerArm_CIE_a.png
+    Modified:   output/withinstats_filtered/LeftUpperInnerArm_CIE_b.png
+    Modified:   output/withinstats_filtered/LeftUpperInnerArm_E.png
+    Modified:   output/withinstats_filtered/LeftUpperInnerArm_G.png
+    Modified:   output/withinstats_filtered/LeftUpperInnerArm_M.png
+    Modified:   output/withinstats_filtered/LeftUpperInnerArm_R.png
+    Modified:   output/withinstats_filtered/RightUpperInnerArm_B.png
+    Modified:   output/withinstats_filtered/RightUpperInnerArm_CIE_L.png
+    Modified:   output/withinstats_filtered/RightUpperInnerArm_CIE_a.png
+    Modified:   output/withinstats_filtered/RightUpperInnerArm_CIE_b.png
+    Modified:   output/withinstats_filtered/RightUpperInnerArm_E.png
+    Modified:   output/withinstats_filtered/RightUpperInnerArm_G.png
+    Modified:   output/withinstats_filtered/RightUpperInnerArm_M.png
+    Modified:   output/withinstats_filtered/RightUpperInnerArm_R.png
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/pigmentationdata.Rmd</code>) and
+HTML (<code>docs/pigmentationdata.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lasisilab/SAPPHIRE/blob/9217a86ffa649f8711002ae80658e05d2fa4edb2/analysis/pigmentationdata.Rmd" target="_blank">9217a86</a>
+</td>
+<td>
+Tina Lasisi
+</td>
+<td>
+2025-03-07
+</td>
+<td>
+Cleaned data and redid analyses
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<pre class="r"><code># Install packages if needed:
+# install.packages(&quot;readxl&quot;)
+# 
+
+library(readxl)
+library(tidyverse)</code></pre>
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.0.4     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code># Path to your Excel file
+workbook_path &lt;- &quot;data/serum_vit_D_study_with_lab_results.xlsx&quot;
+
+# Get the list of all sheet names in the workbook
+sheets &lt;- excel_sheets(workbook_path)
+
+# Loop through each sheet, read it, and write it to a CSV
+for (sheet_name in sheets) {
+  df &lt;- read_excel(workbook_path, sheet = sheet_name)
+  
+  # Replace problematic characters in sheet name
+  safe_sheet_name &lt;- gsub(&quot;[^A-Za-z0-9\\-_]+&quot;, &quot;_&quot;, sheet_name)
+  
+  # Create file name and save
+  output_path &lt;- file.path(&quot;data&quot;, paste0(safe_sheet_name, &quot;.csv&quot;))
+  write.csv(df, output_path, row.names = FALSE)
+  
+  message(&quot;Created CSV file for sheet &#39;&quot;, sheet_name, &quot;&#39;: &quot;, output_path)
+}</code></pre>
+<pre><code>Created CSV file for sheet &#39;ScreeningDataCollectionSummer&#39;: data/ScreeningDataCollectionSummer.csv
+Created CSV file for sheet &#39;ScreeningDataCollectionWinter&#39;: data/ScreeningDataCollectionWinter.csv
+Created CSV file for sheet &#39;ScreeningDataCollection6Weeks&#39;: data/ScreeningDataCollection6Weeks.csv
+Created CSV file for sheet &#39;FoodFrequencySummer&#39;: data/FoodFrequencySummer.csv
+Created CSV file for sheet &#39;FoodFrequencyWinter&#39;: data/FoodFrequencyWinter.csv
+Created CSV file for sheet &#39;FoodFrequency6Weeks&#39;: data/FoodFrequency6Weeks.csv
+Created CSV file for sheet &#39;SunExposureSummer&#39;: data/SunExposureSummer.csv
+Created CSV file for sheet &#39;SunExposureWinter&#39;: data/SunExposureWinter.csv
+Created CSV file for sheet &#39;SunExposure6Weeks&#39;: data/SunExposure6Weeks.csv</code></pre>
+<pre class="r"><code># (Optional) Install packages if needed
+# install.packages(&quot;dplyr&quot;)
+
+# Read each CSV and add a &quot;Season&quot; column
+summer_data  &lt;- read.csv(&quot;data/ScreeningDataCollectionSummer.csv&quot;) %&gt;%
+  mutate(Season = &quot;Summer&quot;)
+
+winter_data  &lt;- read.csv(&quot;data/ScreeningDataCollectionWinter.csv&quot;) %&gt;%
+  mutate(Season = &quot;Winter&quot;)
+
+sixweek_data &lt;- read.csv(&quot;data/ScreeningDataCollection6Weeks.csv&quot;) %&gt;%
+  mutate(Season = &quot;6Weeks&quot;)
+
+# Combine into one data frame
+combined_data &lt;- bind_rows(summer_data, winter_data, sixweek_data)
+
+# Write the combined data to a single CSV
+write.csv(combined_data, &quot;data/ScreeningDataCollection.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code># Step 1: Read &amp; Clean the Data
+# Load required libraries
+library(tidyverse)
+library(readr)
+
+# Read the original data
+df_original &lt;- read.csv(&quot;data/ScreeningDataCollection.csv&quot;)
+
+# Clean and rename variables
+df_cleaned &lt;- df_original |&gt;
+  mutate(
+    # Convert EthnicityColoured -&gt; Ethnicity (adapt if it&#39;s character/string)
+    Ethnicity = if_else(EthnicityColoured == TRUE, &quot;CapeMixed&quot;, &quot;Xhosa&quot;)
+  ) |&gt;
+  select(
+    ParticipantCentreID,
+    TodayDate,
+    Gender,
+    Ethnicity,
+    Season,
+    starts_with(&quot;SkinReflectance&quot;),
+    VitDResult
+  )
+
+# Get all column names
+all_columns &lt;- colnames(df_cleaned)
+
+# Find columns with L., a., and b. and rename them
+renamed_columns &lt;- all_columns
+
+# Create a function to rename CIE variables
+rename_cie_vars &lt;- function(column_name) {
+  # Replace L. with CIE_L
+  column_name &lt;- gsub(&quot;SkinReflectanceForehead[L]\\.([1-3])&quot;, &quot;SkinReflectanceForeheadCIE_L\\1&quot;, column_name)
+  column_name &lt;- gsub(&quot;SkinReflectanceRightUpperInnerArm[L]\\.([1-3])&quot;, &quot;SkinReflectanceRightUpperInnerArmCIE_L\\1&quot;, column_name)
+  column_name &lt;- gsub(&quot;SkinReflectanceLeftUpperInnerArm[L]\\.([1-3])&quot;, &quot;SkinReflectanceLeftUpperInnerArmCIE_L\\1&quot;, column_name)
+  
+  # Replace a. with CIE_a
+  column_name &lt;- gsub(&quot;SkinReflectanceForehead[a]\\.([1-3])&quot;, &quot;SkinReflectanceForeheadCIE_a\\1&quot;, column_name)
+  column_name &lt;- gsub(&quot;SkinReflectanceRightUpperInnerArm[a]\\.([1-3])&quot;, &quot;SkinReflectanceRightUpperInnerArmCIE_a\\1&quot;, column_name)
+  column_name &lt;- gsub(&quot;SkinReflectanceLeftUpperInnerArm[a]\\.([1-3])&quot;, &quot;SkinReflectanceLeftUpperInnerArmCIE_a\\1&quot;, column_name)
+  
+  # Replace b. with CIE_b
+  column_name &lt;- gsub(&quot;SkinReflectanceForehead[b]\\.([1-3])&quot;, &quot;SkinReflectanceForeheadCIE_b\\1&quot;, column_name)
+  column_name &lt;- gsub(&quot;SkinReflectanceRightUpperInnerArm[b]\\.([1-3])&quot;, &quot;SkinReflectanceRightUpperInnerArmCIE_b\\1&quot;, column_name)
+  column_name &lt;- gsub(&quot;SkinReflectanceLeftUpperInnerArm[b]\\.([1-3])&quot;, &quot;SkinReflectanceLeftUpperInnerArmCIE_b\\1&quot;, column_name)
+  
+  return(column_name)
+}
+
+# Apply the renaming function to each column
+for (i in 1:length(all_columns)) {
+  renamed_columns[i] &lt;- rename_cie_vars(all_columns[i])
+}
+
+# Create a rename map
+rename_map &lt;- setNames(all_columns, renamed_columns)
+
+# Check if any columns were changed
+changed_columns &lt;- which(renamed_columns != all_columns)
+if (length(changed_columns) &gt; 0) {
+  cat(&quot;Renamed columns:\n&quot;)
+  for (i in changed_columns) {
+    cat(paste(&quot;  &quot;, all_columns[i], &quot;-&gt;&quot;, renamed_columns[i], &quot;\n&quot;))
+  }
+} else {
+  cat(&quot;No columns were renamed.\n&quot;)
+}</code></pre>
+<pre><code>Renamed columns:
+   SkinReflectanceForeheadL.1 -&gt; SkinReflectanceForeheadCIE_L1 
+   SkinReflectanceForeheadL.2 -&gt; SkinReflectanceForeheadCIE_L2 
+   SkinReflectanceForeheadL.3 -&gt; SkinReflectanceForeheadCIE_L3 
+   SkinReflectanceForeheada.1 -&gt; SkinReflectanceForeheadCIE_a1 
+   SkinReflectanceForeheada.2 -&gt; SkinReflectanceForeheadCIE_a2 
+   SkinReflectanceForeheada.3 -&gt; SkinReflectanceForeheadCIE_a3 
+   SkinReflectanceForeheadb.1 -&gt; SkinReflectanceForeheadCIE_b1 
+   SkinReflectanceForeheadb.2 -&gt; SkinReflectanceForeheadCIE_b2 
+   SkinReflectanceForeheadb.3 -&gt; SkinReflectanceForeheadCIE_b3 
+   SkinReflectanceRightUpperInnerArmL.1 -&gt; SkinReflectanceRightUpperInnerArmCIE_L1 
+   SkinReflectanceRightUpperInnerArmL.2 -&gt; SkinReflectanceRightUpperInnerArmCIE_L2 
+   SkinReflectanceRightUpperInnerArmL.3 -&gt; SkinReflectanceRightUpperInnerArmCIE_L3 
+   SkinReflectanceRightUpperInnerArma.1 -&gt; SkinReflectanceRightUpperInnerArmCIE_a1 
+   SkinReflectanceRightUpperInnerArma.2 -&gt; SkinReflectanceRightUpperInnerArmCIE_a2 
+   SkinReflectanceRightUpperInnerArma.3 -&gt; SkinReflectanceRightUpperInnerArmCIE_a3 
+   SkinReflectanceRightUpperInnerArmb.1 -&gt; SkinReflectanceRightUpperInnerArmCIE_b1 
+   SkinReflectanceRightUpperInnerArmb.2 -&gt; SkinReflectanceRightUpperInnerArmCIE_b2 
+   SkinReflectanceRightUpperInnerArmb.3 -&gt; SkinReflectanceRightUpperInnerArmCIE_b3 
+   SkinReflectanceLeftUpperInnerArmL.1 -&gt; SkinReflectanceLeftUpperInnerArmCIE_L1 
+   SkinReflectanceLeftUpperInnerArmL.2 -&gt; SkinReflectanceLeftUpperInnerArmCIE_L2 
+   SkinReflectanceLeftUpperInnerArmL.3 -&gt; SkinReflectanceLeftUpperInnerArmCIE_L3 
+   SkinReflectanceLeftUpperInnerArma.1 -&gt; SkinReflectanceLeftUpperInnerArmCIE_a1 
+   SkinReflectanceLeftUpperInnerArma.2 -&gt; SkinReflectanceLeftUpperInnerArmCIE_a2 
+   SkinReflectanceLeftUpperInnerArma.3 -&gt; SkinReflectanceLeftUpperInnerArmCIE_a3 
+   SkinReflectanceLeftUpperInnerArmb.1 -&gt; SkinReflectanceLeftUpperInnerArmCIE_b1 
+   SkinReflectanceLeftUpperInnerArmb.2 -&gt; SkinReflectanceLeftUpperInnerArmCIE_b2 
+   SkinReflectanceLeftUpperInnerArmb.3 -&gt; SkinReflectanceLeftUpperInnerArmCIE_b3 </code></pre>
+<pre class="r"><code># Now let&#39;s try a different approach since the regex might not be capturing correctly
+# Directly identify and rename columns with specific patterns
+
+# Create a new renamed dataframe
+df_renamed &lt;- df_cleaned
+
+# Iterate through each column and apply renaming
+rename_columns &lt;- function(df) {
+  col_names &lt;- colnames(df)
+  new_names &lt;- col_names
+  
+  for (i in seq_along(col_names)) {
+    # Check for L. pattern
+    if (grepl(&quot;L\\.&quot;, col_names[i])) {
+      new_names[i] &lt;- gsub(&quot;L\\.&quot;, &quot;CIE_L&quot;, col_names[i])
+    }
+    # Check for a. pattern
+    else if (grepl(&quot;a\\.&quot;, col_names[i])) {
+      new_names[i] &lt;- gsub(&quot;a\\.&quot;, &quot;CIE_a&quot;, col_names[i])
+    }
+    # Check for b. pattern
+    else if (grepl(&quot;b\\.&quot;, col_names[i])) {
+      new_names[i] &lt;- gsub(&quot;b\\.&quot;, &quot;CIE_b&quot;, col_names[i])
+    }
+  }
+  
+  # Show which columns were renamed
+  changed &lt;- which(new_names != col_names)
+  if (length(changed) &gt; 0) {
+    cat(&quot;Renamed columns:\n&quot;)
+    for (i in changed) {
+      cat(paste(&quot;  &quot;, col_names[i], &quot;-&gt;&quot;, new_names[i], &quot;\n&quot;))
+    }
+  }
+  
+  # Rename the columns
+  colnames(df) &lt;- new_names
+  return(df)
+}
+
+# Apply the renaming
+df_renamed &lt;- rename_columns(df_cleaned)</code></pre>
+<pre><code>Renamed columns:
+   SkinReflectanceForeheadL.1 -&gt; SkinReflectanceForeheadCIE_L1 
+   SkinReflectanceForeheadL.2 -&gt; SkinReflectanceForeheadCIE_L2 
+   SkinReflectanceForeheadL.3 -&gt; SkinReflectanceForeheadCIE_L3 
+   SkinReflectanceForeheada.1 -&gt; SkinReflectanceForeheadCIE_a1 
+   SkinReflectanceForeheada.2 -&gt; SkinReflectanceForeheadCIE_a2 
+   SkinReflectanceForeheada.3 -&gt; SkinReflectanceForeheadCIE_a3 
+   SkinReflectanceForeheadb.1 -&gt; SkinReflectanceForeheadCIE_b1 
+   SkinReflectanceForeheadb.2 -&gt; SkinReflectanceForeheadCIE_b2 
+   SkinReflectanceForeheadb.3 -&gt; SkinReflectanceForeheadCIE_b3 
+   SkinReflectanceRightUpperInnerArmL.1 -&gt; SkinReflectanceRightUpperInnerArmCIE_L1 
+   SkinReflectanceRightUpperInnerArmL.2 -&gt; SkinReflectanceRightUpperInnerArmCIE_L2 
+   SkinReflectanceRightUpperInnerArmL.3 -&gt; SkinReflectanceRightUpperInnerArmCIE_L3 
+   SkinReflectanceRightUpperInnerArma.1 -&gt; SkinReflectanceRightUpperInnerArmCIE_a1 
+   SkinReflectanceRightUpperInnerArma.2 -&gt; SkinReflectanceRightUpperInnerArmCIE_a2 
+   SkinReflectanceRightUpperInnerArma.3 -&gt; SkinReflectanceRightUpperInnerArmCIE_a3 
+   SkinReflectanceRightUpperInnerArmb.1 -&gt; SkinReflectanceRightUpperInnerArmCIE_b1 
+   SkinReflectanceRightUpperInnerArmb.2 -&gt; SkinReflectanceRightUpperInnerArmCIE_b2 
+   SkinReflectanceRightUpperInnerArmb.3 -&gt; SkinReflectanceRightUpperInnerArmCIE_b3 
+   SkinReflectanceLeftUpperInnerArmL.1 -&gt; SkinReflectanceLeftUpperInnerArmCIE_L1 
+   SkinReflectanceLeftUpperInnerArmL.2 -&gt; SkinReflectanceLeftUpperInnerArmCIE_L2 
+   SkinReflectanceLeftUpperInnerArmL.3 -&gt; SkinReflectanceLeftUpperInnerArmCIE_L3 
+   SkinReflectanceLeftUpperInnerArma.1 -&gt; SkinReflectanceLeftUpperInnerArmCIE_a1 
+   SkinReflectanceLeftUpperInnerArma.2 -&gt; SkinReflectanceLeftUpperInnerArmCIE_a2 
+   SkinReflectanceLeftUpperInnerArma.3 -&gt; SkinReflectanceLeftUpperInnerArmCIE_a3 
+   SkinReflectanceLeftUpperInnerArmb.1 -&gt; SkinReflectanceLeftUpperInnerArmCIE_b1 
+   SkinReflectanceLeftUpperInnerArmb.2 -&gt; SkinReflectanceLeftUpperInnerArmCIE_b2 
+   SkinReflectanceLeftUpperInnerArmb.3 -&gt; SkinReflectanceLeftUpperInnerArmCIE_b3 </code></pre>
+<pre class="r"><code># Write to csv
+write.csv(df_renamed, &quot;data/ScreeningDataCollection_cleaned.csv&quot;, row.names = FALSE)
+
+# Verify the renamed file
+df_check &lt;- read.csv(&quot;data/ScreeningDataCollection_cleaned.csv&quot;)
+cat(&quot;\nVerification of renamed columns in saved file:\n&quot;)</code></pre>
+<pre><code>
+Verification of renamed columns in saved file:</code></pre>
+<pre class="r"><code>cie_columns &lt;- grep(&quot;CIE_[Lab]&quot;, colnames(df_check), value = TRUE)
+if (length(cie_columns) &gt; 0) {
+  cat(&quot;CIE columns found in the renamed file:\n&quot;)
+  print(cie_columns)
+} else {
+  cat(&quot;No CIE columns found in the renamed file.\n&quot;)
+}</code></pre>
+<pre><code>CIE columns found in the renamed file:
+ [1] &quot;SkinReflectanceForeheadCIE_L1&quot;          
+ [2] &quot;SkinReflectanceForeheadCIE_L2&quot;          
+ [3] &quot;SkinReflectanceForeheadCIE_L3&quot;          
+ [4] &quot;SkinReflectanceForeheadCIE_a1&quot;          
+ [5] &quot;SkinReflectanceForeheadCIE_a2&quot;          
+ [6] &quot;SkinReflectanceForeheadCIE_a3&quot;          
+ [7] &quot;SkinReflectanceForeheadCIE_b1&quot;          
+ [8] &quot;SkinReflectanceForeheadCIE_b2&quot;          
+ [9] &quot;SkinReflectanceForeheadCIE_b3&quot;          
+[10] &quot;SkinReflectanceRightUpperInnerArmCIE_L1&quot;
+[11] &quot;SkinReflectanceRightUpperInnerArmCIE_L2&quot;
+[12] &quot;SkinReflectanceRightUpperInnerArmCIE_L3&quot;
+[13] &quot;SkinReflectanceRightUpperInnerArmCIE_a1&quot;
+[14] &quot;SkinReflectanceRightUpperInnerArmCIE_a2&quot;
+[15] &quot;SkinReflectanceRightUpperInnerArmCIE_a3&quot;
+[16] &quot;SkinReflectanceRightUpperInnerArmCIE_b1&quot;
+[17] &quot;SkinReflectanceRightUpperInnerArmCIE_b2&quot;
+[18] &quot;SkinReflectanceRightUpperInnerArmCIE_b3&quot;
+[19] &quot;SkinReflectanceLeftUpperInnerArmCIE_L1&quot; 
+[20] &quot;SkinReflectanceLeftUpperInnerArmCIE_L2&quot; 
+[21] &quot;SkinReflectanceLeftUpperInnerArmCIE_L3&quot; 
+[22] &quot;SkinReflectanceLeftUpperInnerArmCIE_a1&quot; 
+[23] &quot;SkinReflectanceLeftUpperInnerArmCIE_a2&quot; 
+[24] &quot;SkinReflectanceLeftUpperInnerArmCIE_a3&quot; 
+[25] &quot;SkinReflectanceLeftUpperInnerArmCIE_b1&quot; 
+[26] &quot;SkinReflectanceLeftUpperInnerArmCIE_b2&quot; 
+[27] &quot;SkinReflectanceLeftUpperInnerArmCIE_b3&quot; </code></pre>
+<pre class="r"><code># Print a summary of all column names for verification
+cat(&quot;\nAll column names in final dataset:\n&quot;)</code></pre>
+<pre><code>
+All column names in final dataset:</code></pre>
+<pre class="r"><code>all_final_columns &lt;- colnames(df_check)
+print(all_final_columns)</code></pre>
+<pre><code> [1] &quot;ParticipantCentreID&quot;                    
+ [2] &quot;TodayDate&quot;                              
+ [3] &quot;Gender&quot;                                 
+ [4] &quot;Ethnicity&quot;                              
+ [5] &quot;Season&quot;                                 
+ [6] &quot;SkinReflectanceForeheadE1&quot;              
+ [7] &quot;SkinReflectanceForeheadE2&quot;              
+ [8] &quot;SkinReflectanceForeheadE3&quot;              
+ [9] &quot;SkinReflectanceForeheadM1&quot;              
+[10] &quot;SkinReflectanceForeheadM2&quot;              
+[11] &quot;SkinReflectanceForeheadM3&quot;              
+[12] &quot;SkinReflectanceForeheadR1&quot;              
+[13] &quot;SkinReflectanceForeheadR2&quot;              
+[14] &quot;SkinReflectanceForeheadR3&quot;              
+[15] &quot;SkinReflectanceForeheadG1&quot;              
+[16] &quot;SkinReflectanceForeheadG2&quot;              
+[17] &quot;SkinReflectanceForeheadG3&quot;              
+[18] &quot;SkinReflectanceForeheadB1&quot;              
+[19] &quot;SkinReflectanceForeheadB2&quot;              
+[20] &quot;SkinReflectanceForeheadB3&quot;              
+[21] &quot;SkinReflectanceForeheadCIE_L1&quot;          
+[22] &quot;SkinReflectanceForeheadCIE_L2&quot;          
+[23] &quot;SkinReflectanceForeheadCIE_L3&quot;          
+[24] &quot;SkinReflectanceForeheadCIE_a1&quot;          
+[25] &quot;SkinReflectanceForeheadCIE_a2&quot;          
+[26] &quot;SkinReflectanceForeheadCIE_a3&quot;          
+[27] &quot;SkinReflectanceForeheadCIE_b1&quot;          
+[28] &quot;SkinReflectanceForeheadCIE_b2&quot;          
+[29] &quot;SkinReflectanceForeheadCIE_b3&quot;          
+[30] &quot;SkinReflectanceRightUpperInnerArmE1&quot;    
+[31] &quot;SkinReflectanceRightUpperInnerArmE2&quot;    
+[32] &quot;SkinReflectanceRightUpperInnerArmE3&quot;    
+[33] &quot;SkinReflectanceRightUpperInnerArmM1&quot;    
+[34] &quot;SkinReflectanceRightUpperInnerArmM2&quot;    
+[35] &quot;SkinReflectanceRightUpperInnerArmM3&quot;    
+[36] &quot;SkinReflectanceRightUpperInnerArmR1&quot;    
+[37] &quot;SkinReflectanceRightUpperInnerArmR2&quot;    
+[38] &quot;SkinReflectanceRightUpperInnerArmR3&quot;    
+[39] &quot;SkinReflectanceRightUpperInnerArmG1&quot;    
+[40] &quot;SkinReflectanceRightUpperInnerArmG2&quot;    
+[41] &quot;SkinReflectanceRightUpperInnerArmG3&quot;    
+[42] &quot;SkinReflectanceRightUpperInnerArmB1&quot;    
+[43] &quot;SkinReflectanceRightUpperInnerArmB2&quot;    
+[44] &quot;SkinReflectanceRightUpperInnerArmB3&quot;    
+[45] &quot;SkinReflectanceRightUpperInnerArmCIE_L1&quot;
+[46] &quot;SkinReflectanceRightUpperInnerArmCIE_L2&quot;
+[47] &quot;SkinReflectanceRightUpperInnerArmCIE_L3&quot;
+[48] &quot;SkinReflectanceRightUpperInnerArmCIE_a1&quot;
+[49] &quot;SkinReflectanceRightUpperInnerArmCIE_a2&quot;
+[50] &quot;SkinReflectanceRightUpperInnerArmCIE_a3&quot;
+[51] &quot;SkinReflectanceRightUpperInnerArmCIE_b1&quot;
+[52] &quot;SkinReflectanceRightUpperInnerArmCIE_b2&quot;
+[53] &quot;SkinReflectanceRightUpperInnerArmCIE_b3&quot;
+[54] &quot;SkinReflectanceLeftUpperInnerArmE1&quot;     
+[55] &quot;SkinReflectanceLeftUpperInnerArmE2&quot;     
+[56] &quot;SkinReflectanceLeftUpperInnerArmE3&quot;     
+[57] &quot;SkinReflectanceLeftUpperInnerArmM1&quot;     
+[58] &quot;SkinReflectanceLeftUpperInnerArmM2&quot;     
+[59] &quot;SkinReflectanceLeftUpperInnerArmM3&quot;     
+[60] &quot;SkinReflectanceLeftUpperInnerArmR1&quot;     
+[61] &quot;SkinReflectanceLeftUpperInnerArmR2&quot;     
+[62] &quot;SkinReflectanceLeftUpperInnerArmR3&quot;     
+[63] &quot;SkinReflectanceLeftUpperInnerArmG1&quot;     
+[64] &quot;SkinReflectanceLeftUpperInnerArmG2&quot;     
+[65] &quot;SkinReflectanceLeftUpperInnerArmG3&quot;     
+[66] &quot;SkinReflectanceLeftUpperInnerArmB1&quot;     
+[67] &quot;SkinReflectanceLeftUpperInnerArmB2&quot;     
+[68] &quot;SkinReflectanceLeftUpperInnerArmB3&quot;     
+[69] &quot;SkinReflectanceLeftUpperInnerArmCIE_L1&quot; 
+[70] &quot;SkinReflectanceLeftUpperInnerArmCIE_L2&quot; 
+[71] &quot;SkinReflectanceLeftUpperInnerArmCIE_L3&quot; 
+[72] &quot;SkinReflectanceLeftUpperInnerArmCIE_a1&quot; 
+[73] &quot;SkinReflectanceLeftUpperInnerArmCIE_a2&quot; 
+[74] &quot;SkinReflectanceLeftUpperInnerArmCIE_a3&quot; 
+[75] &quot;SkinReflectanceLeftUpperInnerArmCIE_b1&quot; 
+[76] &quot;SkinReflectanceLeftUpperInnerArmCIE_b2&quot; 
+[77] &quot;SkinReflectanceLeftUpperInnerArmCIE_b3&quot; 
+[78] &quot;VitDResult&quot;                             </code></pre>
+<pre class="r"><code># Count of each type of column
+cat(&quot;\nCount of each type of reflectance measurement:\n&quot;)</code></pre>
+<pre><code>
+Count of each type of reflectance measurement:</code></pre>
+<pre class="r"><code>count_pattern &lt;- function(pattern) {
+  sum(grepl(pattern, all_final_columns))
+}
+
+cat(&quot;E columns:&quot;, count_pattern(&quot;E[1-3]$&quot;), &quot;\n&quot;)</code></pre>
+<pre><code>E columns: 9 </code></pre>
+<pre class="r"><code>cat(&quot;M columns:&quot;, count_pattern(&quot;M[1-3]$&quot;), &quot;\n&quot;)</code></pre>
+<pre><code>M columns: 9 </code></pre>
+<pre class="r"><code>cat(&quot;R columns:&quot;, count_pattern(&quot;R[1-3]$&quot;), &quot;\n&quot;)</code></pre>
+<pre><code>R columns: 9 </code></pre>
+<pre class="r"><code>cat(&quot;G columns:&quot;, count_pattern(&quot;G[1-3]$&quot;), &quot;\n&quot;)</code></pre>
+<pre><code>G columns: 9 </code></pre>
+<pre class="r"><code>cat(&quot;B columns:&quot;, count_pattern(&quot;B[1-3]$&quot;), &quot;\n&quot;)</code></pre>
+<pre><code>B columns: 9 </code></pre>
+<pre class="r"><code>cat(&quot;CIE_L columns:&quot;, count_pattern(&quot;CIE_L[1-3]$&quot;), &quot;\n&quot;)</code></pre>
+<pre><code>CIE_L columns: 9 </code></pre>
+<pre class="r"><code>cat(&quot;CIE_a columns:&quot;, count_pattern(&quot;CIE_a[1-3]$&quot;), &quot;\n&quot;)</code></pre>
+<pre><code>CIE_a columns: 9 </code></pre>
+<pre class="r"><code>cat(&quot;CIE_b columns:&quot;, count_pattern(&quot;CIE_b[1-3]$&quot;), &quot;\n&quot;)</code></pre>
+<pre><code>CIE_b columns: 9 </code></pre>
+</div>
+<div id="long-data-pivot" class="section level1">
+<h1>Long data pivot</h1>
+<pre class="r"><code>library(tidyverse)
+library(readr)
+
+# 1) Read your dataset (wide format).
+skin_data &lt;- read_csv(&quot;data/ScreeningDataCollection_cleaned.csv&quot;)</code></pre>
+<pre><code>Rows: 220 Columns: 78
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr   (3): ParticipantCentreID, Ethnicity, Season
+dbl  (74): Gender, SkinReflectanceForeheadE1, SkinReflectanceForeheadE2, Ski...
+date  (1): TodayDate
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code># 2) Convert to long + calculate CV.
+#    This function is essentially your original pivot plus CV calculation.
+prepare_triplicates_for_plotting_with_cv &lt;- function(data) {
+  body_sites    &lt;- c(&quot;Forehead&quot;, &quot;RightUpperInnerArm&quot;, &quot;LeftUpperInnerArm&quot;)
+  measure_types &lt;- c(&quot;E&quot;, &quot;M&quot;, &quot;R&quot;, &quot;G&quot;, &quot;B&quot;, &quot;CIE_L&quot;, &quot;CIE_a&quot;, &quot;CIE_b&quot;)
+  
+  all_triplicates &lt;- tibble()
+  
+  for (body_site in body_sites) {
+    for (measure_type in measure_types) {
+      # Identify columns like SkinReflectanceForeheadE1..3
+      col_pattern &lt;- paste0(&quot;SkinReflectance&quot;, body_site, measure_type, &quot;[1-3]$&quot;)
+      triplicate_cols &lt;- names(data)[grepl(col_pattern, names(data))]
+      
+      if (length(triplicate_cols) != 3) {
+        cat(&quot;Warning: Did not find exactly 3 columns for&quot;, body_site, &quot;-&quot;, measure_type,
+            &quot;. Found&quot;, length(triplicate_cols), &quot;columns.\n&quot;)
+        next
+      }
+      
+      # Pivot these columns to long
+      trip_long &lt;- data %&gt;%
+        select(ParticipantCentreID, Gender, Ethnicity, Season, all_of(triplicate_cols)) %&gt;%
+        pivot_longer(
+          cols      = all_of(triplicate_cols),
+          names_to  = &quot;measurement&quot;,
+          values_to = &quot;value&quot;
+        ) %&gt;%
+        mutate(
+          replicate        = str_extract(measurement, &quot;\\d$&quot;),
+          body_site        = body_site,
+          measurement_type = measure_type
+        )
+      
+      # Compute CV info for each participant-season-bodySite-metric group
+      cv_info &lt;- trip_long %&gt;%
+        group_by(ParticipantCentreID, Season, body_site, measurement_type) %&gt;%
+        summarize(
+          mean_val = mean(value, na.rm = TRUE),
+          sd_val   = sd(value, na.rm = TRUE),
+          n_valid  = sum(!is.na(value)),
+          cv = ifelse(n_valid &gt;= 2, (sd_val / mean_val) * 100, NA_real_),
+          .groups = &quot;drop&quot;
+        ) %&gt;%
+        mutate(
+          cv_category = case_when(
+            is.na(cv)    ~ NA_character_,
+            cv &lt;= 5      ~ &quot;Low&quot;,
+            cv &lt;= 15     ~ &quot;Medium&quot;,
+            TRUE         ~ &quot;High&quot;
+          )
+        )
+      
+      # Join the CV info back to each replicate row
+      trip_cv &lt;- trip_long %&gt;%
+        left_join(cv_info, 
+                  by = c(&quot;ParticipantCentreID&quot;,&quot;Season&quot;,&quot;body_site&quot;,&quot;measurement_type&quot;))
+      
+      all_triplicates &lt;- bind_rows(all_triplicates, trip_cv)
+    }
+  }
+  
+  return(all_triplicates)
+}</code></pre>
+<pre class="r"><code>library(dplyr)
+
+calculate_triplicate_cv &lt;- function(long_data) {
+  library(dplyr)
+  
+  cv_info &lt;- long_data %&gt;%
+    group_by(ParticipantCentreID, Season, body_site, measurement_type) %&gt;%
+    summarize(
+      mean_val = mean(value, na.rm = TRUE),
+      sd_val   = sd(value, na.rm = TRUE),
+      n_valid  = sum(!is.na(value)),
+      cv       = ifelse(n_valid &gt;= 2 &amp; mean_val != 0 &amp; !is.na(mean_val),
+                        (sd_val / mean_val)*100, NA_real_),
+      .groups  = &quot;drop&quot;
+    ) %&gt;%
+    mutate(
+      cv_category = case_when(
+        is.na(cv)   ~ NA_character_,
+        cv &lt;= 5     ~ &quot;Low&quot;,
+        cv &lt;= 15    ~ &quot;Medium&quot;,
+        TRUE        ~ &quot;High&quot;
+      )
+    )
+  
+  # Remove old CV columns if they exist, then join new ones
+  long_data_stripped &lt;- long_data %&gt;%
+    select(-any_of(c(&quot;mean_val&quot;,&quot;sd_val&quot;,&quot;n_valid&quot;,&quot;cv&quot;,&quot;cv_category&quot;)))
+  
+  long_data_cv &lt;- long_data_stripped %&gt;%
+    left_join(cv_info, by=c(&quot;ParticipantCentreID&quot;,&quot;Season&quot;,&quot;body_site&quot;,&quot;measurement_type&quot;))
+  
+  return(long_data_cv)
+}</code></pre>
+<pre class="r"><code>library(ggplot2)
+
+plot_triplicate_cv_lines &lt;- function(long_data_cv, output_dir = &quot;output/cv_line_plots&quot;) {
+  dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
+  
+  # Unique combos of body_site &amp; measurement_type
+  combos &lt;- long_data_cv %&gt;%
+    select(body_site, measurement_type) %&gt;%
+    distinct()
+  
+  all_plots &lt;- list()
+  
+  for (i in seq_len(nrow(combos))) {
+    bs &lt;- combos$body_site[i]
+    mt &lt;- combos$measurement_type[i]
+    
+    plot_data &lt;- long_data_cv %&gt;%
+      filter(body_site == bs, measurement_type == mt)
+    
+    p &lt;- ggplot(plot_data, aes(
+      x = replicate,
+      y = value,
+      group = interaction(ParticipantCentreID, Season),
+      color = cv_category
+    )) +
+      geom_line(alpha = 0.6, na.rm = TRUE) +
+      geom_point(alpha = 0.6, na.rm = TRUE) +
+      facet_wrap(~ Season) +
+      scale_color_manual(
+        values  = c(&quot;Low&quot; = &quot;green&quot;, &quot;Medium&quot; = &quot;orange&quot;, &quot;High&quot; = &quot;red&quot;),
+        na.value = &quot;grey50&quot;,
+        name    = &quot;CV Category&quot;
+      ) +
+      labs(
+        title    = paste(&quot;Triplicate Measurements for&quot;, bs, &quot;-&quot;, mt),
+        subtitle = &quot;Colored by CV: ≤5% (Green), 5–15% (Orange), &gt;15% (Red)&quot;,
+        x        = &quot;Replicate&quot;,
+        y        = &quot;Value&quot;
+      ) +
+      theme_minimal()
+    
+    filename &lt;- file.path(output_dir, paste0(&quot;cv_&quot;, bs, &quot;_&quot;, mt, &quot;.png&quot;))
+    ggsave(filename, p, width = 12, height = 8)
+    
+    all_plots[[paste(bs, mt, sep=&quot;_&quot;)]] &lt;- p
+  }
+  
+  return(all_plots)
+}</code></pre>
+<pre class="r"><code>## ---- pivot-long-original ----
+library(tidyverse)
+library(readr)
+
+# 1) Read the wide dataset
+skin_data &lt;- read_csv(&quot;data/ScreeningDataCollection_cleaned.csv&quot;)</code></pre>
+<pre><code>Rows: 220 Columns: 78
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr   (3): ParticipantCentreID, Ethnicity, Season
+dbl  (74): Gender, SkinReflectanceForeheadE1, SkinReflectanceForeheadE2, Ski...
+date  (1): TodayDate
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code># 2) Convert to long + calculate initial CV
+all_triplicates_cv &lt;- prepare_triplicates_for_plotting_with_cv(skin_data)
+
+# 3) Plot lines color-coded by the initial CV
+cv_plots_original &lt;- plot_triplicate_cv_lines(
+  all_triplicates_cv,
+  output_dir = &quot;output/cv_line_plots_original&quot;
+)</code></pre>
+<pre class="r"><code>detect_distribution_outliers_by_metric &lt;- function(long_data, iqr_factor = 1.5) {
+  # Summarize distribution stats by measurement_type ONLY
+  distribution_stats &lt;- long_data %&gt;%
+    group_by(measurement_type) %&gt;%
+    summarize(
+      n           = n(),
+      min_value   = min(value, na.rm = TRUE),
+      q1          = quantile(value, 0.25, na.rm = TRUE),
+      median_val  = median(value, na.rm = TRUE),
+      q3          = quantile(value, 0.75, na.rm = TRUE),
+      max_value   = max(value, na.rm = TRUE),
+      iqr         = q3 - q1,
+      lower_thresh= q1 - iqr_factor * iqr,
+      upper_thresh= q3 + iqr_factor * iqr,
+      .groups     = &quot;drop&quot;
+    )
+  
+  # Join thresholds back by measurement_type only
+  data_with_thresh &lt;- long_data %&gt;%
+    left_join(distribution_stats, by = &quot;measurement_type&quot;)
+  
+  # Mark outliers
+  data_out &lt;- data_with_thresh %&gt;%
+    mutate(is_outlier_allSites = value &lt; lower_thresh | value &gt; upper_thresh)
+  
+  list(
+    stats = distribution_stats,
+    data  = data_out
+  )
+}</code></pre>
+<pre class="r"><code>plot_distribution_outliers_by_metric &lt;- function(data_with_outliers, dist_stats,
+                                                 output_dir = &quot;output/dist_plots_by_metric&quot;) {
+  dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
+  
+  # Unique measurement_types
+  metrics &lt;- dist_stats$measurement_type
+  
+  all_plots &lt;- list()
+  
+  for (mt in metrics) {
+    # Pull the row with thresholds for this metric
+    thresh &lt;- dist_stats %&gt;%
+      filter(measurement_type == mt)
+    
+    # If there&#39;s no data for that metric, skip
+    if (nrow(thresh) == 0) next
+    
+    # Filter the main data to just this metric
+    plot_data &lt;- data_with_outliers %&gt;%
+      filter(measurement_type == mt)
+    
+    # Build a histogram ignoring site
+    p &lt;- ggplot(plot_data, aes(x = value)) +
+      geom_histogram(
+        binwidth = (thresh$max_value - thresh$min_value) / 30,
+        fill = &quot;skyblue&quot;, alpha = 0.7
+      ) +
+      geom_vline(xintercept = thresh$lower_thresh, color = &quot;red&quot;, linetype = &quot;dashed&quot;) +
+      geom_vline(xintercept = thresh$upper_thresh, color = &quot;red&quot;, linetype = &quot;dashed&quot;) +
+      labs(
+        title = paste(&quot;Distribution of&quot;, mt, &quot;(All Body Sites)&quot;),
+        subtitle = paste0(&quot;Red dashed lines = outlier cutoffs (&quot;,
+                          round(thresh$lower_thresh, 2), &quot;, &quot;,
+                          round(thresh$upper_thresh, 2), &quot;)&quot;),
+        x = paste(mt, &quot;Value&quot;),
+        y = &quot;Count&quot;
+      ) +
+      theme_minimal()
+    
+    # Save the plot
+    filename &lt;- file.path(output_dir, paste0(&quot;dist_&quot;, mt, &quot;_allSites.png&quot;))
+    ggsave(filename, p, width = 10, height = 6)
+    
+    all_plots[[mt]] &lt;- p
+  }
+  
+  return(all_plots)
+}</code></pre>
+<pre class="r"><code>## ---- distribution-detection ----
+
+# 1) Detect outliers ignoring body site
+res &lt;- detect_distribution_outliers_by_metric(all_triplicates_cv) 
+dist_stats &lt;- res$stats
+dist_data  &lt;- res$data  # &#39;dist_data&#39; has is_outlier_allSites = TRUE/FALSE
+
+# 2) Plot distribution ignoring site
+dist_plots_allSites &lt;- plot_distribution_outliers_by_metric(
+  data_with_outliers = dist_data,
+  dist_stats         = dist_stats,
+  output_dir         = &quot;output/dist_plots_by_metric&quot;
+)</code></pre>
+<pre><code>Warning: Removed 76 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+<pre><code>Warning: Removed 18 rows containing non-finite outside the scale range (`stat_bin()`).
+Removed 18 rows containing non-finite outside the scale range (`stat_bin()`).</code></pre>
+<pre><code>Warning: Removed 19 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+<pre><code>Warning: Removed 18 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+<pre><code>Warning: Removed 76 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+<pre><code>Warning: Removed 18 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+<pre><code>Warning: Removed 76 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+<pre class="r"><code>## ---- distribution-removal-stage1 ----
+
+# 1) Remove distribution outliers =&gt; set &#39;value&#39; to NA if is_outlier_allSites == TRUE
+dist_data_clean &lt;- dist_data %&gt;%
+  mutate(value = ifelse(is_outlier_allSites, NA_real_, value))
+
+# 2) Recompute CV on this newly &quot;cleaned&quot; data
+dist_data_clean_cv &lt;- calculate_triplicate_cv(dist_data_clean)
+
+# 3) Plot lines with updated CV categories
+cv_plots_stage1 &lt;- plot_triplicate_cv_lines(
+  dist_data_clean_cv,
+  output_dir = &quot;output/cv_line_plots_stage1&quot;
+)</code></pre>
+<div id="visualize-cv-after-outlier-removal" class="section level2">
+<h2>Visualize CV after outlier removal</h2>
+<pre class="r"><code>## ---- distribution-removal-stage1 ----
+
+# 1) Remove distribution outliers =&gt; set &#39;value&#39; to NA if is_outlierAllSites == TRUE
+dist_data_clean &lt;- dist_data %&gt;%
+  mutate(value = ifelse(is_outlier_allSites, NA_real_, value))
+
+
+# 2) (Optional) Save or examine replicate-level data after Stage 1
+write_csv(dist_data_clean, &quot;data/ScreeningDataCollection_stage1.csv&quot;)</code></pre>
+<pre class="r"><code>names(dist_data_clean)</code></pre>
+<pre><code> [1] &quot;ParticipantCentreID&quot; &quot;Gender&quot;              &quot;Ethnicity&quot;          
+ [4] &quot;Season&quot;              &quot;measurement&quot;         &quot;value&quot;              
+ [7] &quot;replicate&quot;           &quot;body_site&quot;           &quot;measurement_type&quot;   
+[10] &quot;mean_val&quot;            &quot;sd_val&quot;              &quot;n_valid&quot;            
+[13] &quot;cv&quot;                  &quot;cv_category&quot;         &quot;n&quot;                  
+[16] &quot;min_value&quot;           &quot;q1&quot;                  &quot;median_val&quot;         
+[19] &quot;q3&quot;                  &quot;max_value&quot;           &quot;iqr&quot;                
+[22] &quot;lower_thresh&quot;        &quot;upper_thresh&quot;        &quot;is_outlier_allSites&quot;</code></pre>
+<pre class="r"><code>head(dist_data_clean)</code></pre>
+<pre><code># A tibble: 6 × 24
+  ParticipantCentreID Gender Ethnicity Season measurement        value replicate
+  &lt;chr&gt;                &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;              &lt;dbl&gt; &lt;chr&gt;    
+1 VDKH001                  1 Xhosa     Summer SkinReflectanceFo…  17.0 1        
+2 VDKH001                  1 Xhosa     Summer SkinReflectanceFo…  18.7 2        
+3 VDKH001                  1 Xhosa     Summer SkinReflectanceFo…  18.6 3        
+4 VDKH002                  1 Xhosa     Summer SkinReflectanceFo…  17.2 1        
+5 VDKH002                  1 Xhosa     Summer SkinReflectanceFo…  19.8 2        
+6 VDKH002                  1 Xhosa     Summer SkinReflectanceFo…  17.4 3        
+# ℹ 17 more variables: body_site &lt;chr&gt;, measurement_type &lt;chr&gt;, mean_val &lt;dbl&gt;,
+#   sd_val &lt;dbl&gt;, n_valid &lt;int&gt;, cv &lt;dbl&gt;, cv_category &lt;chr&gt;, n &lt;int&gt;,
+#   min_value &lt;dbl&gt;, q1 &lt;dbl&gt;, median_val &lt;dbl&gt;, q3 &lt;dbl&gt;, max_value &lt;dbl&gt;,
+#   iqr &lt;dbl&gt;, lower_thresh &lt;dbl&gt;, upper_thresh &lt;dbl&gt;,
+#   is_outlier_allSites &lt;lgl&gt;</code></pre>
+<pre class="r"><code># 2) Recompute CV on this newly &quot;cleaned&quot; data
+dist_data_clean_cv &lt;- calculate_triplicate_cv(dist_data_clean)</code></pre>
+<pre class="r"><code>names(dist_data_clean_cv)</code></pre>
+<pre><code> [1] &quot;ParticipantCentreID&quot; &quot;Gender&quot;              &quot;Ethnicity&quot;          
+ [4] &quot;Season&quot;              &quot;measurement&quot;         &quot;value&quot;              
+ [7] &quot;replicate&quot;           &quot;body_site&quot;           &quot;measurement_type&quot;   
+[10] &quot;n&quot;                   &quot;min_value&quot;           &quot;q1&quot;                 
+[13] &quot;median_val&quot;          &quot;q3&quot;                  &quot;max_value&quot;          
+[16] &quot;iqr&quot;                 &quot;lower_thresh&quot;        &quot;upper_thresh&quot;       
+[19] &quot;is_outlier_allSites&quot; &quot;mean_val&quot;            &quot;sd_val&quot;             
+[22] &quot;n_valid&quot;             &quot;cv&quot;                  &quot;cv_category&quot;        </code></pre>
+<pre class="r"><code>head(dist_data_clean_cv)</code></pre>
+<pre><code># A tibble: 6 × 24
+  ParticipantCentreID Gender Ethnicity Season measurement        value replicate
+  &lt;chr&gt;                &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;              &lt;dbl&gt; &lt;chr&gt;    
+1 VDKH001                  1 Xhosa     Summer SkinReflectanceFo…  17.0 1        
+2 VDKH001                  1 Xhosa     Summer SkinReflectanceFo…  18.7 2        
+3 VDKH001                  1 Xhosa     Summer SkinReflectanceFo…  18.6 3        
+4 VDKH002                  1 Xhosa     Summer SkinReflectanceFo…  17.2 1        
+5 VDKH002                  1 Xhosa     Summer SkinReflectanceFo…  19.8 2        
+6 VDKH002                  1 Xhosa     Summer SkinReflectanceFo…  17.4 3        
+# ℹ 17 more variables: body_site &lt;chr&gt;, measurement_type &lt;chr&gt;, n &lt;int&gt;,
+#   min_value &lt;dbl&gt;, q1 &lt;dbl&gt;, median_val &lt;dbl&gt;, q3 &lt;dbl&gt;, max_value &lt;dbl&gt;,
+#   iqr &lt;dbl&gt;, lower_thresh &lt;dbl&gt;, upper_thresh &lt;dbl&gt;,
+#   is_outlier_allSites &lt;lgl&gt;, mean_val &lt;dbl&gt;, sd_val &lt;dbl&gt;, n_valid &lt;int&gt;,
+#   cv &lt;dbl&gt;, cv_category &lt;chr&gt;</code></pre>
+</div>
+</div>
+<div id="remove-based-on-cv" class="section level1">
+<h1>Remove based on CV</h1>
+<pre class="r"><code># 2) Remove high CV replicate
+remove_high_cv_replicate &lt;- function(data, cv_threshold = 15) {
+  library(dplyr)
+  
+  data_new &lt;- data %&gt;%
+    group_by(ParticipantCentreID, Season, body_site, measurement_type) %&gt;%
+    group_modify(~ {
+      .x &lt;- .x
+      
+      # &quot;Classic&quot; CV with mean
+      mean_val  &lt;- mean(.x$value, na.rm=TRUE)
+      sd_val    &lt;- sd(.x$value, na.rm=TRUE)
+      n_valid   &lt;- sum(!is.na(.x$value))
+      cv_val    &lt;- if (n_valid &gt;= 2 &amp;&amp; !is.na(mean_val) &amp;&amp; mean_val != 0) {
+        (sd_val / mean_val) * 100
+      } else {
+        NA_real_
+      }
+      
+      # Use median to pick the farthest replicate if CV&gt;threshold
+      median_val &lt;- median(.x$value, na.rm=TRUE)
+      
+      if (!is.na(cv_val) &amp;&amp; cv_val &gt; cv_threshold) {
+        idx_farthest &lt;- which.max(abs(.x$value - median_val))
+        .x$value[idx_farthest] &lt;- NA
+      }
+      .x
+    }) %&gt;%
+    ungroup()
+  
+  return(data_new)
+}</code></pre>
+<pre class="r"><code>## ---- stage2-highcv-removal ----
+# 5) Remove high CV replicate from Stage 1–cleaned data
+data_stage2 &lt;- remove_high_cv_replicate(dist_data_clean, cv_threshold = 15)
+
+# 6) Recompute CV again with final replicate set
+data_stage2_cv &lt;- calculate_triplicate_cv(data_stage2)
+
+# 7) Plot final lines color-coded by updated CV for Stage 2
+cv_plots_stage2 &lt;- plot_triplicate_cv_lines(
+  data_stage2_cv,
+  output_dir = &quot;output/cv_line_plots_stage2&quot;
+)
+
+# 8) (Optional) Save replicate-level final dataset (Stage 2 cleaned)
+write_csv(data_stage2, &quot;data/ScreeningDataCollection_stage2.csv&quot;)</code></pre>
+<pre class="r"><code>## ---- stage2-final-medians ----
+# 9) Create final medians from data_stage2
+df_final_medians &lt;- data_stage2 %&gt;%
+  group_by(ParticipantCentreID, Ethnicity, Gender, Season, body_site, measurement_type) %&gt;%
+  summarize(
+    final_median = median(value, na.rm = TRUE),
+    n_valid = sum(!is.na(value)),
+    .groups = &quot;drop&quot;
+  )
+
+# 10) Write final medians
+write_csv(df_final_medians, &quot;data/ScreeningDataCollection_medians.csv&quot;)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.3 (2025-02-28)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.3.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Detroit
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.0.4     readr_2.1.5     tidyr_1.3.1     tibble_3.2.1   
+ [9] ggplot2_3.5.1   tidyverse_2.0.0 readxl_1.4.3    workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6      xfun_0.50         bslib_0.9.0       processx_3.8.5   
+ [5] callr_3.7.6       tzdb_0.4.0        vctrs_0.6.5       tools_4.4.3      
+ [9] ps_1.8.1          generics_0.1.3    parallel_4.4.3    pkgconfig_2.0.3  
+[13] lifecycle_1.0.4   compiler_4.4.3    farver_2.1.2      git2r_0.35.0     
+[17] textshaping_1.0.0 munsell_0.5.1     getPass_0.2-4     httpuv_1.6.15    
+[21] htmltools_0.5.8.1 sass_0.4.9        yaml_2.3.10       later_1.4.1      
+[25] pillar_1.10.1     crayon_1.5.3      jquerylib_0.1.4   whisker_0.4.1    
+[29] cachem_1.1.0      tidyselect_1.2.1  digest_0.6.37     stringi_1.8.4    
+[33] labeling_0.4.3    rprojroot_2.0.4   fastmap_1.2.0     grid_4.4.3       
+[37] colorspace_2.1-1  cli_3.6.3         magrittr_2.0.3    utf8_1.2.4       
+[41] withr_3.0.2       scales_1.3.0      promises_1.3.2    bit64_4.6.0-1    
+[45] timechange_0.3.0  rmarkdown_2.29    httr_1.4.7        bit_4.5.0.1      
+[49] cellranger_1.1.0  ragg_1.3.3        hms_1.1.3         evaluate_1.0.3   
+[53] knitr_1.49        rlang_1.1.5       Rcpp_1.0.14       glue_1.8.0       
+[57] rstudioapi_0.17.1 vroom_1.6.5       jsonlite_1.8.9    R6_2.5.1         
+[61] systemfonts_1.2.1 fs_1.6.5         </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
