@@ -7,4 +7,6 @@ editor_options:
   chunk_output_type: console
 ---
 
+South Africa harbors extensive human phenotypic and genetic diversity, providing a unique opportunity to examine the genetic basis of skin pigmentation variation and tanning potential. Traditional assumptions regarding inner arm pigmentation as a proxy for constitutive pigmentation and forehead-inner arm differences as a measure of facultative pigmentation remain untested in diverse populations. This study evaluates these assumptions by integrating reflectance measurements, genetic data, and sun exposure behavior across two South African groups: Cape Mixed and Xhosa.
+
 **SAPPHIRE**'s aim is to achieve better understanding of the relationships between the genetic basis of constitutive skin pigmentation, tanning potential, Vitamin D levels, and ethnicity in the Xhosa and Cape Mixed populations in South Africa.
