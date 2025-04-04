@@ -631,3 +631,15 @@ df_final_medians <- data_stage2 %>%
 write_csv(df_final_medians, "data/ScreeningDataCollection_medians.csv")
 ```
 
+```{r}
+# write wide csv with final medians
+final_medians <- read_csv("data/ScreeningDataCollection_medians.csv")
+final_medians <- final_medians %>%
+  select(-n_valid)
+head(final_medians)
+medians_wide <- final_medians %>%
+  pivot_wider(names_from = c(body_site, measurement_type), 
+              values_from = final_median,
+              names_sep = "_") 
+write.csv(medians_wide, "data/ScreeningDataCollection_mediansWide.csv", row.names = F)
+```

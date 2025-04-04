@@ -1,0 +1,133 @@
+---
+title: "Climate Data"
+author: "Lily Heald"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+```
+
+# Cape Town climate data
+
+```{r result_2_1_cleaning}
+climate_data <- read_csv("data/climate_data.csv")
+
+colnames(climate_data) <- c("month", "year", "avg_temp", 
+                            "hist_avg", "max_temp", "min_temp", 
+                            "hist_max", "hist_min", "date", "month_year")
+
+climate_data$month <- factor(climate_data$month, 
+                   levels = c("January", "February", "March", "April", "May", "June", 
+                              "July", "August", "September", "October", "November", "December"), 
+                   ordered = TRUE)
+
+climate_data$month_numeric <- as.numeric(climate_data$month)
+
+climate_data <- climate_data %>% 
+  mutate(date = as.Date(paste(year, month_numeric, "01", sep = "-"), format="%Y-%m-%d"),
+         month_year = format(as.Date(date), "%Y-%m"))
+
+climate_data_2013 <- climate_data %>%
+  filter(year == 2013)
+
+climate_data_2013 <- climate_data_2013 %>%
+  mutate(time = as.numeric(as.factor(month_year))) 
+
+cos_model <- nls(avg_temp ~ A * cos(B * time + C) + D,
+  data = climate_data_2013,
+  start = list(A = 10, B = 0.5, C = 0, D = mean(climate_data_2013$avg_temp)),
+  control = list(maxiter = 1000))
+
+climate_data_2013$fit <- predict(cos_model)
+
+ggplot(climate_data_2013, aes(x = month_year, y = avg_temp)) +  # Use numeric time for proper ordering
+  geom_point() +
+  geom_line(aes(y = fit, group = 1), color = "red", linetype = "dashed", linewidth = 1) +  # Cosine fit
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Month-Year",
+    y = "Average Temperature",
+    title = "Cape Town climate data over time")
+```
+
+
+```{r result_2_2_1}
+reflectance_data <- read_csv("data/ScreeningDataCollection_processed.csv")
+reflectance_data_dates <- reflectance_data %>%
+  select(c("TodayDate", "ParticipantCentreID", "Season"))
+final_medians <- read_csv("data/ScreeningDataCollection_mediansWide.csv")
+
+final_medians <- left_join(final_medians, reflectance_data_dates, by = c("ParticipantCentreID", "Season"))
+
+final_medians <- final_medians %>%
+  mutate(month_year = format(as.Date(TodayDate), "%Y-%m"))
+
+merged_data <- left_join(climate_data_2013, final_medians, by = "month_year")
+
+primary_axis <- c(min(merged_data$avg_temp, na.rm = T), max(merged_data$avg_temp, na.rm = T))
+secondary_axis <- c(min(merged_data$Forehead_M, na.rm = T), max(merged_data$Forehead_M, na.rm = T))
+
+b <- diff(primary_axis) / diff(secondary_axis)
+a <- primary_axis[1] - b * secondary_axis[1]
+
+ggplot(merged_data, aes(x = month_year, y = avg_temp)) +
+      geom_point(color = "#85D4E3", size = 2) +
+      geom_line(aes(y = fit, group = 1), color = "#9C964A", linetype = "dashed", linewidth = 1) +
+      geom_boxplot(aes(y = a + Forehead_M * b), color = "#F4B5BD") +
+      scale_y_continuous(
+        bquote('Cape Town average temperature (C)'), 
+        sec.axis = sec_axis(~ (. - a) / b, name = bquote('Forehead melanin index'))
+      ) +
+      xlab("Month") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      theme(
+        axis.line.y.right = element_line(color = "#F4B5BD"), 
+        axis.ticks.y.right = element_line(color = "#F4B5BD"),
+        axis.text.y.right = element_text(color = "#F4B5BD"), 
+        axis.title.y.right = element_text(color = "#F4B5BD"),
+        axis.line.y.left = element_line(color = "#85D4E3"), 
+        axis.ticks.y.left = element_line(color = "#85D4E3"),
+        axis.text.y.left = element_text(color = "#85D4E3"), 
+        axis.title.y.left = element_text(color = "#85D4E3")
+      ) +
+      ggtitle("Average temperature and forehead melanin index")
+      coord_cartesian(ylim = primary_axis)
+```
+
+```{r result_2_2_2}
+primary_axis <- c(min(merged_data$avg_temp, na.rm = T), max(merged_data$avg_temp, na.rm = T))
+secondary_axis <- c(min(merged_data$LeftUpperInnerArm_M, na.rm = T), max(merged_data$LeftUpperInnerArm_M, na.rm = T))
+
+b <- diff(primary_axis) / diff(secondary_axis)
+a <- primary_axis[1] - b * secondary_axis[1]
+
+ggplot(merged_data, aes(x = month_year, y = avg_temp)) +
+      geom_point(color = "#85D4E3", size = 2) +
+      geom_line(aes(y = fit, group = 1), color = "#9C964A", linetype = "dashed", size = 1) +
+      geom_boxplot(aes(y = a + LeftUpperInnerArm_M * b)) +
+      scale_y_continuous(
+        bquote('Cape Town average temperature (C)'), 
+        sec.axis = sec_axis(~ (. - a) / b, name = bquote('Left arm melanin index'))
+      ) +
+      xlab("Month") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      theme(
+        axis.line.y.right = element_line(color = "#F4B5BD"), 
+        axis.ticks.y.right = element_line(color = "#F4B5BD"),
+        axis.text.y.right = element_text(color = "#F4B5BD"), 
+        axis.title.y.right = element_text(color = "#F4B5BD"),
+        axis.line.y.left = element_line(color = "#85D4E3"), 
+        axis.ticks.y.left = element_line(color = "#85D4E3"),
+        axis.text.y.left = element_text(color = "#85D4E3"), 
+        axis.title.y.left = element_text(color = "#85D4E3")
+      ) +
+      ggtitle("Average temperature and inner arm melanin index")
+      coord_cartesian(ylim = primary_axis)
+```
