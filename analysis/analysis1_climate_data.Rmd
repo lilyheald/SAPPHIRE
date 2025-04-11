@@ -13,6 +13,29 @@ library(tidyverse)
 library(ggplot2)
 ```
 
+The NASA POWER project provides UV data for specific locations. This is data around Cape Town from 2012 to 2013. First we will clean it up and save it to our data directory. 
+
+```{r}
+uv <- read_csv("data/POWER_data.csv")
+
+uv_long <- uv %>%
+  pivot_longer(cols = JAN:DEC, names_to = "Month", values_to = "UV_INDEX")
+
+uv_long <- uv_long %>%
+  mutate(Month = factor(Month, levels = toupper(month.abb), labels = month.abb))
+uv_long$Month <- factor(uv_long$Month, 
+                   levels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), 
+                   ordered = TRUE)
+uv_long$month_numeric <- as.numeric(uv_long$Month)
+uv_long <- uv_long %>%
+  mutate(date = as.Date(paste(YEAR, month_numeric, "01", sep = "-"), format="%Y-%m-%d"),
+         month_year = format(as.Date(date), "%Y-%m"))
+write.csv(uv_long, file = "data/UV_data.csv", row.names = F)
+uv_2013 <- uv_long %>%
+  filter(YEAR == 2013)
+```
+
 # Cape Town climate data
 
 ```{r result_2_1_cleaning}
@@ -55,6 +78,34 @@ ggplot(climate_data_2013, aes(x = month_year, y = avg_temp)) +  # Use numeric ti
     title = "Cape Town climate data over time")
 ```
 
+```{r 2_1_2}
+# using UV data from NASA POWER project
+ggplot(uv_2013, aes(x = month_year, y = UV_INDEX)) + 
+  geom_point() + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+uv_2013 <- uv_2013 %>%
+  mutate(time = as.numeric(as.factor(month_year))) 
+
+cos_model_uv <- nls(UV_INDEX ~ A * cos(B * time + C) + D,
+  data = uv_2013,
+  start = list(A = 10, B = 0.5, C = 0, D = mean(uv_2013$UV_INDEX)),
+  control = list(maxiter = 1000))
+
+uv_2013$fit <- predict(cos_model_uv)
+
+ggplot(uv_2013, aes(x = month_year, y = UV_INDEX)) +  # Use numeric time for proper ordering
+  geom_point() +
+  geom_line(aes(y = fit, group = 1), color = "red", linetype = "dashed", linewidth = 1) +  # Cosine fit
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Month-Year",
+    y = "UV Index",
+    title = "South Africa monthly average UV index, 2013")
+```
+
+Initially, we use temperature data collected from Cape Town in 2013 to ask the question, what is the relationship between temperature and melanin index measurements from our sample? From our initial data exploration, we find individuals whose forehead melanin index is lighter in the summer than in the winter, which is contrary to our assumptions regarding the longitudinal collection of reflectance measurements to understand tanning. Because of this, it is essential to look into climate data as well as behavioral data from our sample. 
+
+Climate data from [the Africa Data Hub ](https://www.africadatahub.org/dashboards/climate-observer?city=bobo-dioulasso) reveals that the temperature ranged from roughly 6-27 degrees celcius 
 
 ```{r result_2_2_1}
 reflectance_data <- read_csv("data/ScreeningDataCollection_processed.csv")
@@ -66,6 +117,7 @@ final_medians <- left_join(final_medians, reflectance_data_dates, by = c("Partic
 
 final_medians <- final_medians %>%
   mutate(month_year = format(as.Date(TodayDate), "%Y-%m"))
+write.csv(final_medians, "data/Medians_date.csv", row.names = F)
 
 merged_data <- left_join(climate_data_2013, final_medians, by = "month_year")
 
@@ -110,7 +162,7 @@ a <- primary_axis[1] - b * secondary_axis[1]
 ggplot(merged_data, aes(x = month_year, y = avg_temp)) +
       geom_point(color = "#85D4E3", size = 2) +
       geom_line(aes(y = fit, group = 1), color = "#9C964A", linetype = "dashed", size = 1) +
-      geom_boxplot(aes(y = a + LeftUpperInnerArm_M * b)) +
+      geom_boxplot(aes(y = a + LeftUpperInnerArm_M * b), color = "#F4B5BD") +
       scale_y_continuous(
         bquote('Cape Town average temperature (C)'), 
         sec.axis = sec_axis(~ (. - a) / b, name = bquote('Left arm melanin index'))
@@ -131,3 +183,75 @@ ggplot(merged_data, aes(x = month_year, y = avg_temp)) +
       ggtitle("Average temperature and inner arm melanin index")
       coord_cartesian(ylim = primary_axis)
 ```
+
+# using principal component scores
+
+```{r result_2_3_1}
+pc_scores <- read_csv("data/Medians_PC_scores.csv")
+uv_subset <- uv_2013[1:12,]
+
+uv_pc_data <- left_join(uv_subset, pc_scores, by = "month_year")
+
+primary_axis <- c(min(merged_data$UV_INDEX, na.rm = T), max(merged_data$UV_INDEX, na.rm = T))
+secondary_axis <- c(min(merged_data$for_cie_PC1, na.rm = T), max(merged_data$for_cie_PC1, na.rm = T))
+
+b <- diff(primary_axis) / diff(secondary_axis)
+a <- primary_axis[1] - b * secondary_axis[1]
+
+ggplot(uv_pc_data, aes(x = month_year, y = UV_INDEX)) +
+      geom_point(color = "#85D4E3", size = 2) +
+      geom_line(aes(y = fit, group = 1), color = "#9C964A", linetype = "dashed", linewidth = 1) +
+      geom_boxplot(aes(y = a + for_cie_PC1 * b), color = "#F4B5BD") +
+      scale_y_continuous(
+        bquote('Cape Town UV index'), 
+        sec.axis = sec_axis(~ (. - a) / b, name = bquote('Forehead PC1 score (CIElab)'))
+      ) +
+      xlab("Month") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      theme(
+        axis.line.y.right = element_line(color = "#F4B5BD"), 
+        axis.ticks.y.right = element_line(color = "#F4B5BD"),
+        axis.text.y.right = element_text(color = "#F4B5BD"), 
+        axis.title.y.right = element_text(color = "#F4B5BD"),
+        axis.line.y.left = element_line(color = "#85D4E3"), 
+        axis.ticks.y.left = element_line(color = "#85D4E3"),
+        axis.text.y.left = element_text(color = "#85D4E3"), 
+        axis.title.y.left = element_text(color = "#85D4E3")
+      ) +
+      ggtitle("UV index and forehead CIElab PC score")
+      coord_cartesian(ylim = primary_axis)
+```
+
+```{r result_2_3_2}
+primary_axis <- c(min(merged_data$UV_INDEX, na.rm = T), max(merged_data$UV_INDEX, na.rm = T))
+secondary_axis <- c(min(merged_data$for_rgb_PC1, na.rm = T), max(merged_data$for_rgb_PC1, na.rm = T))
+
+b <- diff(primary_axis) / diff(secondary_axis)
+a <- primary_axis[1] - b * secondary_axis[1]
+
+ggplot(uv_pc_data, aes(x = month_year, y = UV_INDEX)) +
+      geom_point(color = "#85D4E3", size = 2) +
+      geom_line(aes(y = fit, group = 1), color = "#9C964A", linetype = "dashed", linewidth = 1) +
+      geom_boxplot(aes(y = a + for_cie_PC1 * b), color = "#F4B5BD") +
+      scale_y_continuous(
+        bquote('Cape Town UV index'), 
+        sec.axis = sec_axis(~ (. - a) / b, name = bquote('Forehead PC1 score (RGB)'))
+      ) +
+      xlab("Month") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      theme(
+        axis.line.y.right = element_line(color = "#F4B5BD"), 
+        axis.ticks.y.right = element_line(color = "#F4B5BD"),
+        axis.text.y.right = element_text(color = "#F4B5BD"), 
+        axis.title.y.right = element_text(color = "#F4B5BD"),
+        axis.line.y.left = element_line(color = "#85D4E3"), 
+        axis.ticks.y.left = element_line(color = "#85D4E3"),
+        axis.text.y.left = element_text(color = "#85D4E3"), 
+        axis.title.y.left = element_text(color = "#85D4E3")
+      ) +
+      ggtitle("UV index and forehead RGB PC score")
+      coord_cartesian(ylim = primary_axis)
+```
+

@@ -1,0 +1,68 @@
+---
+title: "Sunning Behavioral Data"
+author: "Lily Heald"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+```
+
+Our dataset includes extensive behavioral data regarding the amount of time spent outside, the time of the day sun exposure begins, and dietary behavior pertaining to vitamin D consumption. Is there a way to create a categorical representation of overall sunning behavior across seasons?
+
+```{r}
+sun_expos_long <- read_csv("data/sun_expos_data/sun_expos_long.csv")
+sun_expos_summer <- read_csv("data/SunExposureSummer.csv")
+sun_expos_winter <- read_csv("data/SunExposureWinter.csv")
+```
+
+Goal: create a case_when function to classify sun exposure as low, medium, and high based on hours per day and start time of sunning. 
+
+We have data on the amount of time spent outdoors on a weekdays and weekends with 5 unique categories: "Less than 15 minutes", "Between 15 and 30 minutes", "Between 30 minutes and 2 hours", "Between 2 and 5 hours", and "More than 5 hours".
+
+We have data on the beginning time spent outdoors on a weekdays and weekends with 5 unique categories:
+"Before 10h00", "Between 10h00 and 12h00" "Between 12h00 and 14h00" "Between 14h00 and 16h00","After 16h00". 
+
+We will define our sunning categories as such: 
+
+Low = "Less than 15 minutes", "Between 15 and 30 minutes"
+"Before 10h00", "After 16h00"
+
+Medium = "Between 30 minutes and 2 hours", "Between 2 and 5 hours"
+"Between 10h00 and 12h00", "Between 14h00 and 16h00"
+
+High = "More than 5 hours", "Between 12h00 and 14h00"
+
+
+```{r}
+# time_cat <- function(time_weekdays, time_weekends) {
+#   case_when(
+#     time_weekdays == "Less than 15 minutes" || "Between 15 and 30 minutes" &
+#       time_weekends == "Less than 15 minutes" || "Between 15 and 30 minutes" ~ "Low",
+#     time_weekdays == "Between 30 minutes and 2 hours" || "Between 2 and 5 hours" &
+#       time_weekends == "Between 30 minutes and 2 hours" || "Between 2 and 5 hours" ~ "Medium",
+#     time_weekdays == "More than 5 hours" &
+#       time_weekends == "More than 5 hours" ~ "High",
+#         TRUE ~ NA_character_
+#   )
+# }
+# 
+# begin_cat <- function(time_weekdays, begin_time_weekdays, 
+#                         time_weekends, begin_time_weekends) {
+#     time_weekdays == "Between 10h00 and 12h00" || "Between 14h00 and 16h00" &
+#       time_weekends == "Between 10h00 and 12h00" || "Between 14h00 and 16h00" ~ "Medium",
+#     TRUE ~ NA_character_
+#   )
+# }
+```
+
+There is also a ton of data about how much of the skin was exposed, if they were wearing sunscreen, etc. Should we just then factorize everything and sum row wise? I think maybe one way to turn this data into some sort of numeric score might be to take the score from the time spent outside, begin time spend outside, and multiply it by the sum of the positive answers, such as yes forehead exposed, no sunscreen. This is quite simplistic but might be a way to approximate a sunning score. 
+
+```{r}
+# colnames(sun_expos_long)
+```

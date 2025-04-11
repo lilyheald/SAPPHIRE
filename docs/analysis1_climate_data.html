@@ -358,7 +358,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Climate Data</h1>
 <h4 class="author">Lily Heald</h4>
-<h4 class="date">2025-04-04 10:04:07</h4>
+<h4 class="date">2025-04-11 15:55:09</h4>
 
 </div>
 
@@ -387,7 +387,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-04-04
+<strong>Last updated:</strong> 2025-04-11
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -518,15 +518,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtree3fff1f94d1e29c4a9a7583581eba4ca68473a2b8targetblank3fff1f9a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtreee8fdf1b49512d3ab13f6a21802002ffc56be61f4targetblanke8fdf1ba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/lilyheald/SAPPHIRE/tree/3fff1f94d1e29c4a9a7583581eba4ca68473a2b8" target="_blank">3fff1f9</a>
+<a href="https://github.com/lilyheald/SAPPHIRE/tree/e8fdf1b49512d3ab13f6a21802002ffc56be61f4" target="_blank">e8fdf1b</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtree3fff1f94d1e29c4a9a7583581eba4ca68473a2b8targetblank3fff1f9a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomlilyhealdSAPPHIREtreee8fdf1b49512d3ab13f6a21802002ffc56be61f4targetblanke8fdf1ba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -536,7 +536,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/lilyheald/SAPPHIRE/tree/3fff1f94d1e29c4a9a7583581eba4ca68473a2b8" target="_blank">3fff1f9</a>.
+<a href="https://github.com/lilyheald/SAPPHIRE/tree/e8fdf1b49512d3ab13f6a21802002ffc56be61f4" target="_blank">e8fdf1b</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -557,9 +557,7 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    analysis/.RData
     Ignored:    analysis/.Rhistory
-
-Unstaged changes:
-    Modified:   analysis/about.Rmd
+    Ignored:    data/.DS_Store
 
 </code></pre>
 <p>
@@ -610,6 +608,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/e8fdf1b49512d3ab13f6a21802002ffc56be61f4/analysis/analysis1_climate_data.Rmd" target="_blank">e8fdf1b</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-04-11
+</td>
+<td>
+PC projections, UV data
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lilyheald/SAPPHIRE/e86fbb5cce871df7897898ea0ae274f63f6a2ef0/docs/analysis1_climate_data.html" target="_blank">e86fbb5</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-04-04
+</td>
+<td>
+updated about cleaned redundant code
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/lilyheald/SAPPHIRE/blob/3fff1f94d1e29c4a9a7583581eba4ca68473a2b8/analysis/analysis1_climate_data.Rmd" target="_blank">3fff1f9</a>
 </td>
 <td>
@@ -629,6 +661,34 @@ cleaning and climate data
 </div>
 </div>
 </div>
+<p>The NASA POWER project provides UV data for specific locations. This
+is data around Cape Town from 2012 to 2013. First we will clean it up
+and save it to our data directory.</p>
+<pre class="r"><code>uv &lt;- read_csv(&quot;data/POWER_data.csv&quot;)</code></pre>
+<pre><code>Rows: 36 Columns: 17
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr  (1): PARAMETER
+dbl (16): YEAR, LAT, LON, JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, ...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>uv_long &lt;- uv %&gt;%
+  pivot_longer(cols = JAN:DEC, names_to = &quot;Month&quot;, values_to = &quot;UV_INDEX&quot;)
+
+uv_long &lt;- uv_long %&gt;%
+  mutate(Month = factor(Month, levels = toupper(month.abb), labels = month.abb))
+uv_long$Month &lt;- factor(uv_long$Month, 
+                   levels = c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, 
+                              &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;), 
+                   ordered = TRUE)
+uv_long$month_numeric &lt;- as.numeric(uv_long$Month)
+uv_long &lt;- uv_long %&gt;%
+  mutate(date = as.Date(paste(YEAR, month_numeric, &quot;01&quot;, sep = &quot;-&quot;), format=&quot;%Y-%m-%d&quot;),
+         month_year = format(as.Date(date), &quot;%Y-%m&quot;))
+write.csv(uv_long, file = &quot;data/UV_data.csv&quot;, row.names = F)
+uv_2013 &lt;- uv_long %&gt;%
+  filter(YEAR == 2013)</code></pre>
 <div id="cape-town-climate-data" class="section level1">
 <h1>Cape Town climate data</h1>
 <pre class="r"><code>climate_data &lt;- read_csv(&quot;data/climate_data.csv&quot;)</code></pre>
@@ -676,6 +736,78 @@ ggplot(climate_data_2013, aes(x = month_year, y = avg_temp)) +  # Use numeric ti
     y = &quot;Average Temperature&quot;,
     title = &quot;Cape Town climate data over time&quot;)</code></pre>
 <p><img src="figure/analysis1_climate_data.Rmd/result_2_1_cleaning-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-result_2_1_cleaning-1">
+Past versions of result_2_1_cleaning-1.png
+</button>
+</p>
+<div id="fig-result_2_1_cleaning-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/e86fbb5cce871df7897898ea0ae274f63f6a2ef0/docs/figure/analysis1_climate_data.Rmd/result_2_1_cleaning-1.png" target="_blank">e86fbb5</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-04-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code># using UV data from NASA POWER project
+ggplot(uv_2013, aes(x = month_year, y = UV_INDEX)) + 
+  geom_point() + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))</code></pre>
+<p><img src="figure/analysis1_climate_data.Rmd/2_1_2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>uv_2013 &lt;- uv_2013 %&gt;%
+  mutate(time = as.numeric(as.factor(month_year))) 
+
+cos_model_uv &lt;- nls(UV_INDEX ~ A * cos(B * time + C) + D,
+  data = uv_2013,
+  start = list(A = 10, B = 0.5, C = 0, D = mean(uv_2013$UV_INDEX)),
+  control = list(maxiter = 1000))
+
+uv_2013$fit &lt;- predict(cos_model_uv)
+
+ggplot(uv_2013, aes(x = month_year, y = UV_INDEX)) +  # Use numeric time for proper ordering
+  geom_point() +
+  geom_line(aes(y = fit, group = 1), color = &quot;red&quot;, linetype = &quot;dashed&quot;, linewidth = 1) +  # Cosine fit
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = &quot;Month-Year&quot;,
+    y = &quot;UV Index&quot;,
+    title = &quot;South Africa monthly average UV index, 2013&quot;)</code></pre>
+<p><img src="figure/analysis1_climate_data.Rmd/2_1_2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Initially, we use temperature data collected from Cape Town in 2013
+to ask the question, what is the relationship between temperature and
+melanin index measurements from our sample? From our initial data
+exploration, we find individuals whose forehead melanin index is lighter
+in the summer than in the winter, which is contrary to our assumptions
+regarding the longitudinal collection of reflectance measurements to
+understand tanning. Because of this, it is essential to look into
+climate data as well as behavioral data from our sample.</p>
+<p>Climate data from <a
+href="https://www.africadatahub.org/dashboards/climate-observer?city=bobo-dioulasso">the
+Africa Data Hub</a> reveals that the temperature ranged from roughly
+6-27 degrees celcius</p>
 <pre class="r"><code>reflectance_data &lt;- read_csv(&quot;data/ScreeningDataCollection_processed.csv&quot;)</code></pre>
 <pre><code>Rows: 220 Columns: 46
 ── Column specification ────────────────────────────────────────────────────────
@@ -701,6 +833,7 @@ dbl (25): Gender, Forehead_B, Forehead_CIE_L, Forehead_CIE_a, Forehead_CIE_b...
 
 final_medians &lt;- final_medians %&gt;%
   mutate(month_year = format(as.Date(TodayDate), &quot;%Y-%m&quot;))
+write.csv(final_medians, &quot;data/Medians_date.csv&quot;, row.names = F)
 
 merged_data &lt;- left_join(climate_data_2013, final_medians, by = &quot;month_year&quot;)
 
@@ -735,6 +868,43 @@ ggplot(merged_data, aes(x = month_year, y = avg_temp)) +
 <pre><code>Warning: Removed 13 rows containing non-finite outside the scale range
 (`stat_boxplot()`).</code></pre>
 <p><img src="figure/analysis1_climate_data.Rmd/result_2_2_1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-result_2_2_1-1">
+Past versions of result_2_2_1-1.png
+</button>
+</p>
+<div id="fig-result_2_2_1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/e86fbb5cce871df7897898ea0ae274f63f6a2ef0/docs/figure/analysis1_climate_data.Rmd/result_2_2_1-1.png" target="_blank">e86fbb5</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-04-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>      coord_cartesian(ylim = primary_axis)</code></pre>
 <pre><code>&lt;ggproto object: Class CoordCartesian, Coord, gg&gt;
     aspect: function
@@ -770,7 +940,7 @@ a &lt;- primary_axis[1] - b * secondary_axis[1]
 ggplot(merged_data, aes(x = month_year, y = avg_temp)) +
       geom_point(color = &quot;#85D4E3&quot;, size = 2) +
       geom_line(aes(y = fit, group = 1), color = &quot;#9C964A&quot;, linetype = &quot;dashed&quot;, size = 1) +
-      geom_boxplot(aes(y = a + LeftUpperInnerArm_M * b)) +
+      geom_boxplot(aes(y = a + LeftUpperInnerArm_M * b), color = &quot;#F4B5BD&quot;) +
       scale_y_continuous(
         bquote(&#39;Cape Town average temperature (C)&#39;), 
         sec.axis = sec_axis(~ (. - a) / b, name = bquote(&#39;Left arm melanin index&#39;))
@@ -797,6 +967,200 @@ generated.</code></pre>
 <pre><code>Warning: Removed 15 rows containing non-finite outside the scale range
 (`stat_boxplot()`).</code></pre>
 <p><img src="figure/analysis1_climate_data.Rmd/result_2_2_2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-result_2_2_2-1">
+Past versions of result_2_2_2-1.png
+</button>
+</p>
+<div id="fig-result_2_2_2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/lilyheald/SAPPHIRE/blob/e86fbb5cce871df7897898ea0ae274f63f6a2ef0/docs/figure/analysis1_climate_data.Rmd/result_2_2_2-1.png" target="_blank">e86fbb5</a>
+</td>
+<td>
+Lily Heald
+</td>
+<td>
+2025-04-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>      coord_cartesian(ylim = primary_axis)</code></pre>
+<pre><code>&lt;ggproto object: Class CoordCartesian, Coord, gg&gt;
+    aspect: function
+    backtransform_range: function
+    clip: on
+    default: FALSE
+    distance: function
+    expand: TRUE
+    is_free: function
+    is_linear: function
+    labels: function
+    limits: list
+    modify_scales: function
+    range: function
+    render_axis_h: function
+    render_axis_v: function
+    render_bg: function
+    render_fg: function
+    setup_data: function
+    setup_layout: function
+    setup_panel_guides: function
+    setup_panel_params: function
+    setup_params: function
+    train_panel_guides: function
+    transform: function
+    super:  &lt;ggproto object: Class CoordCartesian, Coord, gg&gt;</code></pre>
+</div>
+<div id="using-principal-component-scores" class="section level1">
+<h1>using principal component scores</h1>
+<pre class="r"><code>pc_scores &lt;- read_csv(&quot;data/Medians_PC_scores.csv&quot;)</code></pre>
+<pre><code>Rows: 158 Columns: 35
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr   (4): ParticipantCentreID, Season, Ethnicity, month_year
+dbl  (30): LeftUpperInnerArm_CIE_L, LeftUpperInnerArm_CIE_a, LeftUpperInnerA...
+date  (1): TodayDate
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>uv_subset &lt;- uv_2013[1:12,]
+
+uv_pc_data &lt;- left_join(uv_subset, pc_scores, by = &quot;month_year&quot;)
+
+primary_axis &lt;- c(min(merged_data$UV_INDEX, na.rm = T), max(merged_data$UV_INDEX, na.rm = T))</code></pre>
+<pre><code>Warning: Unknown or uninitialised column: `UV_INDEX`.</code></pre>
+<pre><code>Warning in min(merged_data$UV_INDEX, na.rm = T): no non-missing arguments to
+min; returning Inf</code></pre>
+<pre><code>Warning: Unknown or uninitialised column: `UV_INDEX`.</code></pre>
+<pre><code>Warning in max(merged_data$UV_INDEX, na.rm = T): no non-missing arguments to
+max; returning -Inf</code></pre>
+<pre class="r"><code>secondary_axis &lt;- c(min(merged_data$for_cie_PC1, na.rm = T), max(merged_data$for_cie_PC1, na.rm = T))</code></pre>
+<pre><code>Warning: Unknown or uninitialised column: `for_cie_PC1`.</code></pre>
+<pre><code>Warning in min(merged_data$for_cie_PC1, na.rm = T): no non-missing arguments to
+min; returning Inf</code></pre>
+<pre><code>Warning: Unknown or uninitialised column: `for_cie_PC1`.</code></pre>
+<pre><code>Warning in max(merged_data$for_cie_PC1, na.rm = T): no non-missing arguments to
+max; returning -Inf</code></pre>
+<pre class="r"><code>b &lt;- diff(primary_axis) / diff(secondary_axis)
+a &lt;- primary_axis[1] - b * secondary_axis[1]
+
+ggplot(uv_pc_data, aes(x = month_year, y = UV_INDEX)) +
+      geom_point(color = &quot;#85D4E3&quot;, size = 2) +
+      geom_line(aes(y = fit, group = 1), color = &quot;#9C964A&quot;, linetype = &quot;dashed&quot;, linewidth = 1) +
+      geom_boxplot(aes(y = a + for_cie_PC1 * b), color = &quot;#F4B5BD&quot;) +
+      scale_y_continuous(
+        bquote(&#39;Cape Town UV index&#39;), 
+        sec.axis = sec_axis(~ (. - a) / b, name = bquote(&#39;Forehead PC1 score (CIElab)&#39;))
+      ) +
+      xlab(&quot;Month&quot;) +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      theme(
+        axis.line.y.right = element_line(color = &quot;#F4B5BD&quot;), 
+        axis.ticks.y.right = element_line(color = &quot;#F4B5BD&quot;),
+        axis.text.y.right = element_text(color = &quot;#F4B5BD&quot;), 
+        axis.title.y.right = element_text(color = &quot;#F4B5BD&quot;),
+        axis.line.y.left = element_line(color = &quot;#85D4E3&quot;), 
+        axis.ticks.y.left = element_line(color = &quot;#85D4E3&quot;),
+        axis.text.y.left = element_text(color = &quot;#85D4E3&quot;), 
+        axis.title.y.left = element_text(color = &quot;#85D4E3&quot;)
+      ) +
+      ggtitle(&quot;UV index and forehead CIElab PC score&quot;)</code></pre>
+<pre><code>Warning: Removed 167 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning in min(x): no non-missing arguments to min; returning Inf</code></pre>
+<pre><code>Warning in max(x): no non-missing arguments to max; returning -Inf</code></pre>
+<p><img src="figure/analysis1_climate_data.Rmd/result_2_3_1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>      coord_cartesian(ylim = primary_axis)</code></pre>
+<pre><code>&lt;ggproto object: Class CoordCartesian, Coord, gg&gt;
+    aspect: function
+    backtransform_range: function
+    clip: on
+    default: FALSE
+    distance: function
+    expand: TRUE
+    is_free: function
+    is_linear: function
+    labels: function
+    limits: list
+    modify_scales: function
+    range: function
+    render_axis_h: function
+    render_axis_v: function
+    render_bg: function
+    render_fg: function
+    setup_data: function
+    setup_layout: function
+    setup_panel_guides: function
+    setup_panel_params: function
+    setup_params: function
+    train_panel_guides: function
+    transform: function
+    super:  &lt;ggproto object: Class CoordCartesian, Coord, gg&gt;</code></pre>
+<pre class="r"><code>primary_axis &lt;- c(min(merged_data$UV_INDEX, na.rm = T), max(merged_data$UV_INDEX, na.rm = T))</code></pre>
+<pre><code>Warning: Unknown or uninitialised column: `UV_INDEX`.</code></pre>
+<pre><code>Warning in min(merged_data$UV_INDEX, na.rm = T): no non-missing arguments to
+min; returning Inf</code></pre>
+<pre><code>Warning: Unknown or uninitialised column: `UV_INDEX`.</code></pre>
+<pre><code>Warning in max(merged_data$UV_INDEX, na.rm = T): no non-missing arguments to
+max; returning -Inf</code></pre>
+<pre class="r"><code>secondary_axis &lt;- c(min(merged_data$for_rgb_PC1, na.rm = T), max(merged_data$for_rgb_PC1, na.rm = T))</code></pre>
+<pre><code>Warning: Unknown or uninitialised column: `for_rgb_PC1`.</code></pre>
+<pre><code>Warning in min(merged_data$for_rgb_PC1, na.rm = T): no non-missing arguments to
+min; returning Inf</code></pre>
+<pre><code>Warning: Unknown or uninitialised column: `for_rgb_PC1`.</code></pre>
+<pre><code>Warning in max(merged_data$for_rgb_PC1, na.rm = T): no non-missing arguments to
+max; returning -Inf</code></pre>
+<pre class="r"><code>b &lt;- diff(primary_axis) / diff(secondary_axis)
+a &lt;- primary_axis[1] - b * secondary_axis[1]
+
+ggplot(uv_pc_data, aes(x = month_year, y = UV_INDEX)) +
+      geom_point(color = &quot;#85D4E3&quot;, size = 2) +
+      geom_line(aes(y = fit, group = 1), color = &quot;#9C964A&quot;, linetype = &quot;dashed&quot;, linewidth = 1) +
+      geom_boxplot(aes(y = a + for_cie_PC1 * b), color = &quot;#F4B5BD&quot;) +
+      scale_y_continuous(
+        bquote(&#39;Cape Town UV index&#39;), 
+        sec.axis = sec_axis(~ (. - a) / b, name = bquote(&#39;Forehead PC1 score (RGB)&#39;))
+      ) +
+      xlab(&quot;Month&quot;) +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      theme(
+        axis.line.y.right = element_line(color = &quot;#F4B5BD&quot;), 
+        axis.ticks.y.right = element_line(color = &quot;#F4B5BD&quot;),
+        axis.text.y.right = element_text(color = &quot;#F4B5BD&quot;), 
+        axis.title.y.right = element_text(color = &quot;#F4B5BD&quot;),
+        axis.line.y.left = element_line(color = &quot;#85D4E3&quot;), 
+        axis.ticks.y.left = element_line(color = &quot;#85D4E3&quot;),
+        axis.text.y.left = element_text(color = &quot;#85D4E3&quot;), 
+        axis.title.y.left = element_text(color = &quot;#85D4E3&quot;)
+      ) +
+      ggtitle(&quot;UV index and forehead RGB PC score&quot;)</code></pre>
+<pre><code>Warning: Removed 167 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning in min(x): no non-missing arguments to min; returning Inf</code></pre>
+<pre><code>Warning in max(x): no non-missing arguments to max; returning -Inf</code></pre>
+<p><img src="figure/analysis1_climate_data.Rmd/result_2_3_2-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>      coord_cartesian(ylim = primary_axis)</code></pre>
 <pre><code>&lt;ggproto object: Class CoordCartesian, Coord, gg&gt;
     aspect: function
