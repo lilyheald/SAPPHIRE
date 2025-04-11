@@ -739,6 +739,3 @@ fviz_contrib(six_cie_pca, choice = "var", axes = 2, top = 10)
 
 
 
-
-
-
