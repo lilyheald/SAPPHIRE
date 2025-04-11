@@ -7,6 +7,13 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r setup, include = FALSE}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+```
+
+
 In order to calculate a standard PC score for each colorspace across sites and seasons, we will construct a single PC space for each colorspace based on the values for the upper inner arm in the winter. We will let this approximate the "pure" relationships between each reflectance metric, onto which we will project the measurements for the forehead and summer. This will allow us to make comparisons using the PC scores. 
 
 ```{r part2_0}
