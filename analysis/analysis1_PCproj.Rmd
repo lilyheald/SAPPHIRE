@@ -16,7 +16,7 @@ library(ggstatsplot)
 
 # Part 1: construction
 
-In order to calculate a standard PC score for each colorspace across sites and seasons, we will construct a single PC space for each colorspace based on the values for the upper inner arm in the winter. We will let this approximate the "pure" relationships between each reflectance metric, onto which we will project the measurements for the forehead and summer. This will allow us to make comparisons using the PC scores. 
+In order to calculate a standard PC score for each colorspace across sites and seasons, we will construct a single PC space for each colorspace based on the values for the upper inner arm in the winter. We will let this approximate the "pure" relationships between each reflectance metric, onto which we will project the measurements for the forehead and summer. We believe this will allow us to make comparisons using the PC scores. 
 
 ```{r part2_0}
 medians_wide <- read_csv("data/Medians_date.csv")
@@ -89,13 +89,15 @@ rgb_dataset_list <- c("LeftUpperInnerArm_summer_rgb",
 
 for (name in rgb_dataset_list) {
   dataset <- get(name)
+  #gsub(pattern = ".*\(R|G|B)$", replacement = "\1" , names(dataset))
+  
   data <- select_if(dataset, is.numeric)
   site_abbr <- tolower(substr(name, 1, 3))
 # apply the same scaling and centering
   scaled_data <- scale(data, rgb_base_pca$center, rgb_base_pca$scale)
 # mutlipy by the rotation matrix
   pca_scores <- scaled_data %*% rgb_base_pca$rotation
-  colnames(pca_scores)[1:2] <- paste0(site_abbr, "_rgb_PC", 1:2)
+  colnames(pca_scores)[1:2] <- paste0("RGB_PC", 1:2)
   
   assign(name, cbind(dataset, pca_scores[, 1:2]))
 }
@@ -110,7 +112,7 @@ for (name in cie_dataset_list) {
   data <- select_if(dataset, is.numeric)
   scaled_data <- scale(data, cie_base_pca$center, cie_base_pca$scale)
   pca_scores <- scaled_data %*% cie_base_pca$rotation
-  colnames(pca_scores)[1:2] <- paste0(site_abbr, "_cie_PC", 1:2)
+  colnames(pca_scores)[1:2] <- paste0("CIE_PC", 1:2)
   
   assign(name, cbind(dataset, pca_scores[, 1:2]))
 }
@@ -121,6 +123,8 @@ winter_merge <- list(RightUpperInnerArm_winter_cie, Forehead_winter_cie,
 summer_merge <- list(LeftUpperInnerArm_summer_cie, LeftUpperInnerArm_summer_rgb, 
                      RightUpperInnerArm_summer_cie, RightUpperInnerArm_summer_rgb,
                      Forehead_summer_cie, Forehead_summer_rgb)
+
+# we need to end up with a df with season, site, r, g, b, l, a, b, rgbpc1, rgbpc2, ciepc1, ciepc2
 
 winter_data <- reduce(winter_merge, ~ full_join(.x, .y, by = c("ParticipantCentreID", "Season", "Ethnicity", "TodayDate", "month_year")))
 summer_data <- reduce(summer_merge, ~ full_join(.x, .y, by = c("ParticipantCentreID", "Season", "Ethnicity",  "TodayDate", "month_year")))
@@ -159,6 +163,8 @@ ggplot(medians_pc_scores, aes(x=for_rgb_PC1, y=for_rgb_PC2, col = Season, fill =
   geom_point(shape=21, col="black") +
   labs(title = "Forehead RGB projection")
 ```
+
+
 
 
 
