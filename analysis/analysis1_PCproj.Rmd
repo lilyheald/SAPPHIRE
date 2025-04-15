@@ -14,7 +14,7 @@ library(ggplot2)
 library(ggstatsplot)
 ```
 
-# Part 1: construction
+# Part 1: Construction method 1
 
 In order to calculate a standard PC score for each colorspace across sites and seasons, we will construct a single PC space for each colorspace based on the values for the upper inner arm in the winter. We will let this approximate the "pure" relationships between each reflectance metric, onto which we will project the measurements for the forehead and summer. We believe this will allow us to make comparisons using the PC scores. 
 
@@ -28,55 +28,57 @@ for (site in c("Forehead", "RightUpperInnerArm", "LeftUpperInnerArm")) {
   df_name <- paste0(site, "_winter_rgb")
   assign(df_name, medians_winter %>%
            select("ParticipantCentreID", "Season", "Ethnicity", "TodayDate", "month_year",
-                  contains(paste0(site, "_R")),
-                  contains(paste0(site, "_G")),
-                  contains(paste0(site, "_B"))))
+                  R = contains(paste0(site, "_R")),
+                  G = contains(paste0(site, "_G")),
+                  B = contains(paste0(site, "_B"))))
   
   # Winter CIE
   df_name <- paste0(site, "_winter_cie")
   assign(df_name, medians_winter %>%
            select("ParticipantCentreID", "Season", "Ethnicity", "TodayDate", "month_year", 
-                  contains(paste0(site, "_CIE_L")),
-                  contains(paste0(site, "_CIE_a")),
-                  contains(paste0(site, "_CIE_b"))))
+                  L = contains(paste0(site, "_CIE_L")),
+                  a = contains(paste0(site, "_CIE_a")),
+                  b = contains(paste0(site, "_CIE_b"))))
   # Summer RGB
   df_name <- paste0(site, "_summer_rgb")
   assign(df_name, medians_summer %>%
            select("ParticipantCentreID", "Season", "Ethnicity", "TodayDate", "month_year",  
-                  contains(paste0(site, "_R")),
-                  contains(paste0(site, "_G")),
-                  contains(paste0(site, "_B"))))
+                  R = contains(paste0(site, "_R")),
+                  G = contains(paste0(site, "_G")),
+                  B = contains(paste0(site, "_B"))))
   
   # Summer CIE
   df_name <- paste0(site, "_summer_cie")
   assign(df_name, medians_summer %>%
            select("ParticipantCentreID", "Season", "Ethnicity", "TodayDate", "month_year", 
-                  contains(paste0(site, "_CIE_L")),
-                  contains(paste0(site, "_CIE_a")),
-                  contains(paste0(site, "_CIE_b"))))
+                  L = contains(paste0(site, "_CIE_L")),
+                  a = contains(paste0(site, "_CIE_a")),
+                  b = contains(paste0(site, "_CIE_b"))))
 }
 ```
 
 ```{r part2_1}
 # create a PC space for RGB upper inner arm values
 rgb_base <- na.omit(LeftUpperInnerArm_winter_rgb)
-rgb_base_sc <- scale(select_if(rgb_base, is.numeric))
+rgb_base_sc <- select_if(rgb_base, is.numeric)
 
 rgb_base_pca <- prcomp(rgb_base_sc)
 
 rgb_base_comps <- as.data.frame(rgb_base_pca$x)
-colnames(rgb_base_comps)[1:2] <- c("lef_rgb_PC1", "lef_rgb_PC2")
+colnames(rgb_base_comps)[1:2] <- c("RGB_PC1", "RGB_PC2")
 rgb_base_new <- cbind(rgb_base,rgb_base_comps[,c(1,2)])
+rgb_base_new$Site <- "LeftUpperInnerArm"
 
 # create a PC space for CIE upper inner arm vals 
 cie_base <- na.omit(LeftUpperInnerArm_winter_cie)
-cie_base_sc <- scale(select_if(cie_base, is.numeric))
+cie_base_sc <- select_if(cie_base, is.numeric)
 
 cie_base_pca <- prcomp(cie_base_sc)
 
 cie_base_comps <- as.data.frame(cie_base_pca$x)
-colnames(cie_base_comps)[1:2] <- c("lef_cie_PC1", "lef_cie_PC2")
+colnames(cie_base_comps)[1:2] <- c("CIE_PC1", "CIE_PC2")
 cie_base_new <- cbind(cie_base,cie_base_comps[,c(1,2)])
+cie_base_new$Site <- "LeftUpperInnerArm"
 ```
 
 Now that we have initial PCA spaces constructed based on the values of the left upper inner arm, we can project the values from summer, right upper inner arm, and forehead onto this PC space in order to create a consistent PC score for each season, individual, and site. 
@@ -90,17 +92,21 @@ rgb_dataset_list <- c("LeftUpperInnerArm_summer_rgb",
 for (name in rgb_dataset_list) {
   dataset <- get(name)
   #gsub(pattern = ".*\(R|G|B)$", replacement = "\1" , names(dataset))
-  
   data <- select_if(dataset, is.numeric)
-  site_abbr <- tolower(substr(name, 1, 3))
+  site_name <- gsub("_.*", "", name)  # Extract site name
+  dataset$Site <- site_name
 # apply the same scaling and centering
   scaled_data <- scale(data, rgb_base_pca$center, rgb_base_pca$scale)
-# mutlipy by the rotation matrix
+# multiply by the rotation matrix
   pca_scores <- scaled_data %*% rgb_base_pca$rotation
   colnames(pca_scores)[1:2] <- paste0("RGB_PC", 1:2)
   
   assign(name, cbind(dataset, pca_scores[, 1:2]))
 }
+
+rgb_data <- bind_rows(LeftUpperInnerArm_summer_rgb, RightUpperInnerArm_winter_rgb, 
+                      RightUpperInnerArm_summer_rgb, Forehead_winter_rgb, 
+                      Forehead_summer_rgb, rgb_base_new)
 
 cie_dataset_list <- list("LeftUpperInnerArm_summer_cie",
   "RightUpperInnerArm_winter_cie", "RightUpperInnerArm_summer_cie",
@@ -108,7 +114,8 @@ cie_dataset_list <- list("LeftUpperInnerArm_summer_cie",
 
 for (name in cie_dataset_list) {
   dataset <- get(name)
-  site_abbr <- tolower(substr(name, 1, 3))
+  site_name <- gsub("_.*", "", name)  # Extract site name
+  dataset$Site <- site_name
   data <- select_if(dataset, is.numeric)
   scaled_data <- scale(data, cie_base_pca$center, cie_base_pca$scale)
   pca_scores <- scaled_data %*% cie_base_pca$rotation
@@ -117,20 +124,14 @@ for (name in cie_dataset_list) {
   assign(name, cbind(dataset, pca_scores[, 1:2]))
 }
 
-winter_merge <- list(RightUpperInnerArm_winter_cie, Forehead_winter_cie,
-                     RightUpperInnerArm_winter_rgb, Forehead_winter_rgb, 
-                     cie_base_new, rgb_base_new)
-summer_merge <- list(LeftUpperInnerArm_summer_cie, LeftUpperInnerArm_summer_rgb, 
-                     RightUpperInnerArm_summer_cie, RightUpperInnerArm_summer_rgb,
-                     Forehead_summer_cie, Forehead_summer_rgb)
+cie_data <- bind_rows(LeftUpperInnerArm_summer_cie, RightUpperInnerArm_winter_cie, 
+                      RightUpperInnerArm_summer_cie, Forehead_winter_cie, 
+                      Forehead_summer_cie, cie_base_new)
 
-# we need to end up with a df with season, site, r, g, b, l, a, b, rgbpc1, rgbpc2, ciepc1, ciepc2
-
-winter_data <- reduce(winter_merge, ~ full_join(.x, .y, by = c("ParticipantCentreID", "Season", "Ethnicity", "TodayDate", "month_year")))
-summer_data <- reduce(summer_merge, ~ full_join(.x, .y, by = c("ParticipantCentreID", "Season", "Ethnicity",  "TodayDate", "month_year")))
-
-medians_pc_scores <- rbind(summer_data, winter_data)
-write.csv(medians_pc_scores, "data/Medians_PC_scores.csv", row.names = F)
+pc_data <- full_join(cie_data, rgb_data, by = c("ParticipantCentreID", "Season", 
+                                                "Ethnicity", "TodayDate", 
+                                                "month_year", "Site"))
+write.csv(pc_data, "data/Medians_PC_scores.csv", row.names = F)
 ```
 
 Now we have constructed a PCA space based on each individuals reflectance measurements from the winter of their left upper inner arm for both CIElab and RGB colorspaces. Then, we used this colorspace to project new data from the summer and other sites in order to form a cohesive PC score for each colorspace that is able to be compared across seasons. 
@@ -139,33 +140,60 @@ Now we have constructed a PCA space based on each individuals reflectance measur
 # Part 2: Visualising projections onto pre constructed PC spaces.
 
 ```{r}
-ggplot(medians_pc_scores, aes(x=lef_cie_PC1, y=lef_cie_PC2, col = Season, fill = Season)) +
-  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
-  geom_point(shape=21, col="black") +
-  labs(title = "Left upper inner arm CIElab projection")
+ggplot(pc_data, aes(x=RGB_PC1, y=RGB_PC2, col = Site, fill = Site)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha = 0.5)+
+  geom_point(shape = 21, col="black") +
+  labs(title = "RGB scores")
 
-ggplot(medians_pc_scores, aes(x=lef_rgb_PC1, y=lef_rgb_PC2, col = Season, fill = Season)) +
-  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
+ggplot(pc_data, aes(x=CIE_PC1, y=CIE_PC2, col = Site, fill = Site)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha = 0.5)+
   geom_point(shape=21, col="black") +
-  labs(title = "Left upper inner arm RGB projection")
+  labs(title = "CIE scores")
+
+ggplot(pc_data, aes(x=RGB_PC1, y=RGB_PC2, col = Season, fill = Season)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha = 0.5)+
+  geom_point(shape = 21, col="black") +
+  labs(title = "RGB scores")
+
+ggplot(pc_data, aes(x=CIE_PC1, y=CIE_PC2, col = Season, fill = Season)) +
+  stat_ellipse(geom = "polygon", col= "black", alpha = 0.5)+
+  geom_point(shape=21, col="black") +
+  labs(title = "CIE scores")
 ```
 
 When we visualize the projections of the left upper inner arm (RGB and CIElab), something odd appears to be happening as it is able to very distinctly cluster based off of season. This does not happen for forehead and right upper inner arm values.
 
 ```{r}
-ggplot(medians_pc_scores, aes(x=rig_cie_PC1, y=rig_cie_PC2, col = Season, fill = Season)) +
-  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
-  geom_point(shape=21, col="black") +
-  labs(title = "Right upper inner arm CIElab projection")
+left_arm <- pc_data[pc_data$Site == 'LeftUpperInnerArm',]
 
-ggplot(medians_pc_scores, aes(x=for_rgb_PC1, y=for_rgb_PC2, col = Season, fill = Season)) +
-  stat_ellipse(geom = "polygon", col= "black", alpha =0.5)+
-  geom_point(shape=21, col="black") +
-  labs(title = "Forehead RGB projection")
+ggplot(left_arm, aes(x = RGB_PC1, y = RGB_PC2, col = Season, fill = Season)) + 
+  stat_ellipse(geom = "polygon", col = "black", alpha = 0.5) + 
+  geom_point(shape = 21, col = "black")
+
+ggplot(left_arm, aes(x = CIE_PC1, y = CIE_PC2, col = Season, fill = Season)) + 
+  stat_ellipse(geom = "polygon", col = "black", alpha = 0.5) + 
+  geom_point(shape = 21, col = "black")
+
+right_arm <- pc_data[pc_data$Site == 'RightUpperInnerArm',]
+
+ggplot(right_arm, aes(x = RGB_PC1, y = RGB_PC2, col = Season, fill = Season)) + 
+  stat_ellipse(geom = "polygon", col = "black", alpha = 0.5) + 
+  geom_point(shape = 21, col = "black")
+
+ggplot(right_arm, aes(x = CIE_PC1, y = CIE_PC2, col = Season, fill = Season)) + 
+  stat_ellipse(geom = "polygon", col = "black", alpha = 0.5) + 
+  geom_point(shape = 21, col = "black")
+
+forehead <- pc_data[pc_data$Site == 'Forehead',]
+
+ggplot(forehead, aes(x = RGB_PC1, y = RGB_PC2, col = Season, fill = Season)) + 
+  stat_ellipse(geom = "polygon", col = "black", alpha = 0.5) + 
+  geom_point(shape = 21, col = "black")
+
+ggplot(forehead, aes(x = CIE_PC1, y = CIE_PC2, col = Season, fill = Season)) + 
+  stat_ellipse(geom = "polygon", col = "black", alpha = 0.5) + 
+  geom_point(shape = 21, col = "black")
 ```
-
-
-
 
 
 

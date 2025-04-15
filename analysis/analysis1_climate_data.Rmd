@@ -188,12 +188,13 @@ ggplot(merged_data, aes(x = month_year, y = avg_temp)) +
 
 ```{r result_2_3_1}
 pc_scores <- read_csv("data/Medians_PC_scores.csv")
+forehead <- pc_scores[pc_scores$Site == 'Forehead',]
 uv_subset <- uv_2013[1:12,]
 
-uv_pc_data <- left_join(uv_subset, pc_scores, by = "month_year")
+uv_pc_data <- left_join(uv_subset, forehead, by = "month_year")
 
 primary_axis <- c(min(merged_data$UV_INDEX, na.rm = T), max(merged_data$UV_INDEX, na.rm = T))
-secondary_axis <- c(min(merged_data$for_cie_PC1, na.rm = T), max(merged_data$for_cie_PC1, na.rm = T))
+secondary_axis <- c(min(merged_data$RGB_PC1, na.rm = T), max(merged_data$RGB_PC1, na.rm = T))
 
 b <- diff(primary_axis) / diff(secondary_axis)
 a <- primary_axis[1] - b * secondary_axis[1]
@@ -201,7 +202,7 @@ a <- primary_axis[1] - b * secondary_axis[1]
 ggplot(uv_pc_data, aes(x = month_year, y = UV_INDEX)) +
       geom_point(color = "#85D4E3", size = 2) +
       geom_line(aes(y = fit, group = 1), color = "#9C964A", linetype = "dashed", linewidth = 1) +
-      geom_boxplot(aes(y = a + for_cie_PC1 * b), color = "#F4B5BD") +
+      geom_boxplot(aes(y = a + RGB_PC1 * b), color = "#F4B5BD") +
       scale_y_continuous(
         bquote('Cape Town UV index'), 
         sec.axis = sec_axis(~ (. - a) / b, name = bquote('Forehead PC1 score (CIElab)'))
